@@ -15,11 +15,12 @@
 import sys
 
 import PyQt4.QtCore as QtCore
+from PyQt4.QtCore import SIGNAL
 import PyQt4.QtGui as QtGui
 import QtPoppler
 
 #dpi resolution used to render the pdf into a QImage.
-dpi = 150
+dpi = 140
 
 if len(sys.argv) < 2:
     print "Usage:\n\tpython 03PDF-Qt-Display-async.py <filename>"
@@ -52,8 +53,16 @@ class PdfScene(QtGui.QGraphicsView):
         or QThread.terminated().
         """
         self.thread = PdfLoaderThread(self.document, self.scene)
+        self.connect(self.thread, SIGNAL("output(QImage, int)"), self.addPage)
+        
         self.thread.start()
         print "Adding pages..."
+        
+    def addPage(self, image, i):
+        pixmap = QtGui.QPixmap.fromImage(image)
+        item = self.scene.addPixmap(pixmap)
+        item.setOffset(0, i*1600)
+        print "Signaled."
 
 class TestWindow(QtGui.QMainWindow):
     """ Creates and Displays a QGraphicsScene """
@@ -63,6 +72,7 @@ class TestWindow(QtGui.QMainWindow):
 
         self.view = PdfScene(document)
         self.setCentralWidget(self.view)
+        self.resize(800, 800)
 
 class PdfLoaderThread(QtCore.QThread):
     """
@@ -87,13 +97,8 @@ class PdfLoaderThread(QtCore.QThread):
             image = self.doc.page(i).renderToImage(dpi, dpi)
             print "Size of image: " + str(image.width()) + "x"+ str(image.height())
 
-            """ Move this into a signal/slot.
-            pixmap = QtGui.QPixmap.fromImage(image)
-            item = self.scene.addPixmap(pixmap)
-            item.setOffset(0, i*1800)
-            item.setVisible(True)
-            """
-            print "Added page to scene."
+            self.emit(SIGNAL("output(QImage, int)"), image, i)
+            print "Send signal to add page."
 
 app = QtGui.QApplication(sys.argv)
 
