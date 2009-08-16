@@ -6,6 +6,7 @@
 #    + Load pdf in background
 #    + quality/performance tests with dpi+scaling
 #    + Load pages only when needed (isn't this done by the graphicsscene?)
+# TODOs moved to 03.
 #===============================================================================
 import sys
 
