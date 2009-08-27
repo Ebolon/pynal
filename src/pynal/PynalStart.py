@@ -8,9 +8,8 @@ import sys
 
 from PyQt4 import QtGui
 
-import models.Config as Config
+from models import Config
 from view.MainWindow import MainWindow
-from control.MainWindowControl import MainWindowControl
 
 def load_config(args):
     """ Creates the configuration object that will be used in this instance. """
