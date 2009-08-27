@@ -8,14 +8,14 @@ import sys
 
 from PyQt4 import QtGui
 
-from models import Config
-from view.MainWindow import MainWindow
+from pynal.models import Config
+from pynal.view.MainWindow import MainWindow
 
 def load_config(args):
     """ Creates the configuration object that will be used in this instance. """
     return Config(args)
 
-if __name__ == "__main__":
+def start():
     Config.parse_args(sys.argv)
     Config.load_config()
 
@@ -24,4 +24,7 @@ if __name__ == "__main__":
     mw = MainWindow()
     mw.show()
 
-    sys.exit(app.exec_())
+    return app.exec_()
+
+if __name__ == "__main__":
+    sys.exit(start())

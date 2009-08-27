@@ -5,7 +5,7 @@ from PyQt4.QtCore import SIGNAL
 
 import QtPoppler
 
-import models.Config as Config
+import pynal.models.Config as Config
 
 class PynalDocument(QtGui.QGraphicsView):
     """ Document widget displayed in the QTabWidget. """

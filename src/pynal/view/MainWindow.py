@@ -7,8 +7,8 @@ from PyQt4.QtCore import SIGNAL
 
 from PyKDE4 import kdeui
 
-from PynalDocument import *
-import models.Config as Config
+from pynal.view.PynalDocument import *
+import pynal.models.Config as Config
 
 class MainWindow(QtGui.QMainWindow):
     '''

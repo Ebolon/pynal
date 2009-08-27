@@ -15,5 +15,6 @@ from pynal.models import Config
 setup(name=Config.appname, version=Config.version,
       url=Config.homepage, license=Config.license,
       package_dir={"pynal": "src/pynal"},
-      packages=["pynal", "pynal.models", "pynal.view", "pynal.control"],)
+      packages=["pynal", "pynal.models", "pynal.view", "pynal.control"],
+      scripts=["pynal"],)
 

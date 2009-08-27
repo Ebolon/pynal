@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+"""
+The pynal start script. Placed in $PATH and used to start the application.
+"""
+import pynal.PynalStart
+
+pynal.PynalStart.start()
