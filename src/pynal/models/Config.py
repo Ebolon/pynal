@@ -4,12 +4,18 @@ Contains configuration info for the running application.
 Is stored in a file in the userspace (more like $XDG_CONFIG_HOME).
 Reads and interprets the cmd line arguments.
 '''
-class Config():
-   def __init__(self, args):
-       self.parse_args(args)
-        
-       self.appname = "Pynal"
+appname = "Pynal"
+version = "0.1"
+
+window_width = 600
+window_height = 600
+
+pdf_render_dpi = 150
        
-   def parse_args(self, args):
-       """ Parse the list of arguments and do something useful, like pass. """
-       pass
+def parse_args(args):
+    """ Parse the list of arguments and do something useful, like pass. """
+    pass
+
+def load_config():
+    """ Load the configuration file for the current user. """
+    pass
