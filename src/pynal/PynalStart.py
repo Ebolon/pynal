@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 Entry point for the pynal appliaction.
 
@@ -18,10 +19,10 @@ def load_config(args):
 if __name__ == "__main__":
     Config.parse_args(sys.argv)
     Config.load_config()
-    
+
     app = QtGui.QApplication(sys.argv)
-    
+
     mw = MainWindow()
     mw.show()
-    
+
     sys.exit(app.exec_())

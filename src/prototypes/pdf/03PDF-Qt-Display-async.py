@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #===============================================================================
 # Loads and displays a PDF file in a QGraphicsScene to be able to draw on it.
 #
