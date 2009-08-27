@@ -7,19 +7,21 @@ import sys
 
 from PyQt4 import QtGui
 
-from models.Config import Config
+import models.Config as Config
 from view.MainWindow import MainWindow
+from control.MainWindowControl import MainWindowControl
 
 def load_config(args):
     """ Creates the configuration object that will be used in this instance. """
     return Config(args)
 
 if __name__ == "__main__":
-    config = load_config(sys.argv)
+    Config.parse_args(sys.argv)
+    Config.load_config()
     
     app = QtGui.QApplication(sys.argv)
     
-    mw = MainWindow(config)
+    mw = MainWindow()
     mw.show()
     
     sys.exit(app.exec_())
