@@ -11,6 +11,12 @@ appname = "Pynal"
 # Current version.
 version = "0.1"
 
+# The homepage of the app.
+homepage = "http://github.com/dominiks/pynal"
+
+# License for the code.
+license = ""
+
 
 # Initial width of the main window.
 window_width = 600
