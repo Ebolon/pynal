@@ -5,10 +5,9 @@ from PyQt4 import QtGui
 from PyQt4 import QtCore
 from PyQt4.QtCore import SIGNAL
 
-from PyKDE4 import kdeui
-
 from pynal.view.PynalDocument import *
 import pynal.models.Config as Config
+import pynal.models.fdIconLoader as iconloader
 
 class MainWindow(QtGui.QMainWindow):
     '''
@@ -34,7 +33,7 @@ class MainWindow(QtGui.QMainWindow):
     def createToolbar(self):
         bar = self.addToolBar("title")
         bar.addAction(self.createAction(self.tr("New"), self.loadPDF, "document-new"))
-        bar.addAction(self.createAction(self.tr("Save"), self.loadPDF, "document-save-all"))
+        bar.addAction(self.createAction(self.tr("Save"), self.loadPDF, "document-save"))
         bar.addAction(self.createAction(self.tr("Open"), self.loadPDF, "document-open"))
         bar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
 
@@ -53,7 +52,7 @@ class MainWindow(QtGui.QMainWindow):
         """ Convenience method to create actions for the menu. """
         action = QtGui.QAction(text, self)
         if icon is not None:
-            action.setIcon(kdeui.KIcon(icon))
+            action.setIcon(QtGui.QIcon(iconloader.find_icon(icon, 32)))
 
         self.connect(action, SIGNAL("triggered()"), slot)
         return action
