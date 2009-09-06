@@ -205,7 +205,7 @@ class PyPage(QtGui.QGraphicsItem):
         pos - QRectF specifying the position and dimension of this page
         background - the pixmap to use as a background (or None for white)
         """
-        QtGui.QGraphicsItemGroup.__init__(self, None, scene)
+        QtGui.QGraphicsItem.__init__(self, None, scene)
         self.bounding = pos
 
         if background is not None:
@@ -220,12 +220,56 @@ class PyPage(QtGui.QGraphicsItem):
 
         self.pagenumber = pagenumber
 
+        self.pagecontrol = PageControl(self)
+
     def boundingRect(self):
+        """ Return the bounding box of the page. """
         return self.bounding
 
     def paint(self, painter, option, widget=None):
-        for child in self.childItems():
-            child.paint(painter, option, widget)
+        """
+        Explicitly painting all children is unneeded double work.
+
+        read: retarded
+        """
+        pass
+
+class PageControl(QtGui.QGraphicsItem):
+    """
+    A control bar below a page used to move, delete or create new
+    pages after this.
+    """
+    def __init__(self, page):
+        QtGui.QGraphicsItem.__init__(self, page)
+        self.page = page
+        top = self.page.boundingRect().bottom() + 20
+        left = -100
+        self.bounding = QtCore.QRectF(QtCore.QPointF(left, top),
+                                      QtCore.QSizeF(200, 40))
+        self.back = QtGui.QGraphicsRectItem(QtCore.QRectF(QtCore.QPointF(left, top),
+                                      QtCore.QSizeF(200, 40)),
+                                      self.page)
+        self.setAcceptHoverEvents(True)
+
+    def boundingRect(self):
+        """ Return the bounding box of the page. """
+        return self.bounding
+
+    def paint(self, painter, option, widget=None):
+        """ Paint nothing in particular that isn't already getting painted. """
+        pass
+
+    def hoverEnterEvent(self, event):
+        """ The cursor entered the bounding rect of the control area. """
+        self.back.setBrush(QtGui.QBrush(QtCore.Qt.red))
+
+    def hoverLeaveEvent(self, event):
+        """ The cursor left the bounding rect of the control area. """
+        self.back.setBrush(QtGui.QBrush())
+
+    def mousePressEvent(self, event):
+        """ The user clicked on the control area. """
+        print "click"
 
 class PdfLoaderThread(QtCore.QThread):
     """
