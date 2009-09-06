@@ -48,7 +48,7 @@ class MainWindow(QtGui.QMainWindow):
         return action
 
     def newDocument(self):
-        pass
+        self.tabs.addTab(PynalDocument(), "new Doc")
 
     def newPage(self):
         doc = self.tabs.currentWidget()
@@ -95,7 +95,7 @@ class MainWindow(QtGui.QMainWindow):
 class PynalDocument(QtGui.QGraphicsView):
     """ Document widget displayed in the QTabWidget. """
 
-    def __init__(self, source_file, parent=None):
+    def __init__(self, source_file=None, parent=None):
         """
         Create a new PynalDocument for the given file.
 
@@ -106,21 +106,22 @@ class PynalDocument(QtGui.QGraphicsView):
         QtGui.QGraphicsView.__init__(self, parent)
         self.pages = [] # List to manage the page objects
 
-        self.source = source_file
-        self.document = QtPoppler.Poppler.Document.load(self.source)
-        self.document.setRenderHint(QtPoppler.Poppler.Document.Antialiasing and
-                                    QtPoppler.Poppler.Document.TextAntialiasing)
-
         self.scene = QtGui.QGraphicsScene()
         self.scene.setBackgroundBrush(QtGui.QBrush(QtCore.Qt.gray))
         self.setScene(self.scene)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setDragMode(self.ScrollHandDrag)
 
-        self.thread = PdfLoaderThread(self.document, self.scene)
-        self.connect(self.thread, SIGNAL("output(QImage, int)"), self.addPage)
+        if source_file is not None:
+            self.source = source_file
+            self.document = QtPoppler.Poppler.Document.load(self.source)
+            self.document.setRenderHint(QtPoppler.Poppler.Document.Antialiasing and
+                                    QtPoppler.Poppler.Document.TextAntialiasing)
 
-        self.thread.start()
+            self.thread = PdfLoaderThread(self.document, self.scene)
+            self.connect(self.thread, SIGNAL("output(QImage, int)"), self.addPage)
+
+            self.thread.start()
 
 #        self.scale(0.4, 0.4)
 
@@ -131,7 +132,7 @@ class PynalDocument(QtGui.QGraphicsView):
                                      self.pages[-1].boundingRect().bottom() + 100)
         else:
             dimensions = QtCore.QSizeF(800, 1200)
-            topleft = QtCore.QPointF(-pixmap.width() / 2, 0)
+            topleft = QtCore.QPointF(-dimensions.width() / 2, 0)
         pos = QtCore.QRectF(topleft, dimensions)
         self.pages.append(PyPage(len(self.pages), self.scene, pos))
 
