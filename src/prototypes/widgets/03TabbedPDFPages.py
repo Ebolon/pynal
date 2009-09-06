@@ -30,6 +30,14 @@ class MainWindow(QtGui.QMainWindow):
         docBar.addAction(self.createAction("Add Page", self.newPage))
         docBar.addAction(self.createAction("Remove Page", self.removePage))
 
+        zoombar = self.addToolBar("&Scaling")
+        slider = QtGui.QSlider(QtCore.Qt.Horizontal)
+        slider.setMaximum(200)
+        slider.setMinimum(10)
+        slider.setValue(100)
+        self.connect(slider, QtCore.SIGNAL("valueChanged(int)"), self.changeScale)
+        zoombar.addWidget(slider)
+
         self.tabs = QtGui.QTabWidget()
         self.tabs.setTabsClosable(True)
         self.tabs.setMovable(True)
@@ -40,6 +48,9 @@ class MainWindow(QtGui.QMainWindow):
 
 
         self.resize(800, 700)
+
+    def changeScale(self, scale):
+        self.tabs.currentWidget().changeScale(scale)
 
     def createAction(self, text, slot):
         """ Convenience method to create actions for the menu. """
@@ -110,6 +121,7 @@ class PynalDocument(QtGui.QGraphicsView):
         self.scene.setBackgroundBrush(QtGui.QBrush(QtCore.Qt.gray))
         self.setScene(self.scene)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
+        self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
         self.setDragMode(self.ScrollHandDrag)
 
         if source_file is not None:
@@ -123,7 +135,12 @@ class PynalDocument(QtGui.QGraphicsView):
 
             self.thread.start()
 
-#        self.scale(0.4, 0.4)
+        self.scaleValue = 1.0
+
+    def changeScale(self, scale):
+        self.scaleValue = scale / 100.0
+        self.resetMatrix()
+        self.scale(self.scaleValue, self.scaleValue)
 
     def newPage(self):
         if len(self.pages) > 0: #calculate position on prev page if one exists
