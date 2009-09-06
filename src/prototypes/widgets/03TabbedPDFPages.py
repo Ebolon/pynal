@@ -21,9 +21,14 @@ class MainWindow(QtGui.QMainWindow):
         """ Initialize the content of the window. """
         QtGui.QMainWindow.__init__(self)
 
-        tabMenu = self.menuBar().addMenu("&Tabs")
-        tabMenu.addAction(self.createAction("Open PDF", self.loadPDF))
-        tabMenu.addAction(self.createAction("Rotate", self.rotate))
+        tabBar = self.addToolBar("&Tabs")
+        tabBar.addAction(self.createAction("New Document", self.newDocument))
+        tabBar.addAction(self.createAction("Open PDF", self.loadPDF))
+        tabBar.addAction(self.createAction("Rotate", self.rotate))
+
+        docBar = self.addToolBar("&Document")
+        docBar.addAction(self.createAction("Add Page", self.newPage))
+        docBar.addAction(self.createAction("Remove Page", self.removePage))
 
         self.tabs = QtGui.QTabWidget()
         self.tabs.setTabsClosable(True)
@@ -33,6 +38,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setCentralWidget(self.tabs)
 
+
         self.resize(800, 700)
 
     def createAction(self, text, slot):
@@ -40,6 +46,23 @@ class MainWindow(QtGui.QMainWindow):
         action = QtGui.QAction(text, self)
         self.connect(action, SIGNAL("triggered()"), slot)
         return action
+
+    def newDocument(self):
+        pass
+
+    def newPage(self):
+        doc = self.tabs.currentWidget()
+        if doc is None:
+            return
+
+        doc.newPage()
+
+    def removePage(self):
+        doc = self.tabs.currentWidget()
+        if doc is None:
+            return
+
+        doc.removePage()
 
     def loadPDF(self):
         """
@@ -99,6 +122,19 @@ class PynalDocument(QtGui.QGraphicsView):
 
         self.thread.start()
 
+#        self.scale(0.4, 0.4)
+
+    def newPage(self):
+        if len(self.pages) > 0: #calculate position on prev page if one exists
+            dimensions = QtCore.QSizeF(self.pages[-1].boundingRect().size())
+            topleft = QtCore.QPointF(-dimensions.width() / 2,
+                                     self.pages[-1].boundingRect().bottom() + 100)
+        else:
+            dimensions = QtCore.QSizeF(800, 1200)
+            topleft = QtCore.QPointF(-pixmap.width() / 2, 0)
+        pos = QtCore.QRectF(topleft, dimensions)
+        self.pages.append(PyPage(len(self.pages), self.scene, pos))
+
     def addPage(self, image, i):
         """
         Callback method for the worker thread.
@@ -115,7 +151,7 @@ class PynalDocument(QtGui.QGraphicsView):
 
         dimensions = QtCore.QSizeF(pixmap.width(), pixmap.height())
         pos = QtCore.QRectF(topleft, dimensions)
-        page = PyPage(pixmap, len(self.pages)+1, self.scene, pos)
+        page = PyPage(len(self.pages)+1, self.scene, pos, background=pixmap)
         self.pages.append(page)
 
 
@@ -125,23 +161,28 @@ class PyPage(QtGui.QGraphicsItem):
     Contains a background and can be drawn on.
     """
 
-    def __init__(self, background, pagenumber, scene, pos):
+    def __init__(self, pagenumber, scene, pos, background=None):
         """
         Create a new page.
 
         Parameters:
-        background - the pixmap to use as a background.
         pagenumber - index of this page (first being 0)
         scene - the scene this page will be added to
         pos - QRectF specifying the position and dimension of this page
+        background - the pixmap to use as a background (or None for white)
         """
         QtGui.QGraphicsItemGroup.__init__(self, None, scene)
         self.bounding = pos
 
-        self.background = background
-        self.backgroundImage = QtGui.QGraphicsPixmapItem(self.background, self)
-        self.backgroundImage.setPos(self.bounding.topLeft())
-        self.backgroundImage.setZValue(-1)
+        if background is not None:
+            self.background = QtGui.QGraphicsPixmapItem(background, self)
+            self.background.setPos(self.bounding.topLeft())
+
+        else:
+            self.background = QtGui.QGraphicsRectItem(self.bounding, self)
+            self.background.setBrush(QtGui.QBrush(QtCore.Qt.white))
+
+        self.background.setZValue(-1)
 
         self.pagenumber = pagenumber
 
