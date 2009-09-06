@@ -50,7 +50,13 @@ class MainWindow(QtGui.QMainWindow):
         self.resize(800, 700)
 
     def changeScale(self, scale):
-        self.tabs.currentWidget().changeScale(scale)
+        """
+        Change the scaling of the current document.
+
+        Called by the slider in the toolbar.
+        """
+        if self.tabs.currentWidget() is not None:
+            self.tabs.currentWidget().changeScale(scale)
 
     def createAction(self, text, slot):
         """ Convenience method to create actions for the menu. """
@@ -59,9 +65,11 @@ class MainWindow(QtGui.QMainWindow):
         return action
 
     def newDocument(self):
+        """ Create a new and empty document. """
         self.tabs.addTab(PynalDocument(), "new Doc")
 
     def newPage(self):
+        """ Append an empty page to the current document. """
         doc = self.tabs.currentWidget()
         if doc is None:
             return
@@ -69,6 +77,7 @@ class MainWindow(QtGui.QMainWindow):
         doc.newPage()
 
     def removePage(self):
+        """ Remove the page currently in focus. """
         doc = self.tabs.currentWidget()
         if doc is None:
             return
@@ -138,11 +147,18 @@ class PynalDocument(QtGui.QGraphicsView):
         self.scaleValue = 1.0
 
     def changeScale(self, scale):
+        """
+        Change the scaling of the scene.
+
+        Parameters:
+        scale -- the scaling in %.
+        """
         self.scaleValue = scale / 100.0
         self.resetMatrix()
         self.scale(self.scaleValue, self.scaleValue)
 
     def newPage(self):
+        """ Create an empty page and append it after the last. """
         if len(self.pages) > 0: #calculate position on prev page if one exists
             dimensions = QtCore.QSizeF(self.pages[-1].boundingRect().size())
             topleft = QtCore.QPointF(-dimensions.width() / 2,
