@@ -1,0 +1,9 @@
+Pynal - journaling and PFD annotation application.
+
+Intended for use on tablets to make quick illustrations and add notes
+and other annotations.
+
+For installation instructions see docs/INSTALL
+
+The source is published under the 2-clause BSD license. For details 
+see docs/LICENSE
