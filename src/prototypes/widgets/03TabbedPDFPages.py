@@ -167,7 +167,7 @@ class PynalDocument(QtGui.QGraphicsView):
             dimensions = QtCore.QSizeF(800, 1200)
             topleft = QtCore.QPointF(-dimensions.width() / 2, 0)
         pos = QtCore.QRectF(topleft, dimensions)
-        self.pages.append(PyPage(len(self.pages), self.scene, pos))
+        self.pages.append(PyPage(len(self.pages), self, pos))
 
     def addPage(self, image, i):
         """
@@ -185,7 +185,7 @@ class PynalDocument(QtGui.QGraphicsView):
 
         dimensions = QtCore.QSizeF(pixmap.width(), pixmap.height())
         pos = QtCore.QRectF(topleft, dimensions)
-        page = PyPage(len(self.pages)+1, self.scene, pos, background=pixmap)
+        page = PyPage(len(self.pages)+1, self, pos, background=pixmap)
         self.pages.append(page)
 
 
@@ -195,7 +195,7 @@ class PyPage(QtGui.QGraphicsItem):
     Contains a background and can be drawn on.
     """
 
-    def __init__(self, pagenumber, scene, pos, background=None):
+    def __init__(self, pagenumber, document, pos, background=None):
         """
         Create a new page.
 
@@ -205,8 +205,9 @@ class PyPage(QtGui.QGraphicsItem):
         pos - QRectF specifying the position and dimension of this page
         background - the pixmap to use as a background (or None for white)
         """
-        QtGui.QGraphicsItem.__init__(self, None, scene)
+        QtGui.QGraphicsItem.__init__(self, None, document.scene)
         self.bounding = pos
+        self.document = document
 
         if background is not None:
             self.background = QtGui.QGraphicsPixmapItem(background, self)
@@ -249,7 +250,19 @@ class PageControl(QtGui.QGraphicsItem):
         self.back = QtGui.QGraphicsRectItem(QtCore.QRectF(QtCore.QPointF(left, top),
                                       QtCore.QSizeF(200, 40)),
                                       self.page)
-        self.setAcceptHoverEvents(True)
+
+        self.newPageButton = DocButton("new", 20, self, self.addPage)
+        self.moveUpButton = DocButton("up", 80, self, self.moveUp)
+        self.moveDownButton = DocButton("down", 140, self, self.moveDown)
+
+    def addPage(self):
+        self.page.document.newPage()
+
+    def moveUp(self):
+        pass
+
+    def moveDown(self):
+        pass
 
     def boundingRect(self):
         """ Return the bounding box of the page. """
@@ -259,17 +272,36 @@ class PageControl(QtGui.QGraphicsItem):
         """ Paint nothing in particular that isn't already getting painted. """
         pass
 
+class DocButton(QtGui.QGraphicsItem):
+    def __init__(self, label, offset, parent, action):
+        QtGui.QGraphicsItem.__init__(self, parent)
+        self.action = action
+        top = parent.boundingRect().top()+5
+        left = parent.boundingRect().left()
+        self.setAcceptHoverEvents(True)
+        self.background = QtGui.QGraphicsEllipseItem(
+                            QtCore.QRectF(left + offset, top, 30, 30),
+                            parent)
+        self.background.setBrush(QtGui.QBrush(QtCore.Qt.red))
+
+    def boundingRect(self):
+        """ Return the bounding box of the page. """
+        return self.background.boundingRect()
+
+    def paint(self, painter, option, widget=None):
+        """ Paint nothing in particular that isn't already getting painted. """
+        pass
+
+    def mousePressEvent(self, event):
+        self.action()
+
     def hoverEnterEvent(self, event):
         """ The cursor entered the bounding rect of the control area. """
-        self.back.setBrush(QtGui.QBrush(QtCore.Qt.red))
+        self.background.setBrush(QtGui.QBrush(QtCore.Qt.yellow))
 
     def hoverLeaveEvent(self, event):
         """ The cursor left the bounding rect of the control area. """
-        self.back.setBrush(QtGui.QBrush())
-
-    def mousePressEvent(self, event):
-        """ The user clicked on the control area. """
-        print "click"
+        self.background.setBrush(QtGui.QBrush(QtCore.Qt.red))
 
 class PdfLoaderThread(QtCore.QThread):
     """
