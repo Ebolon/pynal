@@ -5,9 +5,9 @@ from PyQt4 import QtGui
 from PyQt4 import QtCore
 from PyQt4.QtCore import SIGNAL
 
-from pynal.view.PynalDocument import *
-import pynal.models.Config as Config
-import pynal.control.actions as actions
+from pynal.control import actions
+from pynal.models import Config
+from pynal.control.mainWindow import MainWindowControl
 
 class MainWindow(QtGui.QMainWindow):
     '''
@@ -22,7 +22,8 @@ class MainWindow(QtGui.QMainWindow):
         Creates a new MainWindow.
         """
         QtGui.QMainWindow.__init__(self)
-        actions.init(self)
+        self.control = MainWindowControl(self)
+
         self.setWindowTitle("Pynal")
 
         self.createTabWidget()
@@ -32,7 +33,7 @@ class MainWindow(QtGui.QMainWindow):
         self.resize(Config.window_width, Config.window_height)
 
     def createToolbar(self):
-        bar = self.addToolBar("title")
+        bar = self.addToolBar("File operations")
         bar.addAction(actions.new_file_action)
         bar.addAction(actions.open_file_action)
         bar.addAction(actions.save_file_action)
@@ -58,30 +59,10 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(action, SIGNAL("triggered()"), slot)
         return action
 
-    def open_file(self):
-        """
-        Open a dialog to let the user choose pdf files and open
-        them in tabs.
-        """
-        files = QtGui.QFileDialog.getOpenFileNames(self, "Open PDF file",
-                                                    "", "PDF (*.pdf)")
-        if not files:
-            return
-
-        for file in files:
-            filename = os.path.basename(str(file))
-            self.tabWidget.addTab(PynalDocument(file), filename)
-
     def rotate(self):
         """ Rotate the position of the tabs. """
         pos = (self.tabs.tabPosition() + 1) % 4
         self.tabs.setTabPosition(pos)
-
-    def save_file(self):
-        pass
-
-    def new_file(self):
-        pass
 
     def close(self, index):
         """
