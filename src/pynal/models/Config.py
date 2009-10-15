@@ -15,7 +15,7 @@ version = "0.1"
 homepage = "http://github.com/dominiks/pynal"
 
 # License for the code.
-license = ""
+license = "BSD"
 
 
 # Initial width of the main window.
