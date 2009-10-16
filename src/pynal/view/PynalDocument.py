@@ -10,30 +10,31 @@ import pynal.models.Config as Config
 class PynalDocument(QtGui.QGraphicsView):
     """ Document widget displayed in the QTabWidget. """
 
-    def __init__(self, source_file, parent=None):
+    def __init__(self, source_file=None, parent=None):
         """
         Create a new PynalDocument for the given file.
 
-        parameters:
+        Parameters:
         source_file -- String path to the pdf that is to be displayed.
-        parent -- the parent widget of this widget.
+        parent      -- the parent widget of this widget.
         """
         QtGui.QGraphicsView.__init__(self, parent)
-        self.source = source_file
-        self.document = QtPoppler.Poppler.Document.load(self.source)
-        self.document.setRenderHint(QtPoppler.Poppler.Document.Antialiasing and
-                                    QtPoppler.Poppler.Document.TextAntialiasing)
-
         self.scene = QtGui.QGraphicsScene()
         self.scene.setBackgroundBrush(QtGui.QBrush(QtCore.Qt.gray))
         self.setScene(self.scene)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setDragMode(self.ScrollHandDrag)
 
-        self.thread = PdfLoaderThread(self.document, self.scene)
-        self.connect(self.thread, SIGNAL("output(QImage, int)"), self.addPage)
+        if source_file is not None:
+            self.source = source_file
+            self.document = QtPoppler.Poppler.Document.load(self.source)
+            self.document.setRenderHint(QtPoppler.Poppler.Document.Antialiasing and
+                                        QtPoppler.Poppler.Document.TextAntialiasing)
 
-        self.thread.start()
+            self.thread = PdfLoaderThread(self.document, self.scene)
+            self.connect(self.thread, SIGNAL("output(QImage, int)"), self.addPage)
+
+            self.thread.start()
 
     def addPage(self, image, i):
         """

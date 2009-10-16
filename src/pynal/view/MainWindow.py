@@ -40,7 +40,9 @@ class MainWindow(QtGui.QMainWindow):
         bar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
 
     def createMenuBar(self):
-        pass
+        menu = self.menuBar()
+        file = menu.addMenu("&File")
+        file.addAction(actions.menu("exit_app_action"))
 
     def createTabWidget(self):
         self.tabWidget = QtGui.QTabWidget()
