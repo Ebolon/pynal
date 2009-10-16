@@ -55,7 +55,7 @@ class MainWindow(QtGui.QMainWindow):
     def rotate(self):
         """ Rotate the position of the tabs. """
         pos = (self.tabs.tabPosition() + 1) % 4
-        self.tabs.setTabPosition(pos)
+        self.tabWidget.setTabPosition(pos)
 
     def close(self, index):
         """
@@ -64,4 +64,4 @@ class MainWindow(QtGui.QMainWindow):
         No idea if there is more work needed to dispose the widgets and
         QtPoppler.Document that lived in this tab.
         """
-        self.tabs.removeTab(index)
+        self.tabWidget.removeTab(index)
