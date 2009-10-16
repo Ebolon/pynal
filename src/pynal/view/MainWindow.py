@@ -34,9 +34,9 @@ class MainWindow(QtGui.QMainWindow):
 
     def createToolbar(self):
         bar = self.addToolBar("File operations")
-        bar.addAction(actions.new_file_action)
-        bar.addAction(actions.open_file_action)
-        bar.addAction(actions.save_file_action)
+        bar.addAction(actions.toolbar("new_file_action"))
+        bar.addAction(actions.toolbar("open_file_action"))
+        bar.addAction(actions.toolbar("save_file_action"))
         bar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
 
     def createMenuBar(self):
@@ -49,15 +49,6 @@ class MainWindow(QtGui.QMainWindow):
         self.tabWidget.setDocumentMode(True)
         self.connect(self.tabWidget, SIGNAL("tabCloseRequested(int)"), self.close)
         self.setCentralWidget(self.tabWidget)
-
-    def createAction(self, text, slot, icon=None):
-        """ Convenience method to create actions for the menu. """
-        action = QtGui.QAction(text, self)
-        if icon is not None:
-            action.setIcon(QtGui.QIcon(iconloader.find_icon(icon, 32)))
-
-        self.connect(action, SIGNAL("triggered()"), slot)
-        return action
 
     def rotate(self):
         """ Rotate the position of the tabs. """
