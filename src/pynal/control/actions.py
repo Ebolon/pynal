@@ -35,7 +35,17 @@ def init(control, window):
     global action_definitions
     action_definitions.clear()
 
+    create_app_actions(control, parent)
     create_file_actions(control, parent)
+
+def create_app_actions(control, parent):
+    global action_definitions
+
+    """ Create a new file/document. """
+    action_definitions["exit_app_action"] = {
+         "text"   : "Exit",
+         "action" : control.exit
+     }
 
 def create_file_actions(control, parent):
     """

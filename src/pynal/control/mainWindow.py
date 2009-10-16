@@ -41,4 +41,7 @@ class MainWindowControl(QtCore.QObject):
         pass
 
     def new_file(self):
+        self.window.tabWidget.addTab(PynalDocument(), "New Document")
+
+    def exit(self):
         pass
