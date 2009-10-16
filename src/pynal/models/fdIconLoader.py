@@ -8,7 +8,7 @@ TODO:
 import os
 import user
 
-data_dirs = os.environ["XDG_DATA_DIRS"].split(":")
+data_dirs = os.environ.get("XDG_DATA_DIRS", "").split(":")
 
 theme = None
 
