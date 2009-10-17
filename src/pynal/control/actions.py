@@ -12,7 +12,7 @@ from PyQt4 import QtCore
 from PyQt4.QtCore import SIGNAL
 from PyQt4.QtGui import QAction
 
-import pynal.models.fdIconLoader as iconloader
+import pynal.models.iconcache as iconcache
 #===========================================================================
 # File management actions
 #===========================================================================
@@ -99,7 +99,7 @@ def toolbar(name):
         # Will result in a KeyError when the icon is not set in the config.
         # This is slightly wanted behaviour, as the icon is needed for a
         # toolbar action.
-        action.setIcon(QtGui.QIcon(iconloader.find_icon(config["icon"], 32)))
+        action.setIcon(iconcache.get(config["icon"], 32))
 
         # Same exception is wanted here.
         QAction.connect(action, SIGNAL("triggered()"), config["action"])
