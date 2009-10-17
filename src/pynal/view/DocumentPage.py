@@ -54,7 +54,6 @@ class DocumentPage(QtGui.QGraphicsItem):
             pass
 
     def background_ready(self, image):
-        self.loader = None #TODO: To destroy the thread object?
         self.background = image
         self.update()
         """ something like this:
