@@ -38,10 +38,13 @@ class MainWindowControl(QtCore.QObject):
             self.window.tabWidget.addTab(PynalDocument(file), filename)
 
     def save_file(self):
+        """ Save the current document. """
         pass
 
     def new_file(self):
+        """ Create a new document. """
         self.window.tabWidget.addTab(PynalDocument(), "New Document")
 
     def exit(self):
+        """ Exit the application. """
         pass
