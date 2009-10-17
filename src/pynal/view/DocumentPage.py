@@ -9,7 +9,7 @@ from PyQt4.QtCore import SIGNAL
 
 import pynal.models.Config as Config
 
-class DocumentPage(QtGui.QGraphicsItemGroup):
+class DocumentPage(QtGui.QGraphicsItem):
     """
     A page of a PynalDocument. Can have a background (like a
     page from a pdf) and contain QGraphicItems drawn by the user.
@@ -73,10 +73,9 @@ class DocumentPage(QtGui.QGraphicsItemGroup):
         """
         pixmap = QtGui.QPixmap.fromImage(image)
         self.background = pixmap
-        item = QtGui.QGraphicsPixmapItem(pixmap)
+        item = QtGui.QGraphicsPixmapItem(pixmap, self)
         item.setOffset(self.bounding.topLeft())
         item.setZValue(-1)
-        self.addToGroup(item)
 
 class PdfLoaderThread(QtCore.QThread):
     """
