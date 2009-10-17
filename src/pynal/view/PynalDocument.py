@@ -29,12 +29,6 @@ class PynalDocument(QtGui.QGraphicsView):
             self.document.setRenderHint(QtPoppler.Poppler.Document.Antialiasing and
                                         QtPoppler.Poppler.Document.TextAntialiasing)
 
-            #This can be removed when DocumentPage objects work.
-            self.thread = PdfLoaderThread(self.document, self.scene)
-            self.connect(self.thread, SIGNAL("output(QImage, int)"), self.addPage)
-
-            self.thread.start()
-
             # This might want to be moved into an own thread
             # (when numPages is over a certain threshold?)
             for i in range(0, self.document.numPages()):
@@ -59,44 +53,3 @@ class PynalDocument(QtGui.QGraphicsView):
         Create an empty page and append it to the end of the document.
         """
         self.pages.append(DocumentPage(self, bg_source))
-
-
-    def addPage(self, image, i):
-        """
-        Callback method for the worker thread.
-
-        Adds the created image as a pixmap to the scene.
-
-        TODO: This can be removed when DocumentPage objects work.
-        """
-        pixmap = QtGui.QPixmap.fromImage(image)
-        item = self.scene.addPixmap(pixmap)
-        item.setOffset(0, i*1500)
-
-class PdfLoaderThread(QtCore.QThread):
-    """
-    Creates QImages from all pages in a given Poppler document.
-
-    TODO: This can be removed when DocumentPage objects work.
-    """
-    def __init__(self, doc, scene):
-        """
-        Create a new PdfLoaderThread.
-
-        parameters:
-            doc - the QtPoppler.Poppler.Document that is to be loaded.
-            scene - the QGraphicsScene that will receive the QImages.
-        """
-        QtCore.QThread.__init__(self)
-
-        self.doc = doc
-        self.scene = scene
-
-    def run(self):
-        """ Create the images and notify the QGraphicsScene. """
-        for i in range(0, self.doc.numPages()):
-            image = self.doc.page(i).renderToImage(Config.pdf_render_dpi,
-                                                   Config.pdf_render_dpi)
-            self.emit(SIGNAL("output(QImage, int)"), image, i)
-            if i > 10:
-                break
