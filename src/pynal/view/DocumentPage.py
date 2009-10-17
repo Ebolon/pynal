@@ -75,6 +75,7 @@ class DocumentPage(QtGui.QGraphicsItemGroup):
         self.background = pixmap
         item = QtGui.QGraphicsPixmapItem(pixmap)
         item.setOffset(self.bounding.topLeft())
+        item.setZValue(-1)
         self.addToGroup(item)
 
 class PdfLoaderThread(QtCore.QThread):
