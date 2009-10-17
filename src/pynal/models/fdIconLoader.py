@@ -3,7 +3,6 @@ Finds icons by their name as specified by freedesktop.org
 
 TODO:
 - make usable
-- make size optional
 """
 import os
 import user
@@ -12,7 +11,7 @@ data_dirs = os.environ.get("XDG_DATA_DIRS", "").split(":")
 
 theme = None
 
-def find_icon(icon, size):
+def find_icon(icon, size=32):
     """
     Search for an icon of the given name and size.
 
