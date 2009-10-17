@@ -9,7 +9,7 @@ from PyQt4.QtCore import SIGNAL
 
 import pynal.models.Config as Config
 
-class DocumentPage(QtGui.QGraphicsItem):
+class DocumentPage(QtGui.QGraphicsItemGroup):
     """
     A page of a PynalDocument. Can have a background (like a
     page from a pdf) and contain QGraphicItems drawn by the user.
@@ -26,10 +26,13 @@ class DocumentPage(QtGui.QGraphicsItem):
     """
 
     def __init__(self, document, bg_source=None):
-        QtGui.QGraphicsItem.__init__(self, None, document.scene)
+        QtGui.QGraphicsItemGroup.__init__(self, None, document.scene)
 
         self.background = None
         self.bg_source = bg_source
+
+        # TODO: use this for the boundingRect?
+        print bg_source.pageSize()
 
     def boundingRect(self):
         """ Return the bounding box of the page. """
@@ -37,7 +40,7 @@ class DocumentPage(QtGui.QGraphicsItem):
 
     def paint(self, painter, option, widget=None):
         """
-        Nothing to paint as all paintables are children if this item.
+        Nothing to paint as all paintables are children of this item.
 
         This method is used as the notification to start rendering this
         page's background and pre-caching following/previous pages.
@@ -54,13 +57,14 @@ class DocumentPage(QtGui.QGraphicsItem):
             pass
 
     def background_ready(self, image):
-        self.background = image
-        self.update()
-        """ something like this:
-        pixmap = QtGui.QPixmap.fromImage(image)
-        item = self.scene.addPixmap(pixmap)
-        item.setOffset(0, i*1500)
         """
+        Callback method used by the PdfLoaderThread when the image is ready.
+        Creates a pixmap, GraphicsPixmapItem and adds it to this group.
+        """
+        pixmap = QtGui.QPixmap.fromImage(image)
+        self.background = pixmap
+        item = QtGui.QGraphicsPixmapItem(pixmap)
+        self.addToGroup(item)
 
 class PdfLoaderThread(QtCore.QThread):
     """
@@ -77,12 +81,11 @@ class PdfLoaderThread(QtCore.QThread):
             scene - the QGraphicsScene that will receive the QImages.
         """
         QtCore.QThread.__init__(self)
-
         self.page = page
 
     def run(self):
         """ Create the images and notify the QGraphicsScene. """
         image = self.page.bg_source.renderToImage(Config.pdf_render_dpi,
-                                                   Config.pdf_render_dpi)
+                                                  Config.pdf_render_dpi)
         self.emit(SIGNAL("output(QImage)"), image)
 
