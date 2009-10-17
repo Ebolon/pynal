@@ -19,11 +19,7 @@ class PynalDocument(QtGui.QGraphicsView):
         parent      -- the parent widget of this widget.
         """
         QtGui.QGraphicsView.__init__(self, parent)
-        self.scene = QtGui.QGraphicsScene()
-        self.scene.setBackgroundBrush(QtGui.QBrush(QtCore.Qt.gray))
-        self.setScene(self.scene)
-        self.setRenderHint(QtGui.QPainter.Antialiasing)
-        self.setDragMode(self.ScrollHandDrag)
+        self.configure_scene()
 
         if source_file is not None:
             self.source = source_file
@@ -35,6 +31,14 @@ class PynalDocument(QtGui.QGraphicsView):
             self.connect(self.thread, SIGNAL("output(QImage, int)"), self.addPage)
 
             self.thread.start()
+
+    def configure_scene(self):
+        self.scene = QtGui.QGraphicsScene()
+        self.scene.setBackgroundBrush(QtGui.QBrush(QtCore.Qt.gray))
+        self.setScene(self.scene)
+        self.setRenderHint(QtGui.QPainter.Antialiasing)
+        self.setDragMode(self.ScrollHandDrag)
+
 
     def addPage(self, image, i):
         """
