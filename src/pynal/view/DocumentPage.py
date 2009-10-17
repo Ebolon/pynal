@@ -23,20 +23,30 @@ class DocumentPage(QtGui.QGraphicsItemGroup):
     bg_source  -- The source from which the background is created.
                   Can be the poppler document page that is to be
                   rendered.
+    bounding   -- The boundingRect of this page. Usually specified
+                  by the background_source.
     """
 
-    def __init__(self, document, bg_source=None):
+    def __init__(self, document, prevpage=None, bg_source=None):
         QtGui.QGraphicsItemGroup.__init__(self, None, document.scene)
 
         self.background = None
         self.bg_source = bg_source
 
-        # TODO: use this for the boundingRect?
-        print bg_source.pageSize()
+        if prevpage is None:
+            top = 0
+        else:
+            top = prevpage.boundingRect().bottom() + 100
+
+        size = QtCore.QSize(bg_source.pageSize().width()  * 2,
+                            bg_source.pageSize().height() * 2)
+        left_pos = -size.width() / 2
+        self.bounding = QtCore.QRectF(QtCore.QPointF(left_pos, top),
+                                      QtCore.QSizeF(size))
 
     def boundingRect(self):
         """ Return the bounding box of the page. """
-        return QtCore.QRectF()
+        return self.bounding
 
     def paint(self, painter, option, widget=None):
         """
@@ -64,6 +74,7 @@ class DocumentPage(QtGui.QGraphicsItemGroup):
         pixmap = QtGui.QPixmap.fromImage(image)
         self.background = pixmap
         item = QtGui.QGraphicsPixmapItem(pixmap)
+        item.setOffset(self.bounding.topLeft())
         self.addToGroup(item)
 
 class PdfLoaderThread(QtCore.QThread):
@@ -85,7 +96,7 @@ class PdfLoaderThread(QtCore.QThread):
 
     def run(self):
         """ Create the images and notify the QGraphicsScene. """
-        image = self.page.bg_source.renderToImage(Config.pdf_render_dpi,
-                                                  Config.pdf_render_dpi)
+        image = self.page.bg_source.renderToImage(Config.pdf_render_dpi_x,
+                                                  Config.pdf_render_dpi_y)
         self.emit(SIGNAL("output(QImage)"), image)
 

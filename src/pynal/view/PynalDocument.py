@@ -32,7 +32,11 @@ class PynalDocument(QtGui.QGraphicsView):
             # This might want to be moved into an own thread
             # (when numPages is over a certain threshold?)
             for i in range(0, self.document.numPages()):
-                self.append_new_page(self.document.page(i))
+                if not self.pages:
+                    self.append_new_page(bg_source=self.document.page(i))
+                else:
+                    self.append_new_page(self.pages[-1], self.document.page(i))
+
                 # Note that the pdf pages are not rendered
                 # now. That happens when the page is to be
                 # displayed / cached for displaying.
@@ -48,8 +52,8 @@ class PynalDocument(QtGui.QGraphicsView):
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setDragMode(self.ScrollHandDrag) #TODO: should be moved when drawing is enabled.
 
-    def append_new_page(self, bg_source=None):
+    def append_new_page(self, prevpage=None, bg_source=None):
         """
         Create an empty page and append it to the end of the document.
         """
-        self.pages.append(DocumentPage(self, bg_source))
+        self.pages.append(DocumentPage(self, prevpage, bg_source))
