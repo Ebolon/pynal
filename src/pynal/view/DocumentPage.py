@@ -25,6 +25,10 @@ class DocumentPage(QtGui.QGraphicsItem):
                   rendered.
     bounding   -- The boundingRect of this page. Usually specified
                   by the background_source.
+    loader     -- The background generating thread of this page.
+                  This is checked to be not None to prevent
+                  the start of another thread to render the bg
+                  which will result in a crash.
     """
 
     def __init__(self, document, prevpage=None, bg_source=None):
@@ -44,6 +48,8 @@ class DocumentPage(QtGui.QGraphicsItem):
         self.bounding = QtCore.QRectF(QtCore.QPointF(left_pos, top),
                                       QtCore.QSizeF(size))
 
+        self.loader = None
+
     def boundingRect(self):
         """ Return the bounding box of the page. """
         return self.bounding
@@ -56,6 +62,9 @@ class DocumentPage(QtGui.QGraphicsItem):
         page's background and pre-caching following/previous pages.
         """
         if self.background is None:
+            if self.loader is not None:
+                return
+
             #TODO: send poppler-render job to ThreadPool?
             self.loader = PdfLoaderThread(self)
             self.loader.connect(self.loader, SIGNAL("output(QImage)"), self.background_ready)
@@ -76,6 +85,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         item = QtGui.QGraphicsPixmapItem(pixmap, self)
         item.setOffset(self.bounding.topLeft())
         item.setZValue(-1)
+        self.loader = None
 
 class PdfLoaderThread(QtCore.QThread):
     """
