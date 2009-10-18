@@ -93,19 +93,22 @@ class PdfLoaderThread(QtCore.QThread):
 
     TODO: I still don't like creating a new thread for every page.
     """
+
     def __init__(self, page):
         """
         Create a new PdfLoaderThread.
 
-        parameters:
-            doc - the QtPoppler.Poppler.Document that is to be loaded.
-            scene - the QGraphicsScene that will receive the QImages.
+        Parameters:
+          page -- The DocumentPage that the bg is rendered for.
         """
         QtCore.QThread.__init__(self)
         self.page = page
 
     def run(self):
-        """ Create the images and notify the QGraphicsScene. """
+        """
+        Create the background image and emit the
+        signal that the image is ready.
+        """
         image = self.page.bg_source.renderToImage(Config.pdf_render_dpi_x,
                                                   Config.pdf_render_dpi_y)
         self.emit(SIGNAL("output(QImage)"), image)

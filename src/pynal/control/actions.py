@@ -81,6 +81,15 @@ def toolbar(name):
     Returns the action with the given name for toolbar use.
 
     Toolbar use means that there is an icon without text.
+
+    Needed configuration keys:
+    icon, action
+
+    Ignored keys:
+    text
+    
+    Parameters:
+      name -- The name of the action,
     """
     global toolbar_actions
     action = toolbar_actions.get(name, None)
@@ -113,6 +122,15 @@ def menu(name):
     Returns the action with the given name for menu use.
 
     Menu use that the action has a text and might have an icon.
+
+    Needed configuration keys:
+    text, action
+
+    Optional keys:
+    icon
+    
+    Parameters:
+      name -- The name of the action,
     """
     global menu_actions
     action = menu_actions.get(name, None)
