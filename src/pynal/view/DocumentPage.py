@@ -8,6 +8,7 @@ from PyQt4 import QtGui
 from PyQt4.QtCore import SIGNAL
 
 import pynal.models.Config as Config
+from pynal.control.threading import semaphore
 
 class DocumentPage(QtGui.QGraphicsItem):
     """
@@ -109,7 +110,9 @@ class PdfLoaderThread(QtCore.QThread):
         Create the background image and emit the
         signal that the image is ready.
         """
+        semaphore.acquire()
         image = self.page.bg_source.renderToImage(Config.pdf_render_dpi_x,
                                                   Config.pdf_render_dpi_y)
+        semaphore.release()
         self.emit(SIGNAL("output(QImage)"), image)
 

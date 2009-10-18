@@ -25,6 +25,8 @@ window_width = 600
 # Initial height of the main window.
 window_height = 600
 
+# The number of worker threads that can be active at the same time
+threadpool_size = 8
 
 # Resolution to use when rendering pdf pages to QImages.
 pdf_render_dpi_x = QtGui.QX11Info.appDpiX() * 2
