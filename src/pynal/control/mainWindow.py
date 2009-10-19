@@ -57,7 +57,13 @@ class MainWindowControl(QtCore.QObject):
         No idea if there is more work needed to dispose the widgets and
         QtPoppler.Document that lived in this tab.
         """
-        self.window.tabWidget.removeTab(index)
+        tabwidget = self.window.tabWidget
+
+        tabwidget.removeTab(index)
+
+        # When only one tab is displayed hide the tabBar.
+        if tabwidget.count() < 2:
+            tabwidget.tabBar().hide()
 
     def save_file(self):
         """ Save the current document. """
