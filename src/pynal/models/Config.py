@@ -33,6 +33,7 @@ threadpool_size = 1
 pdf_render_dpi_x = QtGui.QX11Info.appDpiX() * 2
 pdf_render_dpi_y = QtGui.QX11Info.appDpiY() * 2
 
+# List of files to open when the application has started.
 open_files = []
 
 def parse_args(args):

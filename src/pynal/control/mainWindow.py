@@ -27,10 +27,14 @@ class MainWindowControl(QtCore.QObject):
         """
         Called when the window has been set up and is ready to receive
         commands. E.g. opening documents.
+
+        This can be extended to auto-reopen documents that were open
+        when pynal was closed the last time.
         """
         for file in Config.open_files:
             filename = os.path.basename(str(file))
             self.window.tabWidget.addTab(PynalDocument(file), filename)
+        Config.open_files[:] = [] # Clear the list
 
     def open_file(self):
         """
