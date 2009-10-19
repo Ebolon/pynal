@@ -24,6 +24,8 @@ class PynalDocument(QtGui.QGraphicsView):
 
         self.pages = []
 
+        self.scaleValue = 1 # The current scaling value.
+
         if source_file is not None:
             self.document = QtPoppler.Poppler.Document.load(source_file)
             self.document.setRenderHint(QtPoppler.Poppler.Document.Antialiasing and

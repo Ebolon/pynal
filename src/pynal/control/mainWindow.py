@@ -86,6 +86,7 @@ class MainWindowControl(QtCore.QObject):
 
     def zoom_width(self):
         """ Zoom the current document to the width of the focused page. """
+        # fitInView rect(xpos is left edge of page, y is current centerpoint, width of page in center, height 1
         pass
 
     def zoom_original(self):
@@ -94,12 +95,22 @@ class MainWindowControl(QtCore.QObject):
 
     def zoom_fit(self):
         """ Zoom the current document to fit the focused page. """
+        # fitInView on page currently in center
         pass
 
     def zoom_in(self):
-        """ Zoom in :D. """
-        pass
+        """
+        Zoom in :D.
+        Needs finer scaling, better quality and a scale limit up and down.
+        """
+        document = self.window.tabWidget.currentWidget()
+        document.scaleValue += 0.1
+        document.resetMatrix()
+        document.scale(document.scaleValue, document.scaleValue)
 
     def zoom_out(self):
         """ Zoom out :D. Step depends on current scale or config..."""
-        pass
+        document = self.window.tabWidget.currentWidget()
+        document.scaleValue -= 0.1
+        document.resetMatrix()
+        document.scale(document.scaleValue, document.scaleValue)
