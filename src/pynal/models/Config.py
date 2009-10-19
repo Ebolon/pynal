@@ -39,7 +39,6 @@ def parse_args(args):
     """ Parse the list of arguments and do something useful, like pass. """
     global open_files
     for pos in range(len(args)):
-        print pos, args[pos]
         arg = args[pos]
         if not arg.startswith("-") and arg.endswith(".pdf"):
             open_files.append(arg)
