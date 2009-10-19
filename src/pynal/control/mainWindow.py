@@ -50,6 +50,15 @@ class MainWindowControl(QtCore.QObject):
             filename = os.path.basename(str(file))
             self.window.tabWidget.addTab(PynalDocument(file), filename)
 
+    def close_document(self, index):
+        """
+        Closes a tab.
+
+        No idea if there is more work needed to dispose the widgets and
+        QtPoppler.Document that lived in this tab.
+        """
+        self.window.tabWidget.removeTab(index)
+
     def save_file(self):
         """ Save the current document. """
         pass

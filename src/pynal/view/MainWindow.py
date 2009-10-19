@@ -58,19 +58,10 @@ class MainWindow(QtGui.QMainWindow):
         self.tabWidget.setTabsClosable(True)
         self.tabWidget.setMovable(True)
         self.tabWidget.setDocumentMode(True)
-        self.connect(self.tabWidget, SIGNAL("tabCloseRequested(int)"), self.close)
+        self.connect(self.tabWidget, SIGNAL("tabCloseRequested(int)"), self.control.close_document)
         self.setCentralWidget(self.tabWidget)
 
     def rotate(self):
         """ Rotate the position of the tabs. """
         pos = (self.tabs.tabPosition() + 1) % 4
         self.tabWidget.setTabPosition(pos)
-
-    def close(self, index):
-        """
-        Closes a tab.
-
-        No idea if there is more work needed to dispose the widgets and
-        QtPoppler.Document that lived in this tab.
-        """
-        self.tabWidget.removeTab(index)
