@@ -33,7 +33,7 @@ class MainWindowControl(QtCore.QObject):
         """
         for file in Config.open_files:
             filename = os.path.basename(str(file))
-            self.window.tabWidget.addTab(PynalDocument(file), filename)
+            self.open_document(PynalDocument(file), filename)
         Config.open_files[:] = [] # Clear the list
 
     def open_file(self):
@@ -48,7 +48,14 @@ class MainWindowControl(QtCore.QObject):
 
         for file in files:
             filename = os.path.basename(str(file))
-            self.window.tabWidget.addTab(PynalDocument(file), filename)
+            self.open_document(PynalDocument(file), filename)
+
+    def open_document(self, document, filename):
+        """ Shows a PynalDocument in the journaling area. """
+        tabwidget = self.window.tabWidget
+        tabwidget.addTab(document, filename)
+        if tabwidget.count() > 1:
+            tabwidget.tabBar().show()
 
     def close_document(self, index):
         """
@@ -71,7 +78,7 @@ class MainWindowControl(QtCore.QObject):
 
     def new_file(self):
         """ Create a new document. """
-        self.window.tabWidget.addTab(PynalDocument(), "New Document")
+        self.open_document(PynalDocument(), "New Document")
 
     def exit(self):
         """ Exit the application. """

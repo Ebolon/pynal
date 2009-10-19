@@ -59,6 +59,9 @@ class MainWindow(QtGui.QMainWindow):
         self.tabWidget.setMovable(True)
         self.tabWidget.setDocumentMode(True)
         self.connect(self.tabWidget, SIGNAL("tabCloseRequested(int)"), self.control.close_document)
+
+        self.tabWidget.tabBar().hide()
+
         self.setCentralWidget(self.tabWidget)
 
     def rotate(self):
