@@ -18,6 +18,8 @@ homepage = "http://github.com/dominiks/pynal"
 # License for the code.
 license = "BSD"
 
+# Use opengl
+use_opengl = True
 
 # Initial width of the main window.
 window_width = 600

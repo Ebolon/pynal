@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from PyQt4 import QtGui
 from PyQt4 import QtCore
+from PyQt4 import QtOpenGL
 from PyQt4.QtCore import SIGNAL
 
 import QtPoppler
@@ -25,6 +26,9 @@ class PynalDocument(QtGui.QGraphicsView):
         self.pages = []
 
         self.scaleValue = 1 # The current scaling value.
+
+        if Config.use_opengl:
+            self.setViewport(QtOpenGL.QGLWidget())
 
         if source_file is not None:
             self.document = QtPoppler.Poppler.Document.load(source_file)
