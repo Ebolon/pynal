@@ -33,9 +33,16 @@ threadpool_size = 1
 pdf_render_dpi_x = QtGui.QX11Info.appDpiX() * 2
 pdf_render_dpi_y = QtGui.QX11Info.appDpiY() * 2
 
+open_files = []
+
 def parse_args(args):
     """ Parse the list of arguments and do something useful, like pass. """
-    pass
+    global open_files
+    for pos in range(len(args)):
+        print pos, args[pos]
+        arg = args[pos]
+        if not arg.startswith("-") and arg.endswith(".pdf"):
+            open_files.append(arg)
 
 def load_config():
     """ Load the configuration file for the current user. """

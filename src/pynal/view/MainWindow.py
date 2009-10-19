@@ -32,6 +32,8 @@ class MainWindow(QtGui.QMainWindow):
 
         self.resize(Config.window_width, Config.window_height)
 
+        self.control.start()
+
     def createToolbar(self):
         bar = self.addToolBar("File operations")
         bar.addAction(actions.toolbar("new_file_action"))

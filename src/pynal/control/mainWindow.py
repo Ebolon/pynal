@@ -23,6 +23,15 @@ class MainWindowControl(QtCore.QObject):
         self.window = window
         actions.init(self, window)
 
+    def start(self):
+        """
+        Called when the window has been set up and is ready to receive
+        commands. E.g. opening documents.
+        """
+        for file in Config.open_files:
+            filename = os.path.basename(str(file))
+            self.window.tabWidget.addTab(PynalDocument(file), filename)
+
     def open_file(self):
         """
         Open a dialog to let the user choose pdf files and open
