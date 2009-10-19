@@ -12,15 +12,13 @@ from PyQt4 import QtCore
 from PyQt4.QtCore import SIGNAL
 from PyQt4.QtGui import QAction
 
-import pynal.models.fdIconLoader as iconloader
-#===========================================================================
-# File management actions
-#===========================================================================
+import pynal.models.iconcache as iconcache
+
 action_definitions = {} # Contains the definitions for all actions
 toolbar_actions = {}    # action_name -> QAction for all created toolbar actions
 menu_actions = {}       # action_name -> QAction for all created menu actions
 
-parent = None
+parent = None # The global parent for all actions (usually the MainWindow)
 
 def init(control, window):
     """
@@ -37,6 +35,45 @@ def init(control, window):
 
     create_app_actions(control, parent)
     create_file_actions(control, parent)
+    create_document_actions(control, parent)
+
+def create_document_actions(control, parent):
+    global action_definitions
+
+    """ Zoom the document to the width of the current document/page. """
+    action_definitions["doc_zoom_width"] = {
+         "text"   : "Zoom to page width",
+         "icon"   : "zoom-fit-width",
+         "action" : control.zoom_width
+     }
+
+    """ Zoom the document to 100%. """
+    action_definitions["doc_zoom_100"] = {
+         "text"   : "Zoom to original size",
+         "icon"   : "zoom-original",
+         "action" : control.zoom_original
+     }
+
+    """ Zoom the document to fit the whole page on screen. """
+    action_definitions["doc_zoom_fit"] = {
+         "text"   : "Zoom to fit",
+         "icon"   : "zoom-fit-best",
+         "action" : control.zoom_fit
+     }
+
+    """ Zoom the document to a bigger scale. """
+    action_definitions["doc_zoom_in"] = {
+         "text"   : "Zoom in",
+         "icon"   : "zoom-in",
+         "action" : control.zoom_in
+     }
+
+    """ Zoom the document to a smaller scale. """
+    action_definitions["doc_zoom_out"] = {
+         "text"   : "Zoom out",
+         "icon"   : "zoom-out",
+         "action" : control.zoom_out
+     }
 
 def create_app_actions(control, parent):
     global action_definitions
@@ -81,6 +118,15 @@ def toolbar(name):
     Returns the action with the given name for toolbar use.
 
     Toolbar use means that there is an icon without text.
+
+    Needed configuration keys:
+    icon, action
+
+    Ignored keys:
+    text
+
+    Parameters:
+      name -- The name of the action,
     """
     global toolbar_actions
     action = toolbar_actions.get(name, None)
@@ -99,7 +145,7 @@ def toolbar(name):
         # Will result in a KeyError when the icon is not set in the config.
         # This is slightly wanted behaviour, as the icon is needed for a
         # toolbar action.
-        action.setIcon(QtGui.QIcon(iconloader.find_icon(config["icon"], 32)))
+        action.setIcon(iconcache.get(config["icon"], 32))
 
         # Same exception is wanted here.
         QAction.connect(action, SIGNAL("triggered()"), config["action"])
@@ -113,6 +159,15 @@ def menu(name):
     Returns the action with the given name for menu use.
 
     Menu use that the action has a text and might have an icon.
+
+    Needed configuration keys:
+    text, action
+
+    Optional keys:
+    icon
+
+    Parameters:
+      name -- The name of the action,
     """
     global menu_actions
     action = menu_actions.get(name, None)

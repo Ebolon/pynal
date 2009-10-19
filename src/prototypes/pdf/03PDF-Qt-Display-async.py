@@ -43,6 +43,8 @@ class PdfScene(QtGui.QGraphicsView):
         self.setScene(self.scene)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
 
+        self.scale(0.5, 0.5)
+
     def addPages(self):
         """
         Keeping a reference to the thread is necessary to prevent
@@ -55,13 +57,14 @@ class PdfScene(QtGui.QGraphicsView):
         """
         self.thread = PdfLoaderThread(self.document, self.scene)
         self.connect(self.thread, SIGNAL("output(QImage, int)"), self.addPage)
-        
+
         self.thread.start()
         print "Adding pages..."
-        
+
     def addPage(self, image, i):
         pixmap = QtGui.QPixmap.fromImage(image)
         item = self.scene.addPixmap(pixmap)
+        item.setCacheMode(item.DeviceCoordinateCache)
         item.setOffset(0, i*1600)
         print "Signaled."
 

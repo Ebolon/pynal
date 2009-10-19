@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 from PyQt4 import QtGui
 from PyQt4 import QtCore
+from PyQt4 import QtOpenGL
 from PyQt4.QtCore import SIGNAL
 
 import QtPoppler
 
 import pynal.models.Config as Config
+from pynal.view.DocumentPage import DocumentPage
 
 class PynalDocument(QtGui.QGraphicsView):
     """ Document widget displayed in the QTabWidget. """
@@ -19,55 +21,52 @@ class PynalDocument(QtGui.QGraphicsView):
         parent      -- the parent widget of this widget.
         """
         QtGui.QGraphicsView.__init__(self, parent)
+        self.configure_scene()
+
+        self.pages = []
+
+        self.scaleValue = 1 # The current scaling value.
+
+        if Config.use_opengl:
+            self.setViewport(QtOpenGL.QGLWidget())
+
+        if source_file is not None:
+            self.document = QtPoppler.Poppler.Document.load(source_file)
+            self.document.setRenderHint(QtPoppler.Poppler.Document.Antialiasing and
+                                        QtPoppler.Poppler.Document.TextAntialiasing)
+
+            # This might want to be moved into an own thread
+            # (when numPages is over a certain threshold?)
+            for i in range(0, self.document.numPages()):
+                if not self.pages:
+                    self.append_new_page(bg_source=self.document.page(i))
+                else:
+                    self.append_new_page(self.pages[-1], self.document.page(i))
+
+                # Note that the pdf pages are not rendered
+                # now. That happens when the page is to be
+                # displayed / cached for displaying.
+
+        else:
+            self.append_new_page() # Add an empty page.
+
+    def configure_scene(self):
+        """ Create and configure the scene object. """
         self.scene = QtGui.QGraphicsScene()
         self.scene.setBackgroundBrush(QtGui.QBrush(QtCore.Qt.gray))
         self.setScene(self.scene)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
-        self.setDragMode(self.ScrollHandDrag)
+        self.setDragMode(self.ScrollHandDrag) #TODO: should be moved when drawing is enabled.
 
-        if source_file is not None:
-            self.source = source_file
-            self.document = QtPoppler.Poppler.Document.load(self.source)
-            self.document.setRenderHint(QtPoppler.Poppler.Document.Antialiasing and
-                                        QtPoppler.Poppler.Document.TextAntialiasing)
-
-            self.thread = PdfLoaderThread(self.document, self.scene)
-            self.connect(self.thread, SIGNAL("output(QImage, int)"), self.addPage)
-
-            self.thread.start()
-
-    def addPage(self, image, i):
+    def current_page(self):
         """
-        Callback method for the worker thread.
-
-        Adds the created image as a pixmap to the scene.
+        The page that has the current focus. This can be the centered or
+        last clicked page.
         """
-        pixmap = QtGui.QPixmap.fromImage(image)
-        item = self.scene.addPixmap(pixmap)
-        item.setOffset(0, i*1500)
+        return self.items(self.contentsRect().center())[-1]
 
-class PdfLoaderThread(QtCore.QThread):
-    """
-    Creates QImages from all pages in a given Poppler document.
-    """
-    def __init__(self, doc, scene):
+    def append_new_page(self, prevpage=None, bg_source=None):
         """
-        Creates a new PdfLoaderThread.
-
-        parameters:
-            doc - the QtPoppler.Poppler.Document that is to be loaded.
-            scene - the QGraphicsScene that will receive the QImages.
+        Create an empty page and append it to the end of the document.
         """
-        QtCore.QThread.__init__(self)
-
-        self.doc = doc
-        self.scene = scene
-
-    def run(self):
-        """ Creates the images and notifies the QGraphicsScene. """
-        for i in range(0, self.doc.numPages()):
-            image = self.doc.page(i).renderToImage(Config.pdf_render_dpi,
-                                                   Config.pdf_render_dpi)
-            self.emit(SIGNAL("output(QImage, int)"), image, i)
-            if i > 10:
-                break
+        self.pages.append(DocumentPage(self, prevpage, bg_source))
