@@ -61,3 +61,23 @@ class MainWindowControl(QtCore.QObject):
     def exit(self):
         """ Exit the application. """
         pass
+
+    def zoom_width(self):
+        """ Zoom the current document to the width of the focused page. """
+        pass
+
+    def zoom_original(self):
+        """ Zoom the current document to 100%. """
+        pass
+
+    def zoom_fit(self):
+        """ Zoom the current document to fit the focused page. """
+        pass
+
+    def zoom_in(self):
+        """ Zoom in :D. """
+        pass
+
+    def zoom_out(self):
+        """ Zoom out :D. Step depends on current scale or config..."""
+        pass

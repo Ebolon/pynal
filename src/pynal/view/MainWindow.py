@@ -41,6 +41,13 @@ class MainWindow(QtGui.QMainWindow):
         bar.addAction(actions.toolbar("save_file_action"))
         bar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
 
+        zoombar = self.addToolBar("Scaling")
+        zoombar.addAction(actions.toolbar("doc_zoom_in"))
+        zoombar.addAction(actions.toolbar("doc_zoom_100"))
+        zoombar.addAction(actions.toolbar("doc_zoom_out"))
+        zoombar.addAction(actions.toolbar("doc_zoom_fit"))
+        zoombar.addAction(actions.toolbar("doc_zoom_width"))
+
     def createMenuBar(self):
         menu = self.menuBar()
         file = menu.addMenu("&File")
