@@ -26,7 +26,8 @@ window_width = 600
 window_height = 600
 
 # The number of worker threads that can be active at the same time
-threadpool_size = 8
+# Wtf, using more than one thread for pdf rendering brings a nice crash.
+threadpool_size = 1
 
 # Resolution to use when rendering pdf pages to QImages.
 pdf_render_dpi_x = QtGui.QX11Info.appDpiX() * 2
