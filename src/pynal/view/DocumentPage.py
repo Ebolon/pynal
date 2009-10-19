@@ -84,6 +84,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         pixmap = QtGui.QPixmap.fromImage(image)
         self.background = pixmap
         item = QtGui.QGraphicsPixmapItem(pixmap, self)
+        item.setCacheMode(item.DeviceCoordinateCache) #makes me feel warm inside
         item.setOffset(self.bounding.topLeft())
         item.setZValue(-1)
         self.loader = None
