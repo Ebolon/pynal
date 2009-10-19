@@ -54,6 +54,13 @@ class PynalDocument(QtGui.QGraphicsView):
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setDragMode(self.ScrollHandDrag) #TODO: should be moved when drawing is enabled.
 
+    def current_page(self):
+        """
+        The page that has the current focus. This can be the centered or
+        last clicked page.
+        """
+        return self.items(self.contentsRect().center())[-1]
+
     def append_new_page(self, prevpage=None, bg_source=None):
         """
         Create an empty page and append it to the end of the document.

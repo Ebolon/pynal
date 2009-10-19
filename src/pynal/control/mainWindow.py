@@ -95,8 +95,8 @@ class MainWindowControl(QtCore.QObject):
 
     def zoom_fit(self):
         """ Zoom the current document to fit the focused page. """
-        # fitInView on page currently in center
-        pass
+        document = self.window.tabWidget.currentWidget()
+        document.fitInView(document.current_page(), QtCore.Qt.KeepAspectRatio)
 
     def zoom_in(self):
         """
