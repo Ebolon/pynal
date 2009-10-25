@@ -107,13 +107,22 @@ class MainWindowControl(QtCore.QObject):
         Needs finer scaling, better quality and a scale limit up and down.
         """
         document = self.window.tabWidget.currentWidget()
-        document.scaleValue += 0.1
-        document.resetMatrix()
-        document.scale(document.scaleValue, document.scaleValue)
+#        document.scaleValue += 0.1
+#        document.resetMatrix()
+#        document.scale(document.scaleValue, document.scaleValue)
+        document.zoom(10)
 
     def zoom_out(self):
         """ Zoom out :D. Step depends on current scale or config..."""
         document = self.window.tabWidget.currentWidget()
-        document.scaleValue -= 0.1
-        document.resetMatrix()
-        document.scale(document.scaleValue, document.scaleValue)
+#        document.scaleValue -= 0.1
+#        document.resetMatrix()
+#        document.scale(document.scaleValue, document.scaleValue)
+        document.zoom(-10)
+
+    def remove_image(self):
+        document = self.window.tabWidget.currentWidget()
+        page = document.current_page()
+        page.background = None
+        page.update() #to start print and generate new bg
+

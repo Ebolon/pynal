@@ -36,6 +36,7 @@ def init(control, window):
     create_app_actions(control, parent)
     create_file_actions(control, parent)
     create_document_actions(control, parent)
+    create_debug_actions(control, parent)
 
 def create_document_actions(control, parent):
     global action_definitions
@@ -75,6 +76,16 @@ def create_document_actions(control, parent):
          "action" : control.zoom_out
      }
 
+def create_debug_actions(control, parent):
+    global action_definitions
+
+    action_definitions["remove_image"] = {
+         "text"   : "RemoveImage",
+         "icon"   : "edit-delete",
+         "action" : control.remove_image
+     }
+
+
 def create_app_actions(control, parent):
     global action_definitions
 
@@ -82,7 +93,7 @@ def create_app_actions(control, parent):
     action_definitions["exit_app_action"] = {
          "text"   : "Exit",
          "action" : control.exit
-     }
+    }
 
 def create_file_actions(control, parent):
     """

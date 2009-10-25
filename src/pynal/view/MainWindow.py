@@ -48,6 +48,9 @@ class MainWindow(QtGui.QMainWindow):
         zoombar.addAction(actions.toolbar("doc_zoom_fit"))
         zoombar.addAction(actions.toolbar("doc_zoom_width"))
 
+        debug = self.addToolBar("Debug")
+        debug.addAction(actions.toolbar("remove_image"))
+
     def createMenuBar(self):
         menu = self.menuBar()
         file = menu.addMenu("&File")

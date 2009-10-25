@@ -23,9 +23,9 @@ class PynalDocument(QtGui.QGraphicsView):
         QtGui.QGraphicsView.__init__(self, parent)
         self.configure_scene()
 
-        self.pages = []
+        self.dpi = 72 * 2
 
-        self.scaleValue = 1 # The current scaling value.
+        self.pages = []
 
         if Config.use_opengl:
             self.setViewport(QtOpenGL.QGLWidget())
@@ -49,6 +49,17 @@ class PynalDocument(QtGui.QGraphicsView):
 
         else:
             self.append_new_page() # Add an empty page.
+
+    def zoom(self, value):
+        self.dpi += value
+        print "dpi now:", self.dpi
+        for page in self.pages:
+            page.update_bounding_rect()
+
+        rect = QtCore.QRectF(self.pages[0].boundingRect().topLeft(),
+                             self.pages[-1].boundingRect().bottomRight())
+
+        self.scene.setSceneRect(rect)
 
     def configure_scene(self):
         """ Create and configure the scene object. """
