@@ -78,12 +78,7 @@ def create_document_actions(control, parent):
 
 def create_debug_actions(control, parent):
     global action_definitions
-
-    action_definitions["remove_image"] = {
-         "text"   : "RemoveImage",
-         "icon"   : "edit-delete",
-         "action" : control.remove_image
-     }
+    pass # No debug actions atm
 
 
 def create_app_actions(control, parent):

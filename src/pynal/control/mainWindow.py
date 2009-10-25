@@ -120,9 +120,3 @@ class MainWindowControl(QtCore.QObject):
 #        document.scale(document.scaleValue, document.scaleValue)
         document.zoom(-10)
 
-    def remove_image(self):
-        document = self.window.tabWidget.currentWidget()
-        page = document.current_page()
-        page.background = None
-        page.update() #to start print and generate new bg
-

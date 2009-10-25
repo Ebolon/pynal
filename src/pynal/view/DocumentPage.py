@@ -21,17 +21,29 @@ class DocumentPage(QtGui.QGraphicsItem):
     or the preceeding image.
 
     Attributes:
-    background -- A rendered version of the background. Will be made
-                  on demand. For example a QImage of the pdf page.
+    document   -- The PynalDocument that contains this page.
     bg_source  -- The source from which the background is created.
                   Can be the poppler document page that is to be
                   rendered.
+    item       -- The QGraphicsItem that contains the background pixmap.
+                  Reference kept to quickly exchange the pixmap for a new one.
     bounding   -- The boundingRect of this page. Usually specified
                   by the background_source.
+    prevpage   -- A reference to the previous page in the document.
+                  Needed to get its bottom coordinates.
+
+                  TODO: This could be removed in favor of the number/index
+                  of the current page and access to the pages list. Might
+                  make the page insertion easier.
+
     loader     -- The background generating thread of this page.
                   This is checked to be not None to prevent
                   the start of another thread to render the bg
                   which will result in a crash.
+
+    background_is_dirty -- Flag indicates that the background needs to
+                           be re-rendered because the user zoomed or
+                           something else made it unneeded.
     """
 
     def __init__(self, document, prevpage=None, bg_source=None):
@@ -82,7 +94,10 @@ class DocumentPage(QtGui.QGraphicsItem):
             self.background_is_dirty = True
 
     def boundingRect(self):
-        """ Return the bounding box of the page. """
+        """
+        Return the bounding box of the page.
+        Needed implementation for being a QGraphicsItem
+        """
         return self.bounding
 
     def paint(self, painter, option, widget=None):
@@ -141,8 +156,6 @@ class DocumentPage(QtGui.QGraphicsItem):
             self.item = QtGui.QGraphicsPixmapItem(pixmap, self)
         else:
             self.item.setPixmap(pixmap)
-
-        pixmap # TODO: why is this saved to a member?
 
         self.move_item_topleft()
         self.item.setZValue(-1)
