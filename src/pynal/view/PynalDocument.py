@@ -23,7 +23,7 @@ class PynalDocument(QtGui.QGraphicsView):
         QtGui.QGraphicsView.__init__(self, parent)
         self.configure_scene()
 
-        self.dpi = Config.pdf_base_dpi * 2
+        self.dpi = Config.pdf_base_dpi * 2.0
 
         self.pages = []
 
@@ -37,11 +37,8 @@ class PynalDocument(QtGui.QGraphicsView):
 
             # This might want to be moved into an own thread
             # (when numPages is over a certain threshold?)
-            for i in range(0, self.document.numPages()):
-                if not self.pages:
-                    self.append_new_page(bg_source=self.document.page(i))
-                else:
-                    self.append_new_page(self.pages[-1], self.document.page(i))
+            for page_number in range(0, self.document.numPages()):
+                    self.append_new_page(page_number, self.document.page(page_number))
 
                 # Note that the pdf pages are not rendered
                 # now. That happens when the page is to be
@@ -49,6 +46,10 @@ class PynalDocument(QtGui.QGraphicsView):
 
         else:
             self.append_new_page() # Add an empty page.
+
+    def dpi_scaling(self):
+        """ Return the scaling factor of the current and base dpi. """
+        return self.dpi / Config.pdf_base_dpi
 
     def zoom(self, value):
         self.dpi += value

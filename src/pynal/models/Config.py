@@ -6,6 +6,11 @@ Is stored in a file in the userspace (more like $XDG_CONFIG_HOME).
 Reads and interprets the cmd line arguments.
 '''
 from PyQt4 import QtGui
+
+
+#===============================================================================
+# Application information constants
+#===============================================================================
 # Name of the application.
 appname = "Pynal"
 
@@ -30,6 +35,9 @@ window_height = 600
 # The number of worker threads that can be active at the same time
 # Wtf, using more than one thread for pdf rendering brings a nice crash.
 threadpool_size = 1
+
+# Space in pixels between the lower and upper border of two pages.
+space_between_pages = 20
 
 # Resolution to use when rendering pdf pages to QImages.
 pdf_base_dpi = 72 #This is the default for QtPoppler and is needed for size calculations.

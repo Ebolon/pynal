@@ -46,7 +46,7 @@ class DocumentPage(QtGui.QGraphicsItem):
                            something else made it unneeded.
     """
 
-    def __init__(self, document, prevpage=None, bg_source=None):
+    def __init__(self, document, page_number, bg_source=None):
         QtGui.QGraphicsItemGroup.__init__(self, None, document.scene)
 
         self.document = document
@@ -55,7 +55,7 @@ class DocumentPage(QtGui.QGraphicsItem):
 
         self.item = None
 
-        self.prevpage = prevpage
+        self.index = page_number
 
         self.update_bounding_rect()
 
@@ -63,11 +63,18 @@ class DocumentPage(QtGui.QGraphicsItem):
 
         self.background_is_dirty = True
 
+    def prevpage(self):
+        """
+        Return the previous page, or None when there is none.
+        """
+        try:
+            return self.document.pages[self.index -1]
+        except IndexError:
+            return None
+
     def update_bounding_rect(self):
         """
         Update the bounding rect of this page.
-
-        TODO: REFACTOR ME, I AM BIG AND UGLY :D
 
         TODO: scale graphics item and its children instead of
               scaling the pixmap bg.
@@ -75,14 +82,14 @@ class DocumentPage(QtGui.QGraphicsItem):
               be calculated.
 
         """
-        if self.prevpage is None:
+        if self.index == 0:
             top = 0
         else:
             space = 20 * self.document.dpi / Config.pdf_base_dpi
-            top = self.prevpage.boundingRect().bottom() + space
+            top = self.prevpage().boundingRect().bottom() + space
 
-        size = QtCore.QSize(math.ceil(self.bg_source.pageSize().width() * self.document.dpi / Config.pdf_base_dpi),
-                            math.ceil(self.bg_source.pageSize().height() * self.document.dpi / Config.pdf_base_dpi))
+        size = QtCore.QSize(math.ceil(self.bg_source.pageSize().width()  * self.document.dpi_scaling()),
+                            math.ceil(self.bg_source.pageSize().height() * self.document.dpi_scaling()))
         left_pos = -size.width() / 2
         self.bounding = QtCore.QRectF(QtCore.QPointF(left_pos, top),
                                       QtCore.QSizeF(size))
