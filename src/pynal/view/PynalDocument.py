@@ -23,7 +23,7 @@ class PynalDocument(QtGui.QGraphicsView):
         QtGui.QGraphicsView.__init__(self, parent)
         self.configure_scene()
 
-        self.dpi = 72 * 2
+        self.dpi = Config.pdf_base_dpi * 2
 
         self.pages = []
 

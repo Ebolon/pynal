@@ -39,7 +39,6 @@ class DocumentPage(QtGui.QGraphicsItem):
 
         self.document = document
 
-        self.background = None
         self.bg_source = bg_source
 
         self.item = None
@@ -50,24 +49,28 @@ class DocumentPage(QtGui.QGraphicsItem):
 
         self.loader = None
 
-        self.dirty = True
+        self.background_is_dirty = True
 
     def update_bounding_rect(self):
         """
         Update the bounding rect of this page.
+
+        TODO: REFACTOR ME, I AM BIG AND UGLY :D
+
         TODO: scale graphics item and its children instead of
               scaling the pixmap bg.
               To achieve this the needed scaling factor has to
               be calculated.
+
         """
         if self.prevpage is None:
             top = 0
         else:
-            space = 50 * self.document.dpi / 72
+            space = 20 * self.document.dpi / Config.pdf_base_dpi
             top = self.prevpage.boundingRect().bottom() + space
 
-        size = QtCore.QSize(math.ceil(self.bg_source.pageSize().width() * self.document.dpi / 72),
-                            math.ceil(self.bg_source.pageSize().height() * self.document.dpi / 72))
+        size = QtCore.QSize(math.ceil(self.bg_source.pageSize().width() * self.document.dpi / Config.pdf_base_dpi),
+                            math.ceil(self.bg_source.pageSize().height() * self.document.dpi / Config.pdf_base_dpi))
         left_pos = -size.width() / 2
         self.bounding = QtCore.QRectF(QtCore.QPointF(left_pos, top),
                                       QtCore.QSizeF(size))
@@ -76,7 +79,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             p = self.item.pixmap()
             self.item.setPixmap(p.scaled(size))
             self.move_item_topleft()
-            self.dirty = True
+            self.background_is_dirty = True
 
     def boundingRect(self):
         """ Return the bounding box of the page. """
@@ -97,8 +100,7 @@ class DocumentPage(QtGui.QGraphicsItem):
                     # Prevent image generation when a thread is still running.
                     return
 
-        if self.background is None or self.dirty:
-
+        if self.background_is_dirty:
             #TODO: send poppler-render job to ThreadPool?
             self.loader = PdfLoaderThread(self, self.document.dpi)
             self.loader.connect(self.loader, SIGNAL("output(QImage)"), self.background_ready)
@@ -115,19 +117,35 @@ class DocumentPage(QtGui.QGraphicsItem):
         Callback method used by the PdfLoaderThread when the image is ready.
         Creates a pixmap, GraphicsPixmapItem and adds it to this group.
         """
-        self.background = pixmap = QtGui.QPixmap.fromImage(image)
+
+        """
+        When the rendered image does not fit (nearly) exactly in the current
+        bounding box, it was an older job that finished. We need a new
+        background.
+
+        When the pixmap does get replaced with an unfit one, it creates a
+        flickering of weird sized pages in the document.
+        """
+        if math.fabs(image.size().width() - self.bounding.size().width()) < 2 :
+            self.background_is_dirty = False
+        else:
+            # Image does not fit. Don't replace the bg pixmap.
+
+            if self.isVisible():
+                self.update() # To force a new call to paint().
+            return
+
+        # Replace the pixmap of the background with the new one.
+        pixmap = QtGui.QPixmap.fromImage(image)
         if self.item is None:
             self.item = QtGui.QGraphicsPixmapItem(pixmap, self)
         else:
             self.item.setPixmap(pixmap)
 
+        pixmap # TODO: why is this saved to a member?
+
         self.move_item_topleft()
         self.item.setZValue(-1)
-
-        if math.fabs(image.size().width() - self.bounding.size().width()) < 2 :
-            self.dirty = False
-        else:
-            print "image is:", image.size(), "but bounding is:", self.bounding.size()
 
     def move_item_topleft(self):
         self.item.setOffset(self.bounding.topLeft())
@@ -167,7 +185,3 @@ class PdfLoaderThread(QtCore.QThread):
         self.emit(SIGNAL("output(QImage)"), image)
 #        print "there it is :D"
         semaphore.release()
-
-    def __del__(self):
-        print "wheee :("
-

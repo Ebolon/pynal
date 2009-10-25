@@ -32,8 +32,7 @@ window_height = 600
 threadpool_size = 1
 
 # Resolution to use when rendering pdf pages to QImages.
-pdf_render_dpi_x = QtGui.QX11Info.appDpiX() * 2
-pdf_render_dpi_y = QtGui.QX11Info.appDpiY() * 2
+pdf_base_dpi = 72 #This is the default for QtPoppler and is needed for size calculations.
 
 # List of files to open when the application has started.
 open_files = []
