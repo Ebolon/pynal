@@ -81,4 +81,4 @@ class PynalDocument(QtGui.QGraphicsView):
         """
         Create an empty page and append it to the end of the document.
         """
-        self.pages.append(DocumentPage(self, prevpage, bg_source))
+        self.pages.append(DocumentPage(self, len(self.pages), bg_source))

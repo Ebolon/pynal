@@ -70,7 +70,6 @@ class DocumentPage(QtGui.QGraphicsItem):
               scaling the pixmap bg.
               To achieve this the needed scaling factor has to
               be calculated.
-
         """
         if self.index == 0:
             top = 0
