@@ -2,7 +2,7 @@
 """
 Module containing the MainWindowControl class.
 """
-import os
+import os, math
 
 from PyQt4 import QtGui
 from PyQt4 import QtCore
@@ -87,19 +87,23 @@ class MainWindowControl(QtCore.QObject):
     def zoom_width(self):
         """ Zoom the current document to the width of the focused page. """
         document = self.window.tabWidget.currentWidget()
-        document.fitInView(document.current_page(), QtCore.Qt.KeepAspectRatioByExpanding)
+        width = document.viewport().width()
+        newdpi = width / document.current_page().bg_source.pageSizeF().width() * 72
+        newdpi = math.floor(newdpi) - 1
+        document.zoom(newdpi)
 
     def zoom_original(self):
         """ Zoom the current document to 100%. """
         document = self.window.tabWidget.currentWidget()
-        document.scaleValue = 1
-        document.resetMatrix()
-        document.scale(document.scaleValue, document.scaleValue)
+        document.zoom(Config.pdf_base_dpi)
 
     def zoom_fit(self):
         """ Zoom the current document to fit the focused page. """
         document = self.window.tabWidget.currentWidget()
-        document.fitInView(document.current_page(), QtCore.Qt.KeepAspectRatio)
+        height = document.height()
+        newdpi = height / document.current_page().bg_source.pageSizeF().height() * 72
+        newdpi = math.floor(newdpi) - 1
+        document.zoom(newdpi)
 
     def zoom_in(self):
         """
@@ -107,16 +111,9 @@ class MainWindowControl(QtCore.QObject):
         Needs finer scaling, better quality and a scale limit up and down.
         """
         document = self.window.tabWidget.currentWidget()
-#        document.scaleValue += 0.1
-#        document.resetMatrix()
-#        document.scale(document.scaleValue, document.scaleValue)
-        document.zoom(10)
+        document.zoom(document.dpi + 10)
 
     def zoom_out(self):
         """ Zoom out :D. Step depends on current scale or config..."""
         document = self.window.tabWidget.currentWidget()
-#        document.scaleValue -= 0.1
-#        document.resetMatrix()
-#        document.scale(document.scaleValue, document.scaleValue)
-        document.zoom(-10)
-
+        document.zoom(document.dpi - 10)

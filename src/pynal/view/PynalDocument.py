@@ -23,7 +23,7 @@ class PynalDocument(QtGui.QGraphicsView):
         QtGui.QGraphicsView.__init__(self, parent)
         self.configure_scene()
 
-        self.dpi = Config.pdf_base_dpi * 2.0
+        self.dpi = Config.pdf_base_dpi * 1.0
 
         self.pages = []
 
@@ -52,7 +52,7 @@ class PynalDocument(QtGui.QGraphicsView):
         return self.dpi / Config.pdf_base_dpi
 
     def zoom(self, value):
-        self.dpi += value
+        self.dpi = value
         print "dpi now:", self.dpi
         for page in self.pages:
             page.update_bounding_rect()

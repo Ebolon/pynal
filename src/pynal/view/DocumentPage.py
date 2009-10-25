@@ -29,13 +29,9 @@ class DocumentPage(QtGui.QGraphicsItem):
                   Reference kept to quickly exchange the pixmap for a new one.
     bounding   -- The boundingRect of this page. Usually specified
                   by the background_source.
-    prevpage   -- A reference to the previous page in the document.
-                  Needed to get its bottom coordinates.
-
-                  TODO: This could be removed in favor of the number/index
-                  of the current page and access to the pages list. Might
-                  make the page insertion easier.
-
+    index      -- The number of this page. Counting starts at 0
+                  and is equal to this page's position in the
+                  document's page list.
     loader     -- The background generating thread of this page.
                   This is checked to be not None to prevent
                   the start of another thread to render the bg
@@ -50,17 +46,11 @@ class DocumentPage(QtGui.QGraphicsItem):
         QtGui.QGraphicsItemGroup.__init__(self, None, document.scene)
 
         self.document = document
-
         self.bg_source = bg_source
-
         self.item = None
-
         self.index = page_number
-
         self.update_bounding_rect()
-
         self.loader = None
-
         self.background_is_dirty = True
 
     def prevpage(self):
