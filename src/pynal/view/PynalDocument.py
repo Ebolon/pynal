@@ -10,7 +10,15 @@ import pynal.models.Config as Config
 from pynal.view.DocumentPage import DocumentPage
 
 class PynalDocument(QtGui.QGraphicsView):
-    """ Document widget displayed in the QTabWidget. """
+    """
+    Document widget displayed in the QTabWidget.
+
+    Attributes:
+    dpi      -- The current dpi used to render the background of pages.
+    pages    -- The list of DocumentPage objects of this document.
+    document -- The Poppler Document used as the background
+                source.
+    """
 
     def __init__(self, source_file=None, parent=None):
         """
