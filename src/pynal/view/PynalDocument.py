@@ -52,6 +52,8 @@ class PynalDocument(QtGui.QGraphicsView):
         return self.dpi / Config.pdf_base_dpi
 
     def zoom(self, value):
+        if self.dpi == value:
+            return
         self.dpi = value
         print "dpi now:", self.dpi
         for page in self.pages:
