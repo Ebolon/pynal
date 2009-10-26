@@ -49,6 +49,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         self.bg_source = bg_source
         self.item = None
         self.index = page_number
+        self.bounding = None
         self.update_bounding_rect()
         self.loader = None
         self.background_is_dirty = True
@@ -65,11 +66,6 @@ class DocumentPage(QtGui.QGraphicsItem):
     def update_bounding_rect(self):
         """
         Update the bounding rect of this page.
-
-        TODO: scale graphics item and its children instead of
-              scaling the pixmap bg.
-              To achieve this the needed scaling factor has to
-              be calculated.
         """
         if self.index == 0:
             top = 0
@@ -80,6 +76,19 @@ class DocumentPage(QtGui.QGraphicsItem):
         size = QtCore.QSize(math.ceil(self.bg_source.pageSize().width()  * self.document.dpi_scaling()),
                             math.ceil(self.bg_source.pageSize().height() * self.document.dpi_scaling()))
         left_pos = -size.width() / 2
+
+        if self.bounding is not None:
+            """
+            Find the scaling factor needed to transform
+            the page to the needed size.
+            Then scale, to transform all children so they stay
+            where they are, relatively to the page.
+            """
+            newwidth = size.width()
+            oldwidth = self.bounding.width()
+            scale = newwidth / oldwidth
+            self.scale(scale, scale)
+
         self.bounding = QtCore.QRectF(QtCore.QPointF(left_pos, top),
                                       QtCore.QSizeF(size))
 
@@ -88,6 +97,20 @@ class DocumentPage(QtGui.QGraphicsItem):
             self.item.setPixmap(p.scaled(size))
             self.move_item_topleft()
             self.background_is_dirty = True
+
+    def scale(self, x, y):
+        """
+        Reimplementation to prevent the background pixmaps from getting
+        scaled. Scaling these Objects will result in an off scale value
+        which will distort the re-rendered pdf pages.
+
+        These must always be kept at a 1.0 scale.
+        Background detection is done atm by checking the z-level of
+        the child item. Background images should be in the back at -1.
+        """
+        for item in self.children():
+            if item.zValue() != -1:
+                item.scale(x, y)
 
     def boundingRect(self):
         """
@@ -157,6 +180,13 @@ class DocumentPage(QtGui.QGraphicsItem):
         self.item.setZValue(-1)
 
     def move_item_topleft(self):
+        """
+        Move the background image to the top left of the
+        bounding rect.
+
+        This should be done as a translation transoformation
+        to move all children correctly.
+        """
         self.item.setOffset(self.bounding.topLeft())
 
 class PdfLoaderThread(QtCore.QThread):
