@@ -21,22 +21,22 @@ class DocumentPage(QtGui.QGraphicsItem):
     or the preceeding image.
 
     Attributes:
-    document   -- The PynalDocument that contains this page.
-    bg_source  -- The source from which the background is created.
-                  Can be the poppler document page that is to be
-                  rendered.
-    item       -- The QGraphicsItem that contains the background pixmap.
-                  Reference kept to quickly exchange the pixmap for a new one.
-    bounding   -- The boundingRect of this page. Usually specified
-                  by the background_source.
-    index      -- The number of this page. Counting starts at 0
-                  and is equal to this page's position in the
-                  document's page list.
-    loader     -- The background generating thread of this page.
-                  This is checked to be not None to prevent
-                  the start of another thread to render the bg
-                  which will result in a crash.
+    document    -- The PynalDocument that contains this page.
+    bg_source   -- The source from which the background is created.
+                   Can be the poppler document page that is to be
+                   rendered.
+                   Reference kept to quickly exchange the pixmap for a new one.
+    bounding    -- The boundingRect of this page. Usually specified
+                   by the background_source.
+    page_number -- The number of this page. Counting starts at 0
+                   and is equal to this page's position in the
+                   document's page list.
+    loader      -- The background generating thread of this page.
+                   This is checked to be not None to prevent
+                   the start of another thread to render the bg
+                   which will result in a crash.
 
+    bg_graphics_item    -- The QGraphicsItem that contains the background pixmap.
     background_is_dirty -- Flag indicates that the background needs to
                            be re-rendered because the user zoomed or
                            something else made it unneeded.
@@ -47,8 +47,8 @@ class DocumentPage(QtGui.QGraphicsItem):
 
         self.document = document
         self.bg_source = bg_source
-        self.item = None
-        self.index = page_number
+        self.bg_graphics_item = None
+        self.page_number = page_number
         self.bounding = None
         self.update_bounding_rect()
         self.loader = None
@@ -59,7 +59,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         Return the previous page, or None when there is none.
         """
         try:
-            return self.document.pages[self.index -1]
+            return self.document.pages[self.page_number -1]
         except IndexError:
             return None
 
@@ -67,7 +67,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         """
         Update the bounding rect of this page.
         """
-        if self.index == 0:
+        if self.page_number == 0:
             top = 0
         else:
             space = 20 * self.document.dpi / Config.pdf_base_dpi
@@ -92,9 +92,9 @@ class DocumentPage(QtGui.QGraphicsItem):
         self.bounding = QtCore.QRectF(QtCore.QPointF(left_pos, top),
                                       QtCore.QSizeF(size))
 
-        if self.item is not None:
-            p = self.item.pixmap()
-            self.item.setPixmap(p.scaled(size))
+        if self.bg_graphics_item is not None:
+            p = self.bg_graphics_item.pixmap()
+            self.bg_graphics_item.setPixmap(p.scaled(size))
             self.move_item_topleft()
             self.background_is_dirty = True
 
@@ -146,48 +146,52 @@ class DocumentPage(QtGui.QGraphicsItem):
             pass
 
 
-    def background_ready(self, image):
+    def background_ready(self, new_image):
         """
-        Callback method used by the PdfLoaderThread when the image is ready.
-        Creates a pixmap, GraphicsPixmapItem and adds it to this group.
+        Callback method used by the PdfLoaderThread when the new_image is ready.
+        Creates a pixmap, GraphicsPixmapItem and adds it to this page.
+
+        TODO: send the image or a notification to the document to act as a
+        central cache store that removes rendered pages at a certain threshold.
         """
 
+
         """
-        When the rendered image does not fit (nearly) exactly in the current
+        When the rendered new_image does not fit (nearly) exactly in the current
         bounding box, it was an older job that finished. We need a new
         background.
 
         When the pixmap does get replaced with an unfit one, it creates a
         flickering of weird sized pages in the document.
         """
-        if math.fabs(image.size().width() - self.bounding.size().width()) < 2 :
+        if math.fabs(new_image.size().width() - self.bounding.size().width()) < 2 :
             self.background_is_dirty = False
         else:
-            # Image does not fit. Don't replace the bg pixmap.
+            # Image does not fit. Don't replace the background pixmap.
 
             if self.isVisible():
                 self.update() # To force a new call to paint().
             return
 
-        # Replace the pixmap of the background with the new one.
-        pixmap = QtGui.QPixmap.fromImage(image)
-        if self.item is None:
-            self.item = QtGui.QGraphicsPixmapItem(pixmap, self)
+        # Replace the new_pixmap of the background with the new one.
+        new_pixmap = QtGui.QPixmap.fromImage(new_image)
+        if self.bg_graphics_item is None:
+            self.bg_graphics_item = QtGui.QGraphicsPixmapItem(new_pixmap, self)
         else:
-            self.item.setPixmap(pixmap)
+            self.bg_graphics_item.setPixmap(new_pixmap)
 
         self.move_item_topleft()
-        self.item.setZValue(-1)
+        self.bg_graphics_item.setZValue(-1)
 
     def move_item_topleft(self):
         """
         Move the background image to the top left of the
         bounding rect.
 
-        This should be done as a translation transoformation
+        This should be done as a translation transformation
         to move all children correctly.
         """
-        self.item.setOffset(self.bounding.topLeft())
+        self.bg_graphics_item.setOffset(self.bounding.topLeft())
 
 class PdfLoaderThread(QtCore.QThread):
     """
@@ -215,12 +219,7 @@ class PdfLoaderThread(QtCore.QThread):
         semaphore.acquire()
         size = self.page.bg_source.pageSizeF()
         factor = self.dpi / 72.0
-#        print ""
-#        print "page size:", size, "with factor:" , factor
-#        print "result will be:", size.width() * factor, size.height() * factor
-#        print "rendering with dpi:", self.dpi
         image = self.page.bg_source.renderToImage(self.dpi, self.dpi)
         size = self.page.boundingRect().size()
         self.emit(SIGNAL("output(QImage)"), image)
-#        print "there it is :D"
         semaphore.release()
