@@ -5,6 +5,8 @@ Contains configuration info for the running application.
 Is stored in a file in the userspace (more like $XDG_CONFIG_HOME).
 Reads and interprets the cmd line arguments.
 '''
+import os, ConfigParser
+
 from PyQt4 import QtGui
 
 
@@ -45,6 +47,9 @@ pdf_base_dpi = 72 #This is the default for QtPoppler and is needed for size calc
 # List of files to open when the application has started.
 open_files = []
 
+# User specific and dynamic settings are stored in this ConfigParser object
+config = None
+
 def parse_args(args):
     """ Parse the list of arguments and do something useful, like pass. """
     global open_files
@@ -55,4 +60,19 @@ def parse_args(args):
 
 def load_config():
     """ Load the configuration file for the current user. """
-    pass
+    global config
+    config = ConfigParser.SafeConfigParser()
+    home = os.environ.get("HOME")
+    conf = os.environ.get("XDG_CONFIG_HOME", "")
+    path_configfile = os.path.join(home, conf, "pynal.conf")
+    config.read(path_configfile)
+
+def save_config():
+    """ Save the config to the user's config file. """
+    global config
+    home = os.environ.get("HOME")
+    conf = os.environ.get("XDG_CONFIG_HOME", "")
+    path_configfile = os.path.join(home, conf, "pynal.conf")
+
+    with open(path_configfile) as file:
+        config.write(file)
