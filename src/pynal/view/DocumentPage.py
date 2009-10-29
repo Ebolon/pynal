@@ -70,7 +70,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         if self.page_number == 0:
             top = 0
         else:
-            space = 20 * self.document.dpi / Config.pdf_base_dpi
+            space = 20 * self.document.dpi_scaling()
             top = self.prevpage().boundingRect().bottom() + space
 
         size = QtCore.QSize(math.ceil(self.bg_source.pageSize().width()  * self.document.dpi_scaling()),
