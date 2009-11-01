@@ -60,6 +60,9 @@ class PynalDocument(QtGui.QGraphicsView):
         return self.dpi / Config.pdf_base_dpi
 
     def zoom(self, value):
+        """
+        Set the dpi to the given value and resize the components accordingly.
+        """
         if self.dpi == value:
             return
         self.dpi = value

@@ -36,6 +36,11 @@ class MainWindow(QtGui.QMainWindow):
         self.control.start()
 
     def createToolbar(self):
+        """
+        Create and popular the toolbar.
+
+        TODO: can this be customized by the user?
+        """
         bar = self.addToolBar("File operations")
         bar.addAction(actions.toolbar("new_file_action"))
         bar.addAction(actions.toolbar("open_file_action"))
@@ -53,11 +58,13 @@ class MainWindow(QtGui.QMainWindow):
         # No debug actions atm
 
     def createMenuBar(self):
+        """ Create and populate the menu bar. """
         menu = self.menuBar()
         file = menu.addMenu("&File")
         file.addAction(actions.menu("exit_app_action"))
 
     def createTabWidget(self):
+        """ Create and configure the center widget. """
         self.tabWidget = QtGui.QTabWidget()
         self.tabWidget.setTabsClosable(True)
         self.tabWidget.setMovable(True)
