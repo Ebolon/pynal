@@ -9,7 +9,6 @@ TODO: extend action_definitions for: tooltip, accelerator, shortcut
 '''
 from PyQt4 import QtGui
 from PyQt4 import QtCore
-from PyQt4.QtCore import SIGNAL
 from PyQt4.QtGui import QAction
 
 import pynal.models.iconcache as iconcache
@@ -154,7 +153,7 @@ def toolbar(name):
         action.setIcon(iconcache.get(config["icon"], 32))
 
         # Same exception is wanted here.
-        QAction.connect(action, SIGNAL("triggered()"), config["action"])
+        action.triggered.connect(config["action"])
 
         toolbar_actions["name"] = action
 
@@ -198,7 +197,7 @@ def menu(name):
         action.setText(config["text"])
 
         # Same exception is wanted here.
-        QAction.connect(action, SIGNAL("triggered()"), config["action"])
+        action.triggered.connect(config["action"])
 
         menu_actions["name"] = action
 

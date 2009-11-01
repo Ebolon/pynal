@@ -7,7 +7,6 @@ import math
 
 from PyQt4 import QtCore
 from PyQt4 import QtGui
-from PyQt4.QtCore import SIGNAL
 
 import pynal.models.Config as Config
 from pynal.control.threading import semaphore
@@ -137,7 +136,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         if self.background_is_dirty:
             #TODO: send poppler-render job to ThreadPool?
             self.loader = PdfLoaderThread(self, self.document.dpi)
-            self.loader.connect(self.loader, SIGNAL("output(QImage)"), self.background_ready)
+            self.loader.output.connect(self.background_ready)
             self.loader.start()
 
             #TODO: call paint on previous/next page to pre-cache.
@@ -200,6 +199,9 @@ class PdfLoaderThread(QtCore.QThread):
     TODO: I still don't like creating a new thread for every page.
     """
 
+    """ Signal to emit when a QImage has been rendered. """
+    output = QtCore.pyqtSignal(QtGui.QImage)
+
     def __init__(self, page, dpi):
         """
         Create a new PdfLoaderThread.
@@ -221,5 +223,5 @@ class PdfLoaderThread(QtCore.QThread):
         factor = self.dpi / 72.0
         image = self.page.bg_source.renderToImage(self.dpi, self.dpi)
         size = self.page.boundingRect().size()
-        self.emit(SIGNAL("output(QImage)"), image)
+        self.output.emit(image)
         semaphore.release()
