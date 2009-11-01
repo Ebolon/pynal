@@ -73,13 +73,12 @@ class PynalDocument(QtGui.QGraphicsView):
         rect = QtCore.QRectF(self.pages[0].boundingRect().topLeft(),
                              self.pages[-1].boundingRect().bottomRight())
 
-        self.scene.setSceneRect(rect)
+        self.scene().setSceneRect(rect)
 
     def configure_scene(self):
-        """ Create and configure the scene object. """
-        self.scene = QtGui.QGraphicsScene()
-        self.scene.setBackgroundBrush(QtGui.QBrush(QtCore.Qt.gray))
-        self.setScene(self.scene)
+        """ Create and configure the scene. """
+        self.setScene(QtGui.QGraphicsScene(self))
+        self.scene().setBackgroundBrush(QtGui.QBrush(QtCore.Qt.gray))
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setDragMode(self.ScrollHandDrag) #TODO: should be moved when drawing is enabled.
 
