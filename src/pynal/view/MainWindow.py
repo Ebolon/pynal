@@ -30,7 +30,8 @@ class MainWindow(QtGui.QMainWindow):
         self.createMenuBar()
         self.createToolbar()
 
-        self.resize(Config.window_width, Config.window_height)
+        self.resize(Config.get_int("Main", "window_width"),
+                    Config.get_int("Main", "window_height"))
 
         self.control.start()
 
@@ -71,3 +72,18 @@ class MainWindow(QtGui.QMainWindow):
         """ Rotate the position of the tabs. """
         pos = (self.tabs.tabPosition() + 1) % 4
         self.tabWidget.setTabPosition(pos)
+
+    def closeEvent(self, event):
+        """
+        Intercept the close event of the main window.
+        Check wether the application can be cleanly closed
+        and save the current state.
+        """
+        QtGui.QMainWindow.closeEvent(self, event)
+        if event.isAccepted():
+            self.save_state()
+
+    def save_state(self):
+        """ Save the size of the window to the configuration. """
+        Config.set("Main", "window_width", str(self.width()))
+        Config.set("Main", "window_height", str(self.height()))

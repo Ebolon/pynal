@@ -24,7 +24,10 @@ def start():
     mw = MainWindow()
     mw.show()
 
-    return app.exec_()
+    result = app.exec_()
+    Config.save_config()
+
+    return result
 
 if __name__ == "__main__":
     sys.exit(start())

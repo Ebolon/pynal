@@ -25,15 +25,6 @@ homepage = "http://github.com/dominiks/pynal"
 # License for the code.
 license = "BSD"
 
-# Use opengl
-use_opengl = True
-
-# Initial width of the main window.
-window_width = 600
-
-# Initial height of the main window.
-window_height = 600
-
 # The number of worker threads that can be active at the same time
 # Wtf, using more than one thread for pdf rendering brings a nice crash.
 threadpool_size = 1
@@ -47,7 +38,7 @@ pdf_base_dpi = 72 #This is the default for QtPoppler and is needed for size calc
 # List of files to open when the application has started.
 open_files = []
 
-# User specific and dynamic settings are stored in this ConfigParser object
+# User specific and dynamic settings are stored in this ConfigParser object.
 config = None
 
 def parse_args(args):
@@ -61,18 +52,66 @@ def parse_args(args):
 def load_config():
     """ Load the configuration file for the current user. """
     global config
+    global default_configs
     config = ConfigParser.SafeConfigParser()
+
+    add_default_values(config)
+
     home = os.environ.get("HOME")
     conf = os.environ.get("XDG_CONFIG_HOME", "")
-    path_configfile = os.path.join(home, conf, "pynal.conf")
+    path_configfile = os.path.join(home, conf, "pynal", "config")
     config.read(path_configfile)
 
 def save_config():
     """ Save the config to the user's config file. """
     global config
+
+    if not os.path.exists(get_config_path()):
+        os.makedirs(get_config_path())
+
+    with open(get_config_file(), "w") as file:
+        config.write(file)
+
+def get_config_path():
+    """
+    Resolve the path to the configuration directory.
+
+    TODO: what if XDG_CONFIG_HOME is not set?
+    """
     home = os.environ.get("HOME")
     conf = os.environ.get("XDG_CONFIG_HOME", "")
-    path_configfile = os.path.join(home, conf, "pynal.conf")
+    return os.path.join(home, conf, "pynal")
 
-    with open(path_configfile) as file:
-        config.write(file)
+def get_config_file():
+    """ resolve the path to the configuration file. """
+    return os.path.join(get_config_path(), "config")
+
+def get(section, key):
+    """ Return a configuration value as a string. """
+    return config.get(section, key)
+
+def get_int(section, key):
+    """ Return a configuration value as an integer. """
+    return config.getint(section, key)
+
+def get_float(section, key):
+    """ Return a configuration value as a float. """
+    return config.getfloat(section, key)
+
+def get_bool(section, key):
+    """ Return a configuration value as a boolean. """
+    return config.getboolean(section, key)
+
+def set(section, key, value):
+    """ Set a configuration value. """
+    config.set(section, key, value)
+
+def add_default_values(config):
+    """
+    These are the default configuration values for the ConfigParser.
+    """
+    config.add_section("Main")
+    config.set("Main", "window_width", "600")
+    config.set("Main", "window_height", "600")
+    config.set("Main", "use_opengl", "false")
+
