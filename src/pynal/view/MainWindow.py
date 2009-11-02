@@ -7,7 +7,7 @@ from PyQt4.QtCore import SIGNAL
 
 from pynal.control import actions
 from pynal.models import Config
-from pynal.control.MainWindow import MainWindowControl
+from pynal.control.MainControl import MainWindowControl
 
 class MainWindow(QtGui.QMainWindow):
     '''
