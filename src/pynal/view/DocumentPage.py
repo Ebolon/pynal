@@ -25,8 +25,10 @@ class DocumentPage(QtGui.QGraphicsItem):
                    Can be the poppler document page that is to be
                    rendered.
                    Reference kept to quickly exchange the pixmap for a new one.
-    bounding    -- The boundingRect of this page. Usually specified
+    _bounding   -- The boundingRect of this page. Usually specified
                    by the background_source.
+                   Marked private to underline that access to this should always
+                   go over boundingRect().
     page_number -- The number of this page. Counting starts at 0
                    and is equal to this page's position in the
                    document's page list.
@@ -198,6 +200,8 @@ class PdfLoaderThread(QtCore.QThread):
     Create QImage for a given poppler page.
 
     TODO: I still don't like creating a new thread for every page.
+          This might fit nicely in the Backgrounds class or a wrapper for the
+          Poppler.Page object.
     """
 
     """ Signal to emit when a QImage has been rendered. """
@@ -209,6 +213,7 @@ class PdfLoaderThread(QtCore.QThread):
 
         Parameters:
           page -- The DocumentPage that the bg is rendered for.
+          dpi  -- The dpi to render with.
         """
         QtCore.QThread.__init__(self)
         self.page = page
@@ -218,10 +223,12 @@ class PdfLoaderThread(QtCore.QThread):
         """
         Create the background image and emit the
         signal that the image is ready.
+
+        TODO: the calculation is not clear and has to be moved somewhere else.
         """
         semaphore.acquire()
         size = self.page.bg_source.pageSizeF()
-        factor = self.dpi / 72.0
+        factor = self.dpi / Config.pdf_base_dpi
         image = self.page.bg_source.renderToImage(self.dpi, self.dpi)
         size = self.page.boundingRect().size()
         self.output.emit(image)

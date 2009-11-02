@@ -8,6 +8,7 @@ import QtPoppler
 
 import pynal.models.Config as Config
 from pynal.view.DocumentPage import DocumentPage
+import pynal.view.Backgrounds as Backgrounds
 
 class PynalDocument(QtGui.QGraphicsView):
     """
@@ -93,4 +94,7 @@ class PynalDocument(QtGui.QGraphicsView):
         """
         Create an empty page and append it to the end of the document.
         """
+        if bg_source is None:
+            bg_source = Backgrounds.empty_background()
+
         self.pages.append(DocumentPage(self, len(self.pages), bg_source))
