@@ -9,7 +9,6 @@ from PyQt4 import QtCore
 from PyQt4 import QtGui
 
 import pynal.models.Config as Config
-from pynal.control.threading import semaphore
 
 class DocumentPage(QtGui.QGraphicsItem):
     """
@@ -128,19 +127,11 @@ class DocumentPage(QtGui.QGraphicsItem):
         This method is used as the notification to start rendering this
         page's background and pre-caching following/previous pages.
         """
-        if self.loader is not None:
-                if self.loader.isFinished():
-                    # New image can be generated.
-                    self.loader = None
-                else:
-                    # Prevent image generation when a thread is still running.
-                    return
+        if not self.bg_source.ready_to_render():
+            return
 
         if self.background_is_dirty:
-            #TODO: send poppler-render job to ThreadPool?
-            self.loader = PdfLoaderThread(self, self.document.dpi)
-            self.loader.output.connect(self.background_ready)
-            self.loader.start()
+            self.bg_source.get_image(self, self.document.dpi)
 
             #TODO: call paint on previous/next page to pre-cache.
             pass
@@ -194,42 +185,3 @@ class DocumentPage(QtGui.QGraphicsItem):
         to move all children correctly.
         """
         self.bg_graphics_item.setOffset(self.boundingRect().topLeft())
-
-class PdfLoaderThread(QtCore.QThread):
-    """
-    Create QImage for a given poppler page.
-
-    TODO: I still don't like creating a new thread for every page.
-          This might fit nicely in the Backgrounds class or a wrapper for the
-          Poppler.Page object.
-    """
-
-    """ Signal to emit when a QImage has been rendered. """
-    output = QtCore.pyqtSignal(QtGui.QImage)
-
-    def __init__(self, page, dpi):
-        """
-        Create a new PdfLoaderThread.
-
-        Parameters:
-          page -- The DocumentPage that the bg is rendered for.
-          dpi  -- The dpi to render with.
-        """
-        QtCore.QThread.__init__(self)
-        self.page = page
-        self.dpi = dpi
-
-    def run(self):
-        """
-        Create the background image and emit the
-        signal that the image is ready.
-
-        TODO: the calculation is not clear and has to be moved somewhere else.
-        """
-        semaphore.acquire()
-        size = self.page.bg_source.pageSizeF()
-        factor = self.dpi / Config.pdf_base_dpi
-        image = self.page.bg_source.renderToImage(self.dpi, self.dpi)
-        size = self.page.boundingRect().size()
-        self.output.emit(image)
-        semaphore.release()
