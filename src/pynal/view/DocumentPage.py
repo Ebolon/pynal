@@ -72,8 +72,9 @@ class DocumentPage(QtGui.QGraphicsItem):
             space = 20 * self.document.dpi_scaling()
             top = self.prevpage().boundingRect().bottom() + space
 
-        size = QtCore.QSize(math.ceil(self.bg_source.pageSize().width()  * self.document.dpi_scaling()),
-                            math.ceil(self.bg_source.pageSize().height() * self.document.dpi_scaling()))
+        #TODO: clean up this calculation.
+        size = QtCore.QSize(math.ceil(self.bg_source.pageSizeF().width()  * self.document.dpi_scaling()),
+                            math.ceil(self.bg_source.pageSizeF().height() * self.document.dpi_scaling()))
         left_pos = -size.width() / 2
 
         if self.boundingRect() is not None:
