@@ -48,7 +48,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         self.bg_source = bg_source
         self.bg_graphics_item = None
         self.page_number = page_number
-        self.bounding = None
+        self._bounding = None
         self.update_bounding_rect()
         self.loader = None
         self.background_is_dirty = True
@@ -76,7 +76,7 @@ class DocumentPage(QtGui.QGraphicsItem):
                             math.ceil(self.bg_source.pageSize().height() * self.document.dpi_scaling()))
         left_pos = -size.width() / 2
 
-        if self.bounding is not None:
+        if self.boundingRect() is not None:
             """
             Find the scaling factor needed to transform
             the page to the needed size.
@@ -84,11 +84,11 @@ class DocumentPage(QtGui.QGraphicsItem):
             where they are, relatively to the page.
             """
             newwidth = size.width()
-            oldwidth = self.bounding.width()
+            oldwidth = self.boundingRect().width()
             scale = newwidth / oldwidth
             self.scale(scale, scale)
 
-        self.bounding = QtCore.QRectF(QtCore.QPointF(left_pos, top),
+        self._bounding = QtCore.QRectF(QtCore.QPointF(left_pos, top),
                                       QtCore.QSizeF(size))
 
         if self.bg_graphics_item is not None:
@@ -116,7 +116,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         Return the bounding box of the page.
         Needed implementation for being a QGraphicsItem
         """
-        return self.bounding
+        return self._bounding
 
     def paint(self, painter, option, widget=None):
         """
@@ -163,7 +163,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         When the pixmap does get replaced with an unfit one, it creates a
         flickering of weird sized pages in the document.
         """
-        if math.fabs(new_image.size().width() - self.bounding.size().width()) < 2 :
+        if math.fabs(new_image.size().width() - self.boundingRect().size().width()) < 2 :
             self.background_is_dirty = False
         else:
             # Image does not fit. Don't replace the background pixmap.
@@ -190,7 +190,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         This should be done as a translation transformation
         to move all children correctly.
         """
-        self.bg_graphics_item.setOffset(self.bounding.topLeft())
+        self.bg_graphics_item.setOffset(self.boundingRect().topLeft())
 
 class PdfLoaderThread(QtCore.QThread):
     """
