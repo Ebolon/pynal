@@ -89,7 +89,7 @@ class MainWindowControl(QtCore.QObject):
         document = self.window.tabWidget.currentWidget()
         width = document.viewport().width()
         newdpi = width / document.current_page().bg_source.pageSizeF().width() * 72
-        newdpi = math.floor(newdpi) - 1
+        newdpi = math.floor(newdpi)
         document.zoom(newdpi)
 
     def zoom_original(self):
@@ -102,7 +102,7 @@ class MainWindowControl(QtCore.QObject):
         document = self.window.tabWidget.currentWidget()
         height = document.height()
         newdpi = height / document.current_page().bg_source.pageSizeF().height() * 72
-        newdpi = math.floor(newdpi) - 1
+        newdpi = math.floor(newdpi)
         document.zoom(newdpi)
 
     def zoom_in(self):
