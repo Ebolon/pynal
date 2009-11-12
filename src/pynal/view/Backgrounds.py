@@ -27,31 +27,17 @@ def pdf_page(popplerpage):
 class BackgroundImage():
     """
     Used as a bg_source by the DocumentPage to present a
-    single image (or style). Functions resemble the API
-    of QtPoppler.Poppler.Page so no typechecking is
-    necessary when working with these objects.
+    single image (or style).
     """
 
     def __init__(self):
-        pass
+        self.bg_callback = None
 
     def pageSizeF(self):
         pass
 
-    def get_image(self, dpix, dpiy):
-        pass
-
-    def ready_to_render(self):
-        return True
-
-class PdfBackground(BackgroundImage):
-
-    def __init__(self, poppler):
-        self.poppler = poppler
-        self.loader = None
-
-    def pageSizeF(self):
-        return self.poppler.pageSizeF()
+    def set_bg_ready(self, callable):
+        self.bg_callback = callable
 
     def get_image(self, page, dpi):
         """
@@ -70,8 +56,23 @@ class PdfBackground(BackgroundImage):
         Return:
           QtGui.QImage
         """
-        self.loader = PdfRenderThread(page, dpi)
-        self.loader.output.connect(page.background_ready)
+        pass
+
+    def ready_to_render(self):
+        return True
+
+class PdfBackground(BackgroundImage):
+
+    def __init__(self, poppler):
+        self.poppler = poppler
+        self.loader = None
+
+    def pageSizeF(self):
+        return self.poppler.pageSizeF()
+
+    def get_image(self, dpi):
+        self.loader = PdfRenderThread(self.poppler, dpi)
+        self.loader.output.connect(self.bg_callback)
         self.loader.start()
 
     def ready_to_render(self):
@@ -82,6 +83,7 @@ class PdfBackground(BackgroundImage):
           True  -- The background can be rendered.
           False -- The bg cannot be rendered now. A reason for this might be
                    that there is still a thread running which needs to finish first.
+                   Or there is just not a need to create a new image.
         """
         if self.loader is not None:
             if self.loader.isFinished():
@@ -99,8 +101,6 @@ class PdfRenderThread(QtCore.QThread):
     Create QImage for a given poppler page.
 
     TODO: I still don't like creating a new thread for every page.
-          This might fit nicely in the Backgrounds class or a wrapper for the
-          Poppler.Page object.
     """
 
     """ Signal to emit when a QImage has been rendered. """
@@ -122,10 +122,8 @@ class PdfRenderThread(QtCore.QThread):
         """
         Create the background image and emit the
         signal that the image is ready.
-
-        TODO: the calculation is not clear and has to be moved somewhere else.
         """
         semaphore.acquire()
-        image = self.page.bg_source.poppler.renderToImage(self.dpi, self.dpi)
+        image = self.page.renderToImage(self.dpi, self.dpi)
         self.output.emit(image)
         semaphore.release()

@@ -47,6 +47,7 @@ class DocumentPage(QtGui.QGraphicsItem):
 
         self.document = document
         self.bg_source = bg_source
+        self.bg_source.set_bg_ready(self.background_ready)
         self.bg_graphics_item = None
         self.page_number = page_number
         self._bounding = None
@@ -131,7 +132,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             return
 
         if self.background_is_dirty:
-            self.bg_source.get_image(self, self.document.dpi)
+            self.bg_source.get_image(self.document.dpi)
 
             #TODO: call paint on previous/next page to pre-cache.
             pass
