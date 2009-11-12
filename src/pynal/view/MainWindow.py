@@ -33,6 +33,9 @@ class MainWindow(QtGui.QMainWindow):
         self.resize(Config.get_int("Main", "window_width"),
                     Config.get_int("Main", "window_height"))
 
+        if Config.get_bool("Main", "window_maximized"):
+            self.setWindowState(QtCore.Qt.WindowMaximized)
+
         self.control.start()
 
     def createToolbar(self):
@@ -94,3 +97,4 @@ class MainWindow(QtGui.QMainWindow):
         """ Save the size of the window to the configuration. """
         Config.set("Main", "window_width", str(self.width()))
         Config.set("Main", "window_height", str(self.height()))
+        Config.set("Main", "window_maximized", str(self.isMaximized()))
