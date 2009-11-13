@@ -31,31 +31,29 @@ class BackgroundImage():
     """
 
     def __init__(self):
-        self.bg_callback = None
+        self.size = None
 
     def sizeF(self):
-        """ Return the size of the background. Or None if"""
-        return None
+        """
+        Return the size of the background or None if the bg
+        does not have a preferred size.
+        """
+        return self.size
 
-    def set_bg_ready(self, callable):
-        self.bg_callback = callable
+    def setSizeF(self, size):
+        """ Set the QSizeF of this bg. """
+        self.size = size
 
     def get_image(self, dpi, callback):
         """
-        Create an image of this bg that can be displayed.
+        Create an image of this bg that can be displayed,
+        and call the callback with the QImage.
         Actually only the pixmap is needed, but that should be
         extracted from the QImage in the GUI-thread.
 
-        TODO: this is a lazy and adapted copy of the code that
-              lived in DocumentPage. Parameters and object calling
-              should be optimized to the new location.
-
         Parameters:
-          page -- The DocumentPage that needs the image as its bg.
-          dpi  -- The dpi to render the image with.
-
-        Return:
-          QtGui.QImage
+          dpi      -- The dpi to render the image with.
+          callback -- The method to deliver the generated image.
         """
         pass
 
@@ -67,9 +65,7 @@ class PdfBackground(BackgroundImage):
     def __init__(self, poppler):
         self.poppler = poppler
         self.loader = None
-
-    def sizeF(self):
-        return self.poppler.pageSizeF()
+        self.setSizeF(self.poppler.pageSizeF())
 
     def get_image(self, dpi, callback):
         self.loader = PdfRenderThread(self.poppler, dpi)

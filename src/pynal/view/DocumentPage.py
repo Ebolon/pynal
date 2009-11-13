@@ -47,7 +47,6 @@ class DocumentPage(QtGui.QGraphicsItem):
 
         self.document = document
         self.bg_source = bg_source
-        self.bg_source.set_bg_ready(self.background_ready)
         self.bg_graphics_item = None
         self.page_number = page_number
         self._bounding = None
@@ -75,8 +74,15 @@ class DocumentPage(QtGui.QGraphicsItem):
             top = self.prevpage().boundingRect().bottom() + space
 
         #TODO: clean up this calculation.
-        size = QtCore.QSize(math.ceil(self.bg_source.pageSizeF().width()  * self.document.dpi_scaling()),
-                            math.ceil(self.bg_source.pageSizeF().height() * self.document.dpi_scaling()))
+        bg_size = self.bg_source.sizeF()
+        if bg_size is None:
+            if self.page_number > 0:
+                bg_size = self.prevpage().boundingRect() / self.document.dpi_scaling()
+            else:
+                bg_size = QtCore.QSizeF(520, 700)
+
+        size = QtCore.QSize(math.ceil(bg_size.width()  * self.document.dpi_scaling()),
+                            math.ceil(bg_size.height() * self.document.dpi_scaling()))
         left_pos = -size.width() / 2
 
         if self.boundingRect() is not None:
