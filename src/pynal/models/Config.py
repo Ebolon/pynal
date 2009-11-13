@@ -113,6 +113,7 @@ def add_default_values(config):
     config.add_section("Main")
     config.set("Main", "window_width", "600")
     config.set("Main", "window_height", "600")
+    config.set("Main", "window_maximized", "false")
 
     config.add_section("Rendering")
     config.set("Rendering", "use_opengl", "false")
