@@ -7,6 +7,7 @@ import os, math
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
+import pynal.models.Config as Config
 from pynal.control import actions
 from pynal.view.PynalDocument import *
 
@@ -88,7 +89,7 @@ class MainWindowControl(QtCore.QObject):
         """ Zoom the current document to the width of the focused page. """
         document = self.window.tabWidget.currentWidget()
         width = document.viewport().width()
-        newdpi = width / document.current_page().bg_source.pageSizeF().width() * 72
+        newdpi = width / document.current_page().bg_source.sizeF().width() * Config.pdf_base_dpi
         newdpi = math.floor(newdpi)
         document.zoom(newdpi)
 
@@ -101,7 +102,7 @@ class MainWindowControl(QtCore.QObject):
         """ Zoom the current document to fit the focused page. """
         document = self.window.tabWidget.currentWidget()
         height = document.height()
-        newdpi = height / document.current_page().bg_source.pageSizeF().height() * 72
+        newdpi = height / document.current_page().bg_source.sizeF().height() * Config.pdf_base_dpi
         newdpi = math.floor(newdpi)
         document.zoom(newdpi)
 
