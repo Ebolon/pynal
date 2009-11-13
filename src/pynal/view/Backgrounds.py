@@ -18,7 +18,7 @@ def empty_background():
     Create and configure a bg_source for a plain
     and empty page.
     """
-    bg = BackgroundImage()
+    bg = PlainBackground()
     return bg
 
 def pdf_page(popplerpage):
@@ -92,6 +92,19 @@ class PdfBackground(BackgroundImage):
                 return False
         else:
             return True
+
+class PlainBackground(BackgroundImage):
+
+    def __init__(self, brush=QtCore.Qt.white):
+        BackgroundImage.__init__(self)
+        self.brush = brush
+
+    def get_image(self, dpi, callback):
+        factor = dpi / Config.pdf_base_dpi #TODO: get factor from document
+        pixmap = QtGui.QPixmap(QtCore.QSize(self.sizeF().width()  * factor,
+                                            self.sizeF().height() * factor))
+        pixmap.fill(self.brush)
+        callback(pixmap)
 
 class PdfRenderThread(QtCore.QThread):
     """

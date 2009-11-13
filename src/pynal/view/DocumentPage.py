@@ -79,7 +79,9 @@ class DocumentPage(QtGui.QGraphicsItem):
             if self.page_number > 0:
                 bg_size = self.prevpage().boundingRect() / self.document.dpi_scaling()
             else:
-                bg_size = QtCore.QSizeF(520, 700)
+                bg_size = QtCore.QSizeF(595, 842)
+
+            self.bg_source.setSizeF(bg_size)
 
         size = QtCore.QSize(math.ceil(bg_size.width()  * self.document.dpi_scaling()),
                             math.ceil(bg_size.height() * self.document.dpi_scaling()))
@@ -146,35 +148,43 @@ class DocumentPage(QtGui.QGraphicsItem):
             pass
 
 
-    def background_ready(self, new_image):
+    def background_ready(self, result):
         """
-        Callback method used by the PdfLoaderThread when the new_image is ready.
-        Creates a pixmap, GraphicsPixmapItem and adds it to this page.
+        Callback method for the bg_source to bring the rendered background to.
+        Creates/Uses the given pixmap as a new background for this page.
 
         TODO: send the image or a notification to the document to act as a
         central cache store that removes rendered pages at a certain threshold.
+
+        Parameters:
+          result -- QImage or QPixmap.
         """
 
 
         """
-        When the rendered new_image does not fit (nearly) exactly in the current
+        When the rendered result does not fit (nearly) exactly in the current
         bounding box, it was an older job that finished. We need a new
         background.
 
         When the pixmap does get replaced with an unfit one, it creates a
         flickering of weird sized pages in the document.
         """
-        if math.fabs(new_image.size().width() - self.boundingRect().size().width()) < 2 :
+        if math.fabs(result.size().width() - self.boundingRect().size().width()) < 2 :
             self.background_is_dirty = False
         else:
             # Image does not fit. Don't replace the background pixmap.
+            print "noooooes, kakcebild!", result.size(), self.boundingRect().size()
 
             if self.isVisible():
                 self.update() # To force a new call to paint().
             return
 
         # Replace the new_pixmap of the background with the new one.
-        new_pixmap = QtGui.QPixmap.fromImage(new_image)
+        if type(result) is QtGui.QImage:
+            new_pixmap = QtGui.QPixmap.fromImage(result)
+        else:
+            new_pixmap = result
+
         if self.bg_graphics_item is None:
             self.bg_graphics_item = QtGui.QGraphicsPixmapItem(new_pixmap, self)
         else:
