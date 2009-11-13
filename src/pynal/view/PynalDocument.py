@@ -58,7 +58,11 @@ class PynalDocument(QtGui.QGraphicsView):
             self.append_new_page() # Add an empty page.
 
     def dpi_scaling(self):
-        """ Return the scaling factor of the current and base dpi. """
+        """
+        Return the scaling factor of the current and base dpi.
+
+        TODO: mapper function to centralise calculations with this value.
+        """
         return self.dpi / Config.pdf_base_dpi
 
     def zoom(self, value):
