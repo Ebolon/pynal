@@ -54,7 +54,8 @@ class MainWindowControl(QtCore.QObject):
     def open_document(self, document, filename):
         """ Shows a PynalDocument in the journaling area. """
         tabwidget = self.window.tabWidget
-        tabwidget.addTab(document, filename)
+        newindex = tabwidget.addTab(document, filename)
+        tabwidget.setCurrentIndex(newindex)
         if tabwidget.count() > 1:
             tabwidget.tabBar().show()
 
