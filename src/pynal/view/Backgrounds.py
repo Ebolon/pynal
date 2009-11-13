@@ -58,6 +58,7 @@ class BackgroundImage():
         pass
 
     def ready_to_render(self):
+        """ Always ready to re-render the bg. """
         return True
 
 class PdfBackground(BackgroundImage):
@@ -68,6 +69,9 @@ class PdfBackground(BackgroundImage):
         self.setSizeF(self.poppler.pageSizeF())
 
     def get_image(self, dpi, callback):
+        """
+        Create a new render thread and start it.
+        """
         self.loader = PdfRenderThread(self.poppler, dpi)
         self.loader.output.connect(callback)
         self.loader.start()
@@ -94,12 +98,28 @@ class PdfBackground(BackgroundImage):
             return True
 
 class PlainBackground(BackgroundImage):
+    """
+    An empty background of a given color.
+    """
 
     def __init__(self, brush=QtCore.Qt.white):
+        """
+        Create a new plain background.
+
+        Parameters:
+          brush -- The Color to use for the background
+        """
         BackgroundImage.__init__(self)
         self.brush = brush
 
     def get_image(self, dpi, callback):
+        """
+        A pixmap can be directly created here as this is done in the GUI-Thread
+        instead of a dedicated one.
+
+        And creating a white pixmap is easier than creating a QImage first and then
+        extract the pixmap.
+        """
         factor = dpi / Config.pdf_base_dpi #TODO: get factor from document
         pixmap = QtGui.QPixmap(QtCore.QSize(self.sizeF().width()  * factor,
                                             self.sizeF().height() * factor))
