@@ -33,13 +33,14 @@ class BackgroundImage():
     def __init__(self):
         self.bg_callback = None
 
-    def pageSizeF(self):
-        pass
+    def sizeF(self):
+        """ Return the size of the background. Or None if"""
+        return None
 
     def set_bg_ready(self, callable):
         self.bg_callback = callable
 
-    def get_image(self, page, dpi):
+    def get_image(self, dpi, callback):
         """
         Create an image of this bg that can be displayed.
         Actually only the pixmap is needed, but that should be
@@ -67,12 +68,12 @@ class PdfBackground(BackgroundImage):
         self.poppler = poppler
         self.loader = None
 
-    def pageSizeF(self):
+    def sizeF(self):
         return self.poppler.pageSizeF()
 
-    def get_image(self, dpi):
+    def get_image(self, dpi, callback):
         self.loader = PdfRenderThread(self.poppler, dpi)
-        self.loader.output.connect(self.bg_callback)
+        self.loader.output.connect(callback)
         self.loader.start()
 
     def ready_to_render(self):

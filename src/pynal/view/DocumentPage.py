@@ -132,7 +132,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             return
 
         if self.background_is_dirty:
-            self.bg_source.get_image(self.document.dpi)
+            self.bg_source.get_image(self.document.dpi, self.background_ready)
 
             #TODO: call paint on previous/next page to pre-cache.
             pass
