@@ -32,9 +32,13 @@ class PynalDocument(QtGui.QGraphicsView):
         """
         QtGui.QGraphicsView.__init__(self, parent)
         self.setCursor(tools.current_tool.cursor)
+
+        #Needed for proper rendering of selection box
+        self.setViewportUpdateMode(self.FullViewportUpdate)
+
         self.configure_scene()
 
-        self.dpi = Config.pdf_base_dpi * 1.0
+        self.dpi = Config.pdf_base_dpi
 
         self.pages = []
 

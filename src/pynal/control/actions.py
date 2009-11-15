@@ -66,7 +66,7 @@ def create_tools(control, parent):
     action_definitions["tool_select"] = {
          "text"   : "Box select",
          "icon"   : "select-rectangular",
-         "action" : control.set_tool_scroll,
+         "action" : control.set_tool_select,
          "checkable" : True
      }
 

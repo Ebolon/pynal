@@ -44,5 +44,17 @@ class ScrollTool(Tool):
     def __init__(self):
         Tool.__init__(self)
 
+class SelectTool(Tool):
+    """
+    The selection tool. As small as the scroll tool as the logic
+    is provided by the QGraphicsView.
+
+    TODO: might want to merge with the scroll tool.
+    """
+
+    def __init__(self):
+        Tool.__init__(self)
+
+
 
 current_tool = Tool()

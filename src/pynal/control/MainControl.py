@@ -95,7 +95,10 @@ class MainWindowControl(QtCore.QObject):
         document.zoom(newdpi)
 
     def zoom_original(self):
-        """ Zoom the current document to 100%. """
+        """
+        Zoom the current document to 100%.
+        TODO: Exception when no tab is open as currentWidget() will return None
+        """
         document = self.window.tabWidget.currentWidget()
         document.zoom(Config.pdf_base_dpi)
 
@@ -124,6 +127,14 @@ class MainWindowControl(QtCore.QObject):
 
     def set_tool_scroll(self):
         """ Set the scroll tool as the current tool. """
-        self.window.tabWidget.currentWidget().setDragMode(
+        for i in range(self.window.tabWidget.count()):
+            self.window.tabWidget.widget(i).setDragMode(
                           QtGui.QGraphicsView.ScrollHandDrag)
         tools.current_tool = tools.ScrollTool()
+
+    def set_tool_select(self):
+        """ Set the selection tool as the current tool. """
+        for i in range(self.window.tabWidget.count()):
+            self.window.tabWidget.widget(i).setDragMode(
+                          QtGui.QGraphicsView.RubberBandDrag)
+        tools.current_tool = tools.SelectTool()
