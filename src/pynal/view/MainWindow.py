@@ -57,6 +57,10 @@ class MainWindow(QtGui.QMainWindow):
         zoombar.addAction(actions.toolbar("doc_zoom_fit"))
         zoombar.addAction(actions.toolbar("doc_zoom_width"))
 
+        tools = self.addToolBar("Tools")
+        toolgroup = QtGui.QActionGroup(tools)
+        tools.addAction(actions.toolbar("tool_scroll", toolgroup))
+
         debug = self.addToolBar("Debug")
         # No debug actions atm
 

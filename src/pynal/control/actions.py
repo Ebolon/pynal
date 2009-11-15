@@ -36,6 +36,18 @@ def init(control, window):
     create_file_actions(control, parent)
     create_document_actions(control, parent)
     create_debug_actions(control, parent)
+    create_tools(control, parent)
+
+def create_tools(control, parent):
+    global action_definitions
+
+    """ Selects the scroll tool to navigate the document. """
+    action_definitions["tool_scroll"] = {
+         "text"   : "Scroll",
+         "icon"   : "transform-move",
+         "action" : control.set_tool_scroll,
+         "checkable" : True
+     }
 
 def create_document_actions(control, parent):
     global action_definitions
@@ -118,7 +130,7 @@ def create_file_actions(control, parent):
          "action" : control.save_file
      }
 
-def toolbar(name):
+def toolbar(name, group=None):
     """
     Returns the action with the given name for toolbar use.
 
@@ -145,12 +157,18 @@ def toolbar(name):
         if config is None:
             return None #Without the config no action can be created
 
-        action = QAction(parent)
+        if group is None:
+            action = QAction(parent)
+        else:
+            action = QAction(group)
 
         # Will result in a KeyError when the icon is not set in the config.
         # This is slightly wanted behaviour, as the icon is needed for a
         # toolbar action.
         action.setIcon(iconcache.get(config["icon"], 32))
+
+        if config.has_key("checkable"):
+            action.setCheckable(True)
 
         # Same exception is wanted here.
         action.triggered.connect(config["action"])
@@ -190,6 +208,9 @@ def menu(name):
 
         if config.has_key("icon"):
             action.setIcon(QtGui.QIcon(iconloader.find_icon(config["icon"], 32)))
+
+        if config.has_key("checkable"):
+            action.setCheckable(True)
 
         # Will result in a KeyError when the text is not set in the config.
         # This is slightly wanted behaviour, as the text is needed for a

@@ -6,6 +6,7 @@ from PyQt4.QtCore import SIGNAL
 
 import QtPoppler
 
+import pynal.control.tools as tools
 import pynal.models.Config as Config
 from pynal.view.DocumentPage import DocumentPage
 import pynal.view.Backgrounds as Backgrounds
@@ -30,6 +31,7 @@ class PynalDocument(QtGui.QGraphicsView):
         parent      -- the parent widget of this widget.
         """
         QtGui.QGraphicsView.__init__(self, parent)
+        self.setCursor(tools.current_tool.cursor)
         self.configure_scene()
 
         self.dpi = Config.pdf_base_dpi * 1.0
@@ -86,7 +88,6 @@ class PynalDocument(QtGui.QGraphicsView):
         self.setScene(QtGui.QGraphicsScene(self))
         self.scene().setBackgroundBrush(QtGui.QBrush(QtCore.Qt.gray))
         self.setRenderHint(QtGui.QPainter.Antialiasing)
-        self.setDragMode(self.ScrollHandDrag) #TODO: should be moved when drawing is enabled.
 
     def current_page(self):
         """
@@ -103,3 +104,27 @@ class PynalDocument(QtGui.QGraphicsView):
             bg_source = Backgrounds.empty_background()
 
         self.pages.append(DocumentPage(self, len(self.pages), bg_source))
+
+    def mouseDoubleClickEvent(self, event):
+        """
+        Delegate the mouse events to the current tool.
+        Event is also delegated to super to handle the event in case
+        the tool calls event.ignore().
+        """
+        tools.current_tool.mouseDoubleClickEvent(event, self.scene())
+        QtGui.QGraphicsView.mouseDoubleClickEvent(self, event)
+
+    def mouseMoveEvent(self, event):
+        """ Delegate the mouse events to the current tool. """
+        tools.current_tool.mouseMoveEvent(event, self.scene())
+        QtGui.QGraphicsView.mouseMoveEvent(self, event)
+
+    def mousePressEvent(self, event):
+        """ Delegate the mouse events to the current tool. """
+        tools.current_tool.mousePressEvent(event, self.scene())
+        QtGui.QGraphicsView.mousePressEvent(self, event)
+
+    def mouseReleaseEvent(self, event):
+        """ Delegate the mouse events to the current tool. """
+        tools.current_tool.mouseReleaseEvent(event, self.scene())
+        QtGui.QGraphicsView.mouseReleaseEvent(self, event)

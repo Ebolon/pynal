@@ -109,13 +109,21 @@ class MainWindowControl(QtCore.QObject):
 
     def zoom_in(self):
         """
-        Zoom in :D.
-        Needs finer scaling, better quality and a scale limit up and down.
+        Zoom in.
+        TODO: Step depends on current scale or config.
         """
         document = self.window.tabWidget.currentWidget()
         document.zoom(document.dpi + 10)
 
     def zoom_out(self):
-        """ Zoom out :D. Step depends on current scale or config..."""
+        """ Zoom out.
+        TODO: Step depends on current scale or config.
+        """
         document = self.window.tabWidget.currentWidget()
         document.zoom(document.dpi - 10)
+
+    def set_tool_scroll(self):
+        """ Set the scroll tool as the current tool. """
+        self.window.tabWidget.currentWidget().setDragMode(
+                          QtGui.QGraphicsView.ScrollHandDrag)
+        tools.current_tool = tools.ScrollTool()
