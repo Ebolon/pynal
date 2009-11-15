@@ -49,6 +49,27 @@ def create_tools(control, parent):
          "checkable" : True
      }
 
+    action_definitions["tool_pen"] = {
+         "text"   : "Pen tool",
+         "icon"   : "draw-freehand",
+         "action" : control.set_tool_scroll,
+         "checkable" : True
+     }
+
+    action_definitions["tool_eraser"] = {
+         "text"   : "Eraser",
+         "icon"   : "draw-eraser",
+         "action" : control.set_tool_scroll,
+         "checkable" : True
+     }
+
+    action_definitions["tool_select"] = {
+         "text"   : "Box select",
+         "icon"   : "select-rectangular",
+         "action" : control.set_tool_scroll,
+         "checkable" : True
+     }
+
 def create_document_actions(control, parent):
     global action_definitions
 

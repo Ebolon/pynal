@@ -21,7 +21,6 @@ class Tool():
         Process the event of a double click.
         TODO: The dclick might be useful to display a quick menu.
         """
-        print "wuh, dclick!"
         event.ignore()
 
     def mouseMoveEvent(self, event, scene):
@@ -30,12 +29,10 @@ class Tool():
 
     def mousePressEvent(self, event, scene):
         """ Process the event of a pressed mouse key. """
-        print "pressed"
         event.ignore()
 
     def mouseReleaseEvent(self, event, scene):
         """ Process the event of a released mouse key. """
-        print "released!"
         event.ignore()
 
 class ScrollTool(Tool):

@@ -60,6 +60,9 @@ class MainWindow(QtGui.QMainWindow):
         tools = self.addToolBar("Tools")
         toolgroup = QtGui.QActionGroup(tools)
         tools.addAction(actions.toolbar("tool_scroll", toolgroup))
+        tools.addAction(actions.toolbar("tool_select", toolgroup))
+        tools.addAction(actions.toolbar("tool_pen", toolgroup))
+        tools.addAction(actions.toolbar("tool_eraser", toolgroup))
 
         debug = self.addToolBar("Debug")
         # No debug actions atm
