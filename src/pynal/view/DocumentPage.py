@@ -9,6 +9,7 @@ from PyQt4 import QtCore
 from PyQt4 import QtGui
 
 import pynal.models.Config as Config
+from pynal.view.PageControl import PageControl
 
 class DocumentPage(QtGui.QGraphicsItem):
     """
@@ -50,9 +51,11 @@ class DocumentPage(QtGui.QGraphicsItem):
         self.bg_graphics_item = None
         self.page_number = page_number
         self._bounding = None
-        self.update_bounding_rect()
+        self.control_panel = PageControl(self)
         self.loader = None
         self.background_is_dirty = True
+
+        self.update_bounding_rect()
 
     def prevpage(self):
         """
@@ -71,6 +74,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             top = 0
         else:
             space = 20 * self.document.dpi_scaling() #TODO: move to config or pagecontrol
+            space += Config.page_panel_height + 5
             top = self.prevpage().boundingRect().bottom() + space
 
         #TODO: clean up this calculation.
@@ -98,16 +102,18 @@ class DocumentPage(QtGui.QGraphicsItem):
             oldwidth = self.boundingRect().width()
             scale = newwidth / oldwidth
             self.scale(scale, scale)
-
+            
         self._bounding = QtCore.QRectF(QtCore.QPointF(left_pos, top),
                                       QtCore.QSizeF(size))
+
+        self.control_panel.update_bounding_rect()
 
         if self.bg_graphics_item is not None:
             p = self.bg_graphics_item.pixmap()
             self.bg_graphics_item.setPixmap(p.scaled(size))
             self.move_item_topleft()
             self.background_is_dirty = True
-
+            
     def scale(self, x, y):
         """
         Reimplementation to prevent the background pixmaps from getting
@@ -119,13 +125,12 @@ class DocumentPage(QtGui.QGraphicsItem):
         the child item. Background images should be in the back at -1.
         """
         for item in self.children():
-            if item.zValue() != -1:
+            if item.zValue() > 0:
                 item.scale(x, y)
 
     def boundingRect(self):
         """
         Return the bounding box of the page.
-        Needed implementation for being a QGraphicsItem
         """
         return self._bounding
 

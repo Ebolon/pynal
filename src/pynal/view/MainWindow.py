@@ -86,7 +86,10 @@ class MainWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.tabWidget)
 
     def rotate(self):
-        """ Rotate the position of the tabs. """
+        """
+        Rotate the position of the tabs.
+        TODO: currently not used
+        """
         pos = (self.tabs.tabPosition() + 1) % 4
         self.tabWidget.setTabPosition(pos)
 
