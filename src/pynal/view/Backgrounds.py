@@ -7,6 +7,8 @@ but don't use a PDF as the backend.
 
 Possible uses are images or patterns for graph or lined paper.
 '''
+import math
+
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
@@ -19,6 +21,10 @@ def empty_background():
     and empty page.
     """
     bg = PlainBackground()
+    return bg
+
+def checked_background():
+    bg = CheckedBackground()
     return bg
 
 def pdf_page(popplerpage):
@@ -111,6 +117,8 @@ class PlainBackground(BackgroundImage):
         """
         BackgroundImage.__init__(self)
         self.brush = brush
+        self.cols = 0
+        self.rows = 0
 
     def get_image(self, dpi, callback):
         """
@@ -124,6 +132,58 @@ class PlainBackground(BackgroundImage):
         pixmap = QtGui.QPixmap(QtCore.QSize(self.sizeF().width()  * factor,
                                             self.sizeF().height() * factor))
         pixmap.fill(self.brush)
+        callback(pixmap)
+
+class CheckedBackground(BackgroundImage):
+    """
+    A background with boxes :D
+    """
+
+    def __init__(self, brush=QtCore.Qt.white):
+        """
+        Create a checked background.
+
+        Parameters:
+          brush -- The Color to use for the background
+        """
+        BackgroundImage.__init__(self)
+        self.brush = brush
+
+    def setSizeF(self, sizef):
+        BackgroundImage.setSizeF(self, sizef)
+        if self.sizeF() is not None:
+            self.cols = int(math.floor(self.sizeF().width() / 17)) #TODO: move to config
+            self.rows = int(math.floor(self.sizeF().height() / 17))
+
+
+    def get_image(self, dpi, callback):
+        """
+        A pixmap can be directly created here as this is done in the GUI-Thread
+        instead of a dedicated one.
+
+        And creating a white pixmap is easier than creating a QImage first and then
+        extract the pixmap.
+        """
+        factor = dpi / Config.pdf_base_dpi #TODO: get factor from document
+        pixmap = QtGui.QPixmap(QtCore.QSize(self.sizeF().width()  * factor,
+                                            self.sizeF().height() * factor))
+        pixmap.fill(self.brush)
+
+        painter = QtGui.QPainter(pixmap)
+        painter.setPen(QtGui.QColor(123, 175, 246)) #TODO: move color to config
+
+        square_size = pixmap.width() / self.cols
+        print self.cols
+        for i in range(1, self.cols + 1):
+            x = i * square_size
+            painter.drawLine(x,0, x, pixmap.height())
+
+        for i in range(1, self.rows + 1):
+            y = i * square_size
+            painter.drawLine(0,y, pixmap.width(), y)
+
+        painter.end()
+
         callback(pixmap)
 
 class PdfRenderThread(QtCore.QThread):

@@ -105,7 +105,7 @@ class PynalDocument(QtGui.QGraphicsView):
         Create an empty page and append it to the end of the document.
         """
         if bg_source is None:
-            bg_source = Backgrounds.empty_background()
+            bg_source = Backgrounds.checked_background()
 
         self.pages.append(DocumentPage(self, len(self.pages), bg_source))
 
