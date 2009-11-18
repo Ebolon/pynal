@@ -70,7 +70,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         if self.page_number == 0:
             top = 0
         else:
-            space = 20 * self.document.dpi_scaling()
+            space = 20 * self.document.dpi_scaling() #TODO: move to config or pagecontrol
             top = self.prevpage().boundingRect().bottom() + space
 
         #TODO: clean up this calculation.
@@ -79,7 +79,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             if self.page_number > 0:
                 bg_size = self.prevpage().boundingRect() / self.document.dpi_scaling()
             else:
-                bg_size = QtCore.QSizeF(595, 842)
+                bg_size = QtCore.QSizeF(595, 842) #TODO: Move to config
 
             self.bg_source.setSizeF(bg_size)
 
@@ -173,7 +173,6 @@ class DocumentPage(QtGui.QGraphicsItem):
             self.background_is_dirty = False
         else:
             # Image does not fit. Don't replace the background pixmap.
-            print "noooooes, kakcebild!", result.size(), self.boundingRect().size()
 
             if self.isVisible():
                 self.update() # To force a new call to paint().
@@ -191,7 +190,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             self.bg_graphics_item.setPixmap(new_pixmap)
 
         self.move_item_topleft()
-        self.bg_graphics_item.setZValue(-1)
+        self.bg_graphics_item.setZValue(-1) #TODO: move to constant or config
 
     def move_item_topleft(self):
         """
