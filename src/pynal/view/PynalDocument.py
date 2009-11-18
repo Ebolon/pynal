@@ -67,7 +67,7 @@ class PynalDocument(QtGui.QGraphicsView):
         """
         Return the scaling factor of the current and base dpi.
 
-        TODO: mapper function to centralise calculations with this value.
+        TODO: mapper function to centralize calculations with this value.
         """
         return self.dpi / Config.pdf_base_dpi
 

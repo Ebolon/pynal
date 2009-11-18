@@ -152,8 +152,8 @@ class CheckedBackground(BackgroundImage):
     def setSizeF(self, sizef):
         BackgroundImage.setSizeF(self, sizef)
         if self.sizeF() is not None:
-            self.cols = int(math.floor(self.sizeF().width() / 17)) #TODO: move to config
-            self.rows = int(math.floor(self.sizeF().height() / 17))
+            self.cols = int(math.floor(self.sizeF().width() / Config.get_int("checked background", "size"))) #TODO: move to config
+            self.rows = int(math.floor(self.sizeF().height() / Config.get_int("checked background", "size")))
 
 
     def get_image(self, dpi, callback):
@@ -173,7 +173,6 @@ class CheckedBackground(BackgroundImage):
         painter.setPen(QtGui.QColor(123, 175, 246)) #TODO: move color to config
 
         square_size = pixmap.width() / self.cols
-        print self.cols
         for i in range(1, self.cols + 1):
             x = i * square_size
             painter.drawLine(x,0, x, pixmap.height())

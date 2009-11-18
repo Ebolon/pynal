@@ -16,7 +16,7 @@ class DocumentPage(QtGui.QGraphicsItem):
     page from a pdf) and contain QGraphicItems drawn by the user.
 
     Size is either specified by the size of the background image
-    or the preceeding image.
+    or the preceding image.
 
     Attributes:
     document    -- The PynalDocument that contains this page.

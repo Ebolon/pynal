@@ -118,3 +118,6 @@ def add_default_values(config):
     config.add_section("Rendering")
     config.set("Rendering", "use_opengl", "false")
 
+    config.add_section("checked background")
+    config.set("checked background", "size", "17")
+
