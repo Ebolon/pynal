@@ -37,6 +37,7 @@ def init(control, window):
     create_document_actions(control, parent)
     create_debug_actions(control, parent)
     create_tools(control, parent)
+    create_page_actions(control, parent)
 
 def create_tools(control, parent):
     global action_definitions
@@ -68,6 +69,37 @@ def create_tools(control, parent):
          "icon"   : "select-rectangular",
          "action" : control.set_tool_select,
          "checkable" : True
+     }
+
+def create_page_actions(control, parent):
+    global action_definitions
+
+    """ Zoom the document to the width of the current document/page. """
+    action_definitions["page_new_after"] = {
+         "text"   : "Append a new page after this",
+         "icon"   : "document-new",
+     }
+
+    """ Zoom the document to the width of the current document/page. """
+    action_definitions["page_up"] = {
+         "text"   : "Move this page up",
+         "icon"   : "go-up",
+     }
+
+    """ Zoom the document to the width of the current document/page. """
+    action_definitions["page_down"] = {
+         "text"   : "Move this page down",
+         "icon"   : "go-down",
+    }
+
+    action_definitions["page_remove"] = {
+         "text"   : "Remove this page",
+         "icon"   : "edit-delete",
+    }
+
+    action_definitions["page_duplicate"] = {
+         "text"   : "Duplicate this page",
+         "icon"   : "edit-copy",
      }
 
 def create_document_actions(control, parent):
@@ -151,7 +183,7 @@ def create_file_actions(control, parent):
          "action" : control.save_file
      }
 
-def toolbar(name, group=None):
+def toolbar(name, group=None, callable=None):
     """
     Returns the action with the given name for toolbar use.
 
@@ -164,7 +196,11 @@ def toolbar(name, group=None):
     text
 
     Parameters:
-      name -- The name of the action,
+      name     -- The name of the action.
+
+      group    -- The QActionGroup to add this action to.
+      callable -- The callable to call when the action is triggered.
+                  Can be used to override the action in the definition or provide one.
     """
     global toolbar_actions
     action = toolbar_actions.get(name, None)
@@ -191,8 +227,11 @@ def toolbar(name, group=None):
         if config.has_key("checkable"):
             action.setCheckable(True)
 
-        # Same exception is wanted here.
-        action.triggered.connect(config["action"])
+        # Same exception is wanted here. As an alternative one can specify a callable as a parameter.
+        if callable is not None:
+            action.triggered.connect(callable)
+        else:
+            action.triggered.connect(config["action"])
 
         toolbar_actions["name"] = action
 

@@ -73,7 +73,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         if self.page_number == 0:
             top = 0
         else:
-            space = 20 * self.document.dpi_scaling() #TODO: move to config or pagecontrol
+            space = 10 * self.document.dpi_scaling() #TODO: move to config or pagecontrol
             space += Config.page_panel_height + 5
             top = self.prevpage().boundingRect().bottom() + space
 
