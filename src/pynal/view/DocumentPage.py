@@ -74,7 +74,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             top = 0
         else:
             space = 10 * self.document.dpi_scaling() #TODO: move to config or pagecontrol
-            space += Config.page_panel_height + 5
+            space += 30 #TODO: this is a retarded piece of space to keep the control panel visible
             top = self.prevpage().boundingRect().bottom() + space
 
         #TODO: clean up this calculation.
@@ -102,7 +102,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             oldwidth = self.boundingRect().width()
             scale = newwidth / oldwidth
             self.scale(scale, scale)
-            
+
         self._bounding = QtCore.QRectF(QtCore.QPointF(left_pos, top),
                                       QtCore.QSizeF(size))
 
@@ -113,7 +113,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             self.bg_graphics_item.setPixmap(p.scaled(size))
             self.move_item_topleft()
             self.background_is_dirty = True
-            
+
     def scale(self, x, y):
         """
         Reimplementation to prevent the background pixmaps from getting

@@ -73,8 +73,10 @@ class PageControl(QtGui.QGraphicsItem):
         and the physical size in the scene has changed so the panel
         has to be relocated.
         """
+
+        #TODO: these values and the whole bounding_rect should be related to the toolbar
         self._bounding = QtCore.QRectF(-100, self.parentItem().boundingRect().bottom(),
-                                        200, Config.page_panel_height)
+                                        200, 30)
 
         if self.toolbar is not None:
             self.reposition_toolbar()

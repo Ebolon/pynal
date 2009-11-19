@@ -35,9 +35,6 @@ space_between_pages = 20
 # Resolution to use when rendering pdf pages to QImages.
 pdf_base_dpi = 72.0 # This is the default for QtPoppler and is needed for size calculations.
 
-# The height of a page control panel.
-page_panel_height = 30
-
 # List of files to open when the application has started.
 open_files = []
 
