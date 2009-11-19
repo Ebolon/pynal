@@ -83,7 +83,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             if self.page_number > 0:
                 bg_size = self.prevpage().boundingRect() / self.document.dpi_scaling()
             else:
-                bg_size = QtCore.QSizeF(595, 842) #TODO: Move to config
+                bg_size = QtCore.QSizeF(595, 842) #TODO: Move to config, A4 size in points@72dpi
 
             self.bg_source.setSizeF(bg_size)
 

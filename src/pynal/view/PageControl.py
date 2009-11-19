@@ -10,43 +10,60 @@ import pynal.models.Config as Config
 
 class PageControl(QtGui.QGraphicsItem):
     '''
-
+    A control panel/toolbar below every page for quick access to
+    page manipulation and management actions.
     '''
 
     def __init__(self, parent):
         '''
+        Creates a new PageControl for the given page.
 
+        Parameters:
+          parent -- The DocumentPage that is controlled by this panel.
         '''
         QtGui.QGraphicsItem.__init__(self, parent)
         self.setZValue(0)
         self._bounding = None
+        self.toolbar = None
 
         toolbar = QtGui.QToolBar("page controls")
-        #TODO: page specific actions needed here.
+
         toolbar.addAction(actions.toolbar("page_new_after", callable=self.append))
         toolbar.addAction(actions.toolbar("page_up", callable=self.move_up))
         toolbar.addAction(actions.toolbar("page_down", callable=self.move_down))
         toolbar.addAction(actions.toolbar("page_remove", callable=self.remove))
         toolbar.addAction(actions.toolbar("page_duplicate", callable=self.duplicate))
+        self.toolbar_widget = toolbar
 
-        #TODO: at this point there are no boundingRects for self and parent
-        toolbar_item = QtGui.QGraphicsProxyWidget(self)
-        toolbar_item.setWidget(toolbar)
-        self.toolbar = toolbar_item
+    def reposition_toolbar(self):
+        """ Move the toolbar QGraphicsProxyItem below the page. """
+        return self.toolbar.setPos(-self.toolbar.boundingRect().width() / 2, self.boundingRect().top())
+
+#        Toolbar can also be left or right aligned.
+#        return self.toolbar.setPos(self.parentItem().boundingRect().left(), self.boundingRect().top())
+#        return self.toolbar.setPos(
+#                    self.parentItem().boundingRect().right() - self.toolbar.boundingRect().width(),
+#                    self.boundingRect().top())
+
 
     def append(self):
+        """ Insert a new page after this. """
         pass
 
     def move_up(self):
+        """ Move this page above the previous page. """
         pass
 
     def move_down(self):
+        """ Move this page below the next page. """
         pass
 
     def remove(self):
+        """ Remove this page. """
         pass
 
     def duplicate(self):
+        """ Insert a duplicate of this page below it. """
         pass
 
     def update_bounding_rect(self):
@@ -60,8 +77,7 @@ class PageControl(QtGui.QGraphicsItem):
                                         200, Config.page_panel_height)
 
         if self.toolbar is not None:
-            self.toolbar.setPos(-self.toolbar.boundingRect().width() / 2,
-                                 self.boundingRect().top())
+            self.reposition_toolbar()
 
     def boundingRect(self):
         """
@@ -77,4 +93,7 @@ class PageControl(QtGui.QGraphicsItem):
         page's background and pre-caching following/previous pages.
         """
         if self.toolbar is None:
-            self.add_buttons()
+            toolbar_item = QtGui.QGraphicsProxyWidget(self)
+            toolbar_item.setWidget(self.toolbar_widget)
+            self.toolbar = toolbar_item
+            self.reposition_toolbar()
