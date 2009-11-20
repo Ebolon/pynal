@@ -29,11 +29,11 @@ class PageControl(QtGui.QGraphicsItem):
 
         toolbar = QtGui.QToolBar("page controls")
 
-        toolbar.addAction(actions.toolbar("page_new_after", callable=self.append))
-        toolbar.addAction(actions.toolbar("page_up", callable=self.move_up))
-        toolbar.addAction(actions.toolbar("page_down", callable=self.move_down))
-        toolbar.addAction(actions.toolbar("page_remove", callable=self.remove))
-        toolbar.addAction(actions.toolbar("page_duplicate", callable=self.duplicate))
+        toolbar.addAction(actions.toolbar("page_new_after", callable=self.parentItem().append))
+        toolbar.addAction(actions.toolbar("page_up", callable=self.parentItem().move_up))
+        toolbar.addAction(actions.toolbar("page_down", callable=self.parentItem().move_down))
+        toolbar.addAction(actions.toolbar("page_remove", callable=self.parentItem().remove))
+        toolbar.addAction(actions.toolbar("page_duplicate", callable=self.parentItem().duplicate))
         toolbar.addSeparator()
         toolbar.addAction(actions.toolbar("page_bg_plain", callable=self.plain_bg))
         toolbar.addAction(actions.toolbar("page_bg_checked", callable=self.checked_bg))
@@ -49,26 +49,6 @@ class PageControl(QtGui.QGraphicsItem):
 #                    self.parentItem().boundingRect().right() - self.toolbar.boundingRect().width(),
 #                    self.boundingRect().top())
 
-
-    def append(self):
-        """ Append a new page after this one. """
-        self.parentItem().append()
-
-    def move_up(self):
-        """ Move this page above the previous page. """
-        self.parentItem().move_up()
-
-    def move_down(self):
-        """ Move this page below the next page. """
-        self.parentItem().move_down()
-
-    def remove(self):
-        """ Remove this page. """
-        pass
-
-    def duplicate(self):
-        """ Insert a duplicate of this page below it. """
-        pass
 
     def plain_bg(self):
         """ Set the background to plain. """
@@ -113,3 +93,6 @@ class PageControl(QtGui.QGraphicsItem):
             toolbar_item.setWidget(self.toolbar_widget)
             self.toolbar = toolbar_item
             self.reposition_toolbar()
+
+    def __del__(self):
+        print ":("

@@ -182,3 +182,11 @@ class PynalDocument(QtGui.QGraphicsView):
         pages[index_b].page_number = index_b
         pages[index_a].update_bounding_rect()
         pages[index_b].update_bounding_rect()
+
+    def remove_page(self, index):
+        """ Delete the page at the given index. """
+        pages = self.pages
+        pages[index:] = pages[index + 1:]
+        for i in range(index, len(pages)):
+            pages[i].page_number = i
+            pages[i].update_bounding_rect()

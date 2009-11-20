@@ -212,10 +212,22 @@ class DocumentPage(QtGui.QGraphicsItem):
         self.document.insert_new_page_after(self.page_number, self.bg_source)
 
     def move_down(self):
+        """
+        Move this page below the page after this.
+        TODO: check for bottom limit.
+        """
         self.document.switch_pages(self.page_number, self.page_number + 1)
 
     def move_up(self):
+        """ Move this page on top of the one over this. """
         if self.page_number == 0:
             return
         self.document.switch_pages(self.page_number, self.page_number - 1)
 
+    def remove(self):
+        """ Remove this page. """
+        self.document.remove_page(self.page_number)
+
+    def duplicate(self):
+        """ Insert a duplicate of this page below it. """
+        pass
