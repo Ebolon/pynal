@@ -210,3 +210,12 @@ class DocumentPage(QtGui.QGraphicsItem):
     def append(self):
         """ Append a new page after this. """
         self.document.insert_new_page_after(self.page_number, self.bg_source)
+
+    def move_down(self):
+        self.document.switch_pages(self.page_number, self.page_number + 1)
+
+    def move_up(self):
+        if self.page_number == 0:
+            return
+        self.document.switch_pages(self.page_number, self.page_number - 1)
+

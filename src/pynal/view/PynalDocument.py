@@ -163,3 +163,22 @@ class PynalDocument(QtGui.QGraphicsView):
         """
         tools.current_tool.mouseReleaseEvent(event, self.scene())
         QtGui.QGraphicsView.mouseReleaseEvent(self, event)
+
+    def switch_pages(self, index_a, index_b):
+        """
+        Switch the pages with the given indexes.
+
+        Parameters:
+          index_a -- page_number of one page
+          index_b -- page_number of the other :D
+        """
+        if index_a < index_b:
+            index_b, index_a = index_a, index_b
+
+        pages = self.pages
+        pages[index_a], pages[index_b] = pages[index_b], pages[index_a]
+
+        pages[index_a].page_number = index_a
+        pages[index_a].update_bounding_rect()
+        pages[index_b].page_number = index_b
+        pages[index_b].update_bounding_rect()

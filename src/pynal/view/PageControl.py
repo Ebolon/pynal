@@ -56,11 +56,11 @@ class PageControl(QtGui.QGraphicsItem):
 
     def move_up(self):
         """ Move this page above the previous page. """
-        pass
+        self.parentItem().move_up()
 
     def move_down(self):
         """ Move this page below the next page. """
-        pass
+        self.parentItem().move_down()
 
     def remove(self):
         """ Remove this page. """
