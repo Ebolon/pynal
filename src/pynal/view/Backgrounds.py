@@ -15,16 +15,16 @@ from PyQt4 import QtGui
 from pynal.control.threading import semaphore
 import pynal.models.Config as Config
 
-def empty_background():
+def empty_background(size=None):
     """
     Create and configure a bg_source for a plain
     and empty page.
     """
-    bg = PlainBackground()
+    bg = PlainBackground(size)
     return bg
 
-def checked_background():
-    bg = CheckedBackground()
+def checked_background(size=None):
+    bg = CheckedBackground(size)
     return bg
 
 def pdf_page(popplerpage):
@@ -36,8 +36,8 @@ class BackgroundImage():
     single image (or style).
     """
 
-    def __init__(self):
-        self.size = None
+    def __init__(self, size):
+        self.size = size
 
     def sizeF(self):
         """
@@ -108,14 +108,14 @@ class PlainBackground(BackgroundImage):
     An empty background of a given color.
     """
 
-    def __init__(self, brush=QtCore.Qt.white):
+    def __init__(self, size, brush=QtCore.Qt.white):
         """
         Create a new plain background.
 
         Parameters:
           brush -- The Color to use for the background
         """
-        BackgroundImage.__init__(self)
+        BackgroundImage.__init__(self, size)
         self.brush = brush
         self.cols = 0
         self.rows = 0
@@ -139,14 +139,14 @@ class CheckedBackground(BackgroundImage):
     A background with boxes :D
     """
 
-    def __init__(self, brush=QtCore.Qt.white):
+    def __init__(self, size, brush=QtCore.Qt.white):
         """
         Create a checked background.
 
         Parameters:
           brush -- The Color to use for the background
         """
-        BackgroundImage.__init__(self)
+        BackgroundImage.__init__(self, size)
         self.brush = brush
 
     def setSizeF(self, sizef):

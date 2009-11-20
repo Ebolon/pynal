@@ -81,7 +81,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         bg_size = self.bg_source.sizeF()
         if bg_size is None:
             if self.page_number > 0:
-                bg_size = self.prevpage().boundingRect() / self.document.dpi_scaling()
+                bg_size = self.prevpage().bg_source.sizeF()
             else:
                 bg_size = QtCore.QSizeF(595, 842) #TODO: Move to config, A4 size in points@72dpi
 
@@ -206,3 +206,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         to move all children correctly.
         """
         self.bg_graphics_item.setOffset(self.boundingRect().topLeft())
+
+    def append(self):
+        """ Append a new page after this. """
+        self.document.insert_new_page_after(self.page_number, self.bg_source)

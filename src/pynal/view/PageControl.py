@@ -7,6 +7,7 @@ from PyQt4 import QtCore
 import pynal.control.actions as actions
 import pynal.models.iconcache as iconcache
 import pynal.models.Config as Config
+import pynal.view.Backgrounds as Backgrounds
 
 class PageControl(QtGui.QGraphicsItem):
     '''
@@ -33,6 +34,9 @@ class PageControl(QtGui.QGraphicsItem):
         toolbar.addAction(actions.toolbar("page_down", callable=self.move_down))
         toolbar.addAction(actions.toolbar("page_remove", callable=self.remove))
         toolbar.addAction(actions.toolbar("page_duplicate", callable=self.duplicate))
+        toolbar.addSeparator()
+        toolbar.addAction(actions.toolbar("page_bg_plain", callable=self.plain_bg))
+        toolbar.addAction(actions.toolbar("page_bg_checked", callable=self.checked_bg))
         self.toolbar_widget = toolbar
 
     def reposition_toolbar(self):
@@ -47,8 +51,8 @@ class PageControl(QtGui.QGraphicsItem):
 
 
     def append(self):
-        """ Insert a new page after this. """
-        pass
+        """ Append a new page after this one. """
+        self.parentItem().append()
 
     def move_up(self):
         """ Move this page above the previous page. """
@@ -64,6 +68,16 @@ class PageControl(QtGui.QGraphicsItem):
 
     def duplicate(self):
         """ Insert a duplicate of this page below it. """
+        pass
+
+    def plain_bg(self):
+        """ Set the background to plain. """
+        parent = self.parentItem()
+        parent.bg_source = Backgrounds.empty_background(size=parent.bg_source.sizeF())
+        parent.background_is_dirty = True
+
+    def checked_bg(self):
+        """ Set the background to checked. """
         pass
 
     def update_bounding_rect(self):

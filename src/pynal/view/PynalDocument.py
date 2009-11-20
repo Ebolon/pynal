@@ -97,6 +97,8 @@ class PynalDocument(QtGui.QGraphicsView):
         """
         The page that has the current focus. This can be the centered or
         last clicked page.
+
+        TODO: prone to failure when no page is in dead center
         """
         return self.items(self.contentsRect().center())[-1]
 
@@ -105,9 +107,26 @@ class PynalDocument(QtGui.QGraphicsView):
         Create an empty page and append it to the end of the document.
         """
         if bg_source is None:
-            bg_source = Backgrounds.checked_background()
+            bg_source = Backgrounds.plain_background()
 
         self.pages.append(DocumentPage(self, len(self.pages), bg_source))
+
+    def insert_new_page_after(self, index, bg_source=None):
+        """
+        Insert a new page after the page with the given index.
+
+        Parameters:
+          index     -- Index/site number of the page to insert after
+
+          bg_source -- The bg_source for this page. None results in a blank page.
+        """
+        if bg_source is None:
+            bg_source = Backgrounds.plain_background()
+
+        self.pages.insert(index + 1, DocumentPage(self, index + 1, bg_source))
+        for i in range(index + 2, len(self.pages)):
+            self.pages[i].page_number = i
+            self.pages[i].update_bounding_rect()
 
     def mouseDoubleClickEvent(self, event):
         """
@@ -119,16 +138,28 @@ class PynalDocument(QtGui.QGraphicsView):
         QtGui.QGraphicsView.mouseDoubleClickEvent(self, event)
 
     def mouseMoveEvent(self, event):
-        """ Delegate the mouse events to the current tool. """
+        """
+        Delegate the mouse events to the current tool.
+        Event is also delegated to super to handle the event in case
+        the tool calls event.ignore().
+        """
         tools.current_tool.mouseMoveEvent(event, self.scene())
         QtGui.QGraphicsView.mouseMoveEvent(self, event)
 
     def mousePressEvent(self, event):
-        """ Delegate the mouse events to the current tool. """
+        """
+        Delegate the mouse events to the current tool.
+        Event is also delegated to super to handle the event in case
+        the tool calls event.ignore().
+        """
         tools.current_tool.mousePressEvent(event, self.scene())
         QtGui.QGraphicsView.mousePressEvent(self, event)
 
     def mouseReleaseEvent(self, event):
-        """ Delegate the mouse events to the current tool. """
+        """
+        Delegate the mouse events to the current tool.
+        Event is also delegated to super to handle the event in case
+        the tool calls event.ignore().
+        """
         tools.current_tool.mouseReleaseEvent(event, self.scene())
         QtGui.QGraphicsView.mouseReleaseEvent(self, event)

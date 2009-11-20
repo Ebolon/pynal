@@ -77,7 +77,8 @@ def create_page_actions(control, parent):
     """ Zoom the document to the width of the current document/page. """
     action_definitions["page_new_after"] = {
          "text"   : "Append a new page after this",
-         "icon"   : "document-new",
+#         "icon"   : "document-new",
+         "icon"   : "archive-insert",
      }
 
     """ Zoom the document to the width of the current document/page. """
@@ -94,12 +95,23 @@ def create_page_actions(control, parent):
 
     action_definitions["page_remove"] = {
          "text"   : "Remove this page",
-         "icon"   : "edit-delete",
+#         "icon"   : "edit-delete",
+         "icon"   : "archive-remove",
     }
 
     action_definitions["page_duplicate"] = {
          "text"   : "Duplicate this page",
          "icon"   : "edit-copy",
+    }
+
+    action_definitions["page_bg_plain"] = {
+         "text"   : "Set a plain background.",
+         "icon"   : "page-simple",
+     }
+
+    action_definitions["page_bg_checked"] = {
+         "text"   : "Set a checked background.",
+         "icon"   : "page-2sides",
      }
 
 def create_document_actions(control, parent):
@@ -232,6 +244,9 @@ def toolbar(name, group=None, callable=None):
             action.triggered.connect(callable)
         else:
             action.triggered.connect(config["action"])
+
+        if config.has_key("text"):
+            action.setToolTip(config["text"])
 
         toolbar_actions["name"] = action
 
