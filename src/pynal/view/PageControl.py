@@ -29,6 +29,7 @@ class PageControl(QtGui.QGraphicsItem):
 
         toolbar = QtGui.QToolBar("page controls")
 
+        # TODO: make these user configurable (or is that too KDE?) -> #17
         toolbar.addAction(actions.toolbar("page_new_after", callable=self.parentItem().append))
         toolbar.addAction(actions.toolbar("page_up", callable=self.parentItem().move_up))
         toolbar.addAction(actions.toolbar("page_down", callable=self.parentItem().move_down))
@@ -93,6 +94,3 @@ class PageControl(QtGui.QGraphicsItem):
             toolbar_item.setWidget(self.toolbar_widget)
             self.toolbar = toolbar_item
             self.reposition_toolbar()
-
-    def __del__(self):
-        print ":("

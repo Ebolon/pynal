@@ -63,6 +63,8 @@ class PynalDocument(QtGui.QGraphicsView):
         else:
             self.append_new_page() # Add an empty page.
 
+        self.removed_pages = []
+
     def dpi_scaling(self):
         """
         Return the scaling factor of the current and base dpi.
@@ -107,7 +109,7 @@ class PynalDocument(QtGui.QGraphicsView):
         Create an empty page and append it to the end of the document.
         """
         if bg_source is None:
-            bg_source = Backgrounds.plain_background()
+            bg_source = Backgrounds.empty_background()
 
         self.pages.append(DocumentPage(self, len(self.pages), bg_source))
 
@@ -184,9 +186,19 @@ class PynalDocument(QtGui.QGraphicsView):
         pages[index_b].update_bounding_rect()
 
     def remove_page(self, index):
-        """ Delete the page at the given index. """
+        """
+        Delete the page at the given index.
+
+        TODO: Page is removed from the scene but the data is not removed.
+              A reference has to be kept or the program crashes. The reason
+              for this is still under investigation. ->#15
+        """
         pages = self.pages
-        pages[index:] = pages[index + 1:]
+        page_remove = pages[index]
+        pages.remove(page_remove)
+        self.scene().removeItem(page_remove)
         for i in range(index, len(pages)):
             pages[i].page_number = i
             pages[i].update_bounding_rect()
+
+        self.removed_pages.append(page_remove)
