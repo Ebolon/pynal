@@ -74,21 +74,29 @@ class DocumentPage(QtGui.QGraphicsItem):
             top = 0
         else:
             space = 10 * self.document.dpi_scaling() #TODO: move to config or pagecontrol
-            space += 30 #TODO: this is a retarded piece of space to keep the control panel visible
+
+            # Make enough Space for the page control of the previous page.
+            space += self.prevpage().control_panel.sizeF().height()
+
             top = self.prevpage().boundingRect().bottom() + space
 
-        #TODO: clean up this calculation.
+        # Determine the size this page in dots
+        #Take the preferred size of the bg
         bg_size = self.bg_source.sizeF()
-        if bg_size is None:
+
+        if bg_size is None: # When the bg has no preference
             if self.page_number > 0:
-                bg_size = self.prevpage().bg_source.sizeF()
+                bg_size = QtCore.QSizeF(self.prevpage().bg_source.sizeF())
             else:
-                bg_size = QtCore.QSizeF(595, 842) #TODO: Move to config, A4 size in points@72dpi
+                bg_size = QtCore.QSizeF(Config.page_size_A4)
 
             self.bg_source.setSizeF(bg_size)
 
+        # Transform from dots to pixels according to the current zoom/dpi-setting.
         size = QtCore.QSize(math.ceil(bg_size.width()  * self.document.dpi_scaling()),
                             math.ceil(bg_size.height() * self.document.dpi_scaling()))
+
+        # Move to the left by half width so center is on y-axis of scene.
         left_pos = -size.width() / 2
 
         if self.boundingRect() is not None:
@@ -96,15 +104,17 @@ class DocumentPage(QtGui.QGraphicsItem):
             Find the scaling factor needed to transform
             the page to the needed size.
             Then scale, to transform all children so they stay
-            where they are, relatively to the page.
+            where they are relative to the page.
             """
             newwidth = size.width()
             oldwidth = self.boundingRect().width()
             scale = newwidth / oldwidth
             self.scale(scale, scale)
+        else:
+            self._bounding = QtCore.QRectF()
 
-        self._bounding = QtCore.QRectF(QtCore.QPointF(left_pos, top),
-                                      QtCore.QSizeF(size))
+        self._bounding.setTopLeft(QtCore.QPointF(left_pos, top))
+        self._bounding.setSize(QtCore.QSizeF(size))
 
         self.control_panel.update_bounding_rect()
 
