@@ -37,7 +37,7 @@ class BackgroundImage():
     """
 
     def __init__(self, size):
-        self.size = size
+        self.setSizeF(size)
 
     def sizeF(self):
         """
@@ -117,8 +117,6 @@ class PlainBackground(BackgroundImage):
         """
         BackgroundImage.__init__(self, size)
         self.brush = brush
-        self.cols = 0
-        self.rows = 0
 
     def get_image(self, dpi, callback):
         """
@@ -154,7 +152,6 @@ class CheckedBackground(BackgroundImage):
         if self.sizeF() is not None:
             self.cols = int(math.floor(self.sizeF().width() / Config.get_int("checked background", "size"))) #TODO: move to config
             self.rows = int(math.floor(self.sizeF().height() / Config.get_int("checked background", "size")))
-
 
     def get_image(self, dpi, callback):
         """
