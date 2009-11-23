@@ -73,7 +73,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         if self.page_number == 0:
             top = 0
         else:
-            space = 10 * self.document.dpi_scaling() #TODO: move to config or pagecontrol
+            space = Config.min_space_between_pages * self.document.dpi_scaling()
 
             # Make enough Space for the page control of the previous page.
             space += self.prevpage().control_panel.sizeF().height()
@@ -81,7 +81,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             top = self.prevpage().boundingRect().bottom() + space
 
         # Determine the size this page in dots
-        #Take the preferred size of the bg
+        # Take the preferred size of the bg
         bg_size = self.bg_source.sizeF()
 
         if bg_size is None: # When the bg has no preference
@@ -111,8 +111,10 @@ class DocumentPage(QtGui.QGraphicsItem):
             scale = newwidth / oldwidth
             self.scale(scale, scale)
         else:
+            # Create the rect once...
             self._bounding = QtCore.QRectF()
 
+        # ...and change its properties to update it.
         self._bounding.setTopLeft(QtCore.QPointF(left_pos, top))
         self._bounding.setSize(QtCore.QSizeF(size))
 
