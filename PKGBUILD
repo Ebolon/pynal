@@ -16,3 +16,4 @@ build() {
 
   python setup.py install "--root=$pkgdir" || return 1
 }
+

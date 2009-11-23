@@ -15,6 +15,7 @@
 #===============================================================================
 import sys
 
+from PyQt4 import QtOpenGL
 import PyQt4.QtCore as QtCore
 from PyQt4.QtCore import SIGNAL
 import PyQt4.QtGui as QtGui
@@ -35,6 +36,9 @@ class PdfScene(QtGui.QGraphicsView):
         QtGui.QGraphicsView.__init__(self, parent)
 
         self.document = document
+
+        self.setViewport(QtOpenGL.QGLWidget())
+
         self.scene = QtGui.QGraphicsScene()
         self.scene.setBackgroundBrush(QtGui.QBrush(QtCore.Qt.gray))
 

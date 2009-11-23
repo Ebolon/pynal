@@ -2,11 +2,12 @@
 """
 Module containing the MainWindowControl class.
 """
-import os
+import os, math
 
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
+import pynal.models.Config as Config
 from pynal.control import actions
 from pynal.view.PynalDocument import *
 
@@ -53,7 +54,8 @@ class MainWindowControl(QtCore.QObject):
     def open_document(self, document, filename):
         """ Shows a PynalDocument in the journaling area. """
         tabwidget = self.window.tabWidget
-        tabwidget.addTab(document, filename)
+        newindex = tabwidget.addTab(document, filename)
+        tabwidget.setCurrentIndex(newindex)
         if tabwidget.count() > 1:
             tabwidget.tabBar().show()
 
@@ -87,33 +89,52 @@ class MainWindowControl(QtCore.QObject):
     def zoom_width(self):
         """ Zoom the current document to the width of the focused page. """
         document = self.window.tabWidget.currentWidget()
-        document.fitInView(document.current_page(), QtCore.Qt.KeepAspectRatioByExpanding)
+        width = document.viewport().width()
+        newdpi = width / document.current_page().bg_source.sizeF().width() * Config.pdf_base_dpi
+        newdpi = math.floor(newdpi)
+        document.zoom(newdpi)
 
     def zoom_original(self):
-        """ Zoom the current document to 100%. """
+        """
+        Zoom the current document to 100%.
+        TODO: Exception when no tab is open as currentWidget() will return None
+        """
         document = self.window.tabWidget.currentWidget()
-        document.scaleValue = 1
-        document.resetMatrix()
-        document.scale(document.scaleValue, document.scaleValue)
+        document.zoom(Config.pdf_base_dpi)
 
     def zoom_fit(self):
         """ Zoom the current document to fit the focused page. """
         document = self.window.tabWidget.currentWidget()
-        document.fitInView(document.current_page(), QtCore.Qt.KeepAspectRatio)
+        height = document.height()
+        newdpi = height / document.current_page().bg_source.sizeF().height() * Config.pdf_base_dpi
+        newdpi = math.floor(newdpi)
+        document.zoom(newdpi)
 
     def zoom_in(self):
         """
-        Zoom in :D.
-        Needs finer scaling, better quality and a scale limit up and down.
+        Zoom in.
+        TODO: Step depends on current scale or config.
         """
         document = self.window.tabWidget.currentWidget()
-        document.scaleValue += 0.1
-        document.resetMatrix()
-        document.scale(document.scaleValue, document.scaleValue)
+        document.zoom(document.dpi + 10)
 
     def zoom_out(self):
-        """ Zoom out :D. Step depends on current scale or config..."""
+        """ Zoom out.
+        TODO: Step depends on current scale or config.
+        """
         document = self.window.tabWidget.currentWidget()
-        document.scaleValue -= 0.1
-        document.resetMatrix()
-        document.scale(document.scaleValue, document.scaleValue)
+        document.zoom(document.dpi - 10)
+
+    def set_tool_scroll(self):
+        """ Set the scroll tool as the current tool. """
+        for i in range(self.window.tabWidget.count()):
+            self.window.tabWidget.widget(i).setDragMode(
+                          QtGui.QGraphicsView.ScrollHandDrag)
+        tools.current_tool = tools.ScrollTool()
+
+    def set_tool_select(self):
+        """ Set the selection tool as the current tool. """
+        for i in range(self.window.tabWidget.count()):
+            self.window.tabWidget.widget(i).setDragMode(
+                          QtGui.QGraphicsView.RubberBandDrag)
+        tools.current_tool = tools.SelectTool()

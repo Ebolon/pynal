@@ -7,7 +7,7 @@ from PyQt4.QtCore import SIGNAL
 
 from pynal.control import actions
 from pynal.models import Config
-from pynal.control.mainWindow import MainWindowControl
+from pynal.control.MainControl import MainWindowControl
 
 class MainWindow(QtGui.QMainWindow):
     '''
@@ -30,11 +30,20 @@ class MainWindow(QtGui.QMainWindow):
         self.createMenuBar()
         self.createToolbar()
 
-        self.resize(Config.window_width, Config.window_height)
+        self.resize(Config.get_int("Main", "window_width"),
+                    Config.get_int("Main", "window_height"))
+
+        if Config.get_bool("Main", "window_maximized"):
+            self.setWindowState(QtCore.Qt.WindowMaximized)
 
         self.control.start()
 
     def createToolbar(self):
+        """
+        Create and popular the toolbar.
+
+        TODO: can this be customized by the user?
+        """
         bar = self.addToolBar("File operations")
         bar.addAction(actions.toolbar("new_file_action"))
         bar.addAction(actions.toolbar("open_file_action"))
@@ -48,12 +57,24 @@ class MainWindow(QtGui.QMainWindow):
         zoombar.addAction(actions.toolbar("doc_zoom_fit"))
         zoombar.addAction(actions.toolbar("doc_zoom_width"))
 
+        tools = self.addToolBar("Tools")
+        toolgroup = QtGui.QActionGroup(tools)
+        tools.addAction(actions.toolbar("tool_scroll", toolgroup))
+        tools.addAction(actions.toolbar("tool_select", toolgroup))
+        tools.addAction(actions.toolbar("tool_pen", toolgroup))
+        tools.addAction(actions.toolbar("tool_eraser", toolgroup))
+
+        debug = self.addToolBar("Debug")
+        # No debug actions atm
+
     def createMenuBar(self):
+        """ Create and populate the menu bar. """
         menu = self.menuBar()
         file = menu.addMenu("&File")
         file.addAction(actions.menu("exit_app_action"))
 
     def createTabWidget(self):
+        """ Create and configure the center widget. """
         self.tabWidget = QtGui.QTabWidget()
         self.tabWidget.setTabsClosable(True)
         self.tabWidget.setMovable(True)
@@ -65,6 +86,25 @@ class MainWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.tabWidget)
 
     def rotate(self):
-        """ Rotate the position of the tabs. """
+        """
+        Rotate the position of the tabs.
+        TODO: currently not used
+        """
         pos = (self.tabs.tabPosition() + 1) % 4
         self.tabWidget.setTabPosition(pos)
+
+    def closeEvent(self, event):
+        """
+        Intercept the close event of the main window.
+        Check wether the application can be cleanly closed
+        and save the current state.
+        """
+        QtGui.QMainWindow.closeEvent(self, event)
+        if event.isAccepted():
+            self.save_state()
+
+    def save_state(self):
+        """ Save the size of the window to the configuration. """
+        Config.set("Main", "window_width", str(self.width()))
+        Config.set("Main", "window_height", str(self.height()))
+        Config.set("Main", "window_maximized", str(self.isMaximized()))
