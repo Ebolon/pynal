@@ -33,11 +33,12 @@ class PynalDocument(QtGui.QGraphicsView):
         QtGui.QGraphicsView.__init__(self, parent)
         self.setCursor(tools.current_tool.cursor)
 
-        #Needed for proper rendering of selection box
+        # Needed for proper rendering of selection box
         self.setViewportUpdateMode(self.FullViewportUpdate)
 
         self.configure_scene()
 
+        # Set the default zoom level to 1.0
         self.dpi = Config.pdf_base_dpi
 
         self.pages = []
@@ -73,6 +74,21 @@ class PynalDocument(QtGui.QGraphicsView):
         """
         return self.dpi / Config.pdf_base_dpi
 
+
+    def refresh_viewport_size(self):
+        """
+        Extend or shrink the viewport's size to show all pages and not more than needed.
+        This stretches from the top-left of the first page (or its control) to the
+        bottom right page (page's control).
+        """
+        print "refreshing!"
+        lastpage = self.pages[-1]
+        bottom = lastpage.boundingRect().bottomRight()
+        bottom.setY(bottom.y() + lastpage.control_panel.sizeF().height())
+        rect = QtCore.QRectF(self.pages[0].boundingRect().topLeft(),
+                             bottom)
+        return self.scene().setSceneRect(rect)
+
     def zoom(self, value):
         """
         Set the dpi to the given value and resize the components accordingly.
@@ -84,10 +100,7 @@ class PynalDocument(QtGui.QGraphicsView):
         for page in self.pages:
             page.update_bounding_rect()
 
-        rect = QtCore.QRectF(self.pages[0].boundingRect().topLeft(),
-                             self.pages[-1].boundingRect().bottomRight())
-
-        self.scene().setSceneRect(rect)
+        self.refresh_viewport_size()
 
     def configure_scene(self):
         """ Create and configure the scene. """
@@ -112,6 +125,7 @@ class PynalDocument(QtGui.QGraphicsView):
             bg_source = Backgrounds.empty_background()
 
         self.pages.append(DocumentPage(self, len(self.pages), bg_source))
+        self.refresh_viewport_size()
 
     def insert_new_page_after(self, index, bg_source=None):
         """
@@ -129,6 +143,7 @@ class PynalDocument(QtGui.QGraphicsView):
         for i in range(index + 2, len(self.pages)):
             self.pages[i].page_number = i
             self.pages[i].update_bounding_rect()
+        self.refresh_viewport_size()
 
     def mouseDoubleClickEvent(self, event):
         """
@@ -202,3 +217,4 @@ class PynalDocument(QtGui.QGraphicsView):
             pages[i].update_bounding_rect()
 
         self.removed_pages.append(page_remove)
+        self.refresh_viewport_size()
