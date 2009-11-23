@@ -167,16 +167,16 @@ class CheckedBackground(BackgroundImage):
         pixmap.fill(self.brush)
 
         painter = QtGui.QPainter(pixmap)
-        painter.setPen(QtGui.QColor(123, 175, 246)) #TODO: move color to config
+        painter.setPen(Config.checked_line_color)
 
         square_size = pixmap.width() / self.cols
         for i in range(1, self.cols + 1):
             x = i * square_size
-            painter.drawLine(x,0, x, pixmap.height())
+            painter.drawLine(x, 0, x, pixmap.height())
 
         for i in range(1, self.rows + 1):
             y = i * square_size
-            painter.drawLine(0,y, pixmap.width(), y)
+            painter.drawLine(0, y, pixmap.width(), y)
 
         painter.end()
 

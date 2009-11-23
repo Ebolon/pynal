@@ -7,6 +7,7 @@ Reads and interprets the cmd line arguments.
 '''
 import os, ConfigParser
 
+from PyQt4 import QtCore
 from PyQt4 import QtGui
 
 
@@ -32,14 +33,23 @@ threadpool_size = 1
 # Space in pixels between the lower and upper border of two pages.
 space_between_pages = 20
 
-# Resolution to use when rendering pdf pages to QImages.
-pdf_base_dpi = 72.0 # This is the default for QtPoppler and is needed for size calculations.
-
 # List of files to open when the application has started.
 open_files = []
 
 # User specific and dynamic settings are stored in this ConfigParser object.
 config = None
+
+#===============================================================================
+# Page settings
+#===============================================================================
+# Resolution to use when rendering pdf pages to QImages.
+pdf_base_dpi = 72.0 # This is the default for QtPoppler and is needed for size calculations.
+
+# Predefined page format
+page_size_A4 = QtCore.QSizeF(595, 842)
+
+# Color to use for the lines in checked bg pages.
+checked_line_color = QtGui.QColor(123, 175, 246)
 
 def parse_args(args):
     """ Parse the list of arguments and do something useful, like pass. """
