@@ -54,7 +54,7 @@ class PynalDocument(QtGui.QGraphicsView):
             # This might want to be moved into an own thread
             # (when numPages is over a certain threshold?)
             for page_number in range(0, self.document.numPages()):
-                    self.append_new_page(page_number,
+                    self.insert_new_page_at(page_number,
                         Backgrounds.pdf_page(self.document.page(page_number)))
 
                 # Note that the pdf pages are not rendered
@@ -62,7 +62,7 @@ class PynalDocument(QtGui.QGraphicsView):
                 # displayed / cached for displaying.
 
         else:
-            self.append_new_page() # Add an empty page.
+            self.insert_new_page_at(0) # Add an empty page.
 
         self.removed_pages = []
 
@@ -81,7 +81,6 @@ class PynalDocument(QtGui.QGraphicsView):
         This stretches from the top-left of the first page (or its control) to the
         bottom right page (page's control).
         """
-        print "refreshing!"
         lastpage = self.pages[-1]
         bottom = lastpage.boundingRect().bottomRight()
         bottom.setY(bottom.y() + lastpage.control_panel.sizeF().height())
@@ -117,33 +116,37 @@ class PynalDocument(QtGui.QGraphicsView):
         """
         return self.items(self.contentsRect().center())[-1]
 
-    def append_new_page(self, prevpage=None, bg_source=None):
+    def insert_new_page_at(self, index, bg_source=None):
         """
-        Create an empty page and append it to the end of the document.
-        """
-        if bg_source is None:
-            bg_source = Backgrounds.empty_background()
-
-        self.pages.append(DocumentPage(self, len(self.pages), bg_source))
-        self.refresh_viewport_size()
-
-    def insert_new_page_after(self, index, bg_source=None):
-        """
-        Insert a new page after the page with the given index.
+        Insert a new page at the given index.
 
         Parameters:
-          index     -- Index/site number of the page to insert after
+          index     -- Index/site number that this page will have.
 
           bg_source -- The bg_source for this page. None results in a blank page.
         """
         if bg_source is None:
-            bg_source = Backgrounds.plain_background()
+            bg_source = Backgrounds.empty_background()
 
-        self.pages.insert(index + 1, DocumentPage(self, index + 1, bg_source))
-        for i in range(index + 2, len(self.pages)):
+        self.pages.insert(index, DocumentPage(self, index, bg_source))
+
+        # Move all pages after this down to accommodate it.
+        for i in range(index + 1, len(self.pages)):
             self.pages[i].page_number = i
             self.pages[i].update_bounding_rect()
         self.refresh_viewport_size()
+
+    def insert_new_page_after(self, index, bg_source=None):
+        """
+        Insert a new page after the page at the given index.
+        This is a convenience method for insert_new_page_at.
+
+        Parameters:
+          index     -- Index/site number of the page that will precede this.
+
+          bg_source -- The bg_source for this page. None results in a blank page.
+        """
+        self.insert_new_page_at(index + 1, bg_source)
 
     def mouseDoubleClickEvent(self, event):
         """
