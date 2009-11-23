@@ -27,18 +27,25 @@ class PageControl(QtGui.QGraphicsItem):
         self._bounding = None
         self.toolbar = None
 
-        toolbar = QtGui.QToolBar("page controls")
+        toolbar_widget = QtGui.QToolBar("page controls")
 
         # TODO: make these user configurable (or is that too KDE?) -> #17
-        toolbar.addAction(actions.toolbar("page_new_after", callable=self.parentItem().append))
-        toolbar.addAction(actions.toolbar("page_up", callable=self.parentItem().move_up))
-        toolbar.addAction(actions.toolbar("page_down", callable=self.parentItem().move_down))
-        toolbar.addAction(actions.toolbar("page_remove", callable=self.parentItem().remove))
-        toolbar.addAction(actions.toolbar("page_duplicate", callable=self.parentItem().duplicate))
-        toolbar.addSeparator()
-        toolbar.addAction(actions.toolbar("page_bg_plain", callable=self.plain_bg))
-        toolbar.addAction(actions.toolbar("page_bg_checked", callable=self.checked_bg))
-        self.toolbar_widget = toolbar
+        toolbar_widget.addAction(actions.toolbar("page_new_after", callable=self.parentItem().append))
+        toolbar_widget.addAction(actions.toolbar("page_up", callable=self.parentItem().move_up))
+        toolbar_widget.addAction(actions.toolbar("page_down", callable=self.parentItem().move_down))
+        toolbar_widget.addAction(actions.toolbar("page_remove", callable=self.parentItem().remove))
+        toolbar_widget.addAction(actions.toolbar("page_duplicate", callable=self.parentItem().duplicate))
+        toolbar_widget.addSeparator()
+        toolbar_widget.addAction(actions.toolbar("page_bg_plain", callable=self.plain_bg))
+        toolbar_widget.addAction(actions.toolbar("page_bg_checked", callable=self.checked_bg))
+        self.toolbar_widget = toolbar_widget
+
+#        self._size = QtCore.QSizeF(toolbar_widget.size() / 4)
+        self._size = QtCore.QSizeF(100, 30)
+
+    def sizeF(self):
+        """ Return the size of this control panel. """
+        return self._size
 
     def reposition_toolbar(self):
         """ Move the toolbar QGraphicsProxyItem below the page. """
@@ -59,7 +66,9 @@ class PageControl(QtGui.QGraphicsItem):
 
     def checked_bg(self):
         """ Set the background to checked. """
-        pass
+        parent = self.parentItem()
+        parent.bg_source = Backgrounds.checked_background(size=parent.bg_source.sizeF())
+        parent.background_is_dirty = True
 
     def update_bounding_rect(self):
         """
@@ -70,8 +79,8 @@ class PageControl(QtGui.QGraphicsItem):
         """
 
         #TODO: these values and the whole bounding_rect should be related to the toolbar
-        self._bounding = QtCore.QRectF(-100, self.parentItem().boundingRect().bottom(),
-                                        200, 30)
+        self._bounding = QtCore.QRectF(QtCore.QPointF(-100, self.parentItem().boundingRect().bottom()),
+                                        self.sizeF())
 
         if self.toolbar is not None:
             self.reposition_toolbar()
