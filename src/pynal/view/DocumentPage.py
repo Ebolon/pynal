@@ -226,8 +226,9 @@ class DocumentPage(QtGui.QGraphicsItem):
     def move_down(self):
         """
         Move this page below the page after this.
-        TODO: check for bottom limit.
         """
+        if self.page_number == len(self.document.pages) - 1:
+            return
         self.document.switch_pages(self.page_number, self.page_number + 1)
 
     def move_up(self):
