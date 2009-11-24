@@ -68,11 +68,18 @@ class BackgroundImage():
         return True
 
 class PdfBackground(BackgroundImage):
+    """ A background that uses a Poppler Page as its source. """
 
     def __init__(self, poppler):
+        """
+        Create a new PdfBackground.
+
+        Parameters:
+          poppler -- The QtPoppler.Page to use as the source.
+        """
+        BackgroundImage.__init__(self, poppler.pageSizeF())
         self.poppler = poppler
         self.loader = None
-        self.setSizeF(self.poppler.pageSizeF())
 
     def get_image(self, dpi, callback):
         """
