@@ -5,11 +5,13 @@ from PyQt4 import QtGui
 from PyQt4 import QtCore
 from PyQt4.QtCore import SIGNAL
 
+from PyKDE4 import kdeui
+
 from pynal.control import actions
 from pynal.models import Config
 from pynal.control.MainControl import MainWindowControl
 
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(kdeui.KMainWindow):
     '''
     Uh, the main window. Contains more or less useful toolbars, menus and
     a heroic status bar.
@@ -21,8 +23,11 @@ class MainWindow(QtGui.QMainWindow):
         """
         Creates a new MainWindow.
         """
-        QtGui.QMainWindow.__init__(self)
+#        QtGui.QMainWindow.__init__(self)
+        kdeui.KMainWindow.__init__(self)
         self.control = MainWindowControl(self)
+
+        print dir(self)
 
         self.setWindowTitle("Pynal")
 
@@ -44,27 +49,27 @@ class MainWindow(QtGui.QMainWindow):
 
         TODO: can this be customized by the user?
         """
-        bar = self.addToolBar("File operations")
+        bar = self.toolBar("File operations")
         bar.addAction(actions.toolbar("new_file_action"))
         bar.addAction(actions.toolbar("open_file_action"))
         bar.addAction(actions.toolbar("save_file_action"))
         bar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
 
-        zoombar = self.addToolBar("Scaling")
+        zoombar = self.toolBar("Scaling")
         zoombar.addAction(actions.toolbar("doc_zoom_in"))
         zoombar.addAction(actions.toolbar("doc_zoom_100"))
         zoombar.addAction(actions.toolbar("doc_zoom_out"))
         zoombar.addAction(actions.toolbar("doc_zoom_fit"))
         zoombar.addAction(actions.toolbar("doc_zoom_width"))
 
-        tools = self.addToolBar("Tools")
+        tools = self.toolBar("Tools")
         toolgroup = QtGui.QActionGroup(tools)
         tools.addAction(actions.toolbar("tool_scroll", toolgroup))
         tools.addAction(actions.toolbar("tool_select", toolgroup))
         tools.addAction(actions.toolbar("tool_pen", toolgroup))
         tools.addAction(actions.toolbar("tool_eraser", toolgroup))
 
-        debug = self.addToolBar("Debug")
+        debug = self.toolBar("Debug")
         # No debug actions atm
 
     def createMenuBar(self):

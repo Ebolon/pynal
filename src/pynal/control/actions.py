@@ -9,13 +9,15 @@ TODO: extend action_definitions for: tooltip, accelerator, shortcut
 '''
 from PyQt4 import QtGui
 from PyQt4 import QtCore
-from PyQt4.QtGui import QAction
+from PyKDE4 import kdeui
+from PyKDE4 import kdecore
+from PyKDE4.kdeui import KAction
 
 import pynal.models.iconcache as iconcache
 
 action_definitions = {} # Contains the definitions for all actions
-toolbar_actions = {}    # action_name -> QAction for all created toolbar actions
-menu_actions = {}       # action_name -> QAction for all created menu actions
+toolbar_actions = {}    # action_name -> KAction for all created toolbar actions
+menu_actions = {}       # action_name -> KAction for all created menu actions
 
 parent = None # The global parent for all actions (usually the MainWindow)
 
@@ -227,16 +229,16 @@ def toolbar(name, group=None, callable=None):
             return None #Without the config no action can be created
 
         if group is None:
-            action = QAction(parent)
+            action = KAction(parent)
         else:
-            action = QAction(group)
+            action = KAction(group)
 
         # Will result in a KeyError when the icon is not set in the config.
         # This is slightly wanted behaviour, as the icon is needed for a
         # toolbar action.
         action.setIcon(iconcache.get(config["icon"], 32))
 
-        if config.has_key("checkable"):
+        if "checkable" in config:
             action.setCheckable(True)
 
         # Same exception is wanted here. As an alternative one can specify a callable as a parameter.
@@ -245,8 +247,8 @@ def toolbar(name, group=None, callable=None):
         else:
             action.triggered.connect(config["action"])
 
-        if config.has_key("text"):
-            action.setToolTip(config["text"])
+        if "text" in config:
+            action.setText(config["text"])
 
         toolbar_actions["name"] = action
 
@@ -279,12 +281,12 @@ def menu(name):
         if config is None:
             return None #Without the config no action can be created
 
-        action = QAction(parent)
+        action = KAction(parent)
 
-        if config.has_key("icon"):
-            action.setIcon(QtGui.QIcon(iconloader.find_icon(config["icon"], 32)))
+        if "icon" in config:
+            action.setIcon(QtGui.QIcon(iconloader.find_icon(config["icon"], 48)))
 
-        if config.has_key("checkable"):
+        if "checkable" in config:
             action.setCheckable(True)
 
         # Will result in a KeyError when the text is not set in the config.
