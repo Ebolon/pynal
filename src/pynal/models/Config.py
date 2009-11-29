@@ -15,10 +15,16 @@ from PyQt4 import QtGui
 # Application information constants
 #===============================================================================
 # Name of the application.
-appname = "Pynal"
+appname = "pynal"
 
 # Current version.
 version = "0.1"
+
+# Readable application name to display.
+readable_appname = "Pynal"
+
+# The KDE catalog specifier.
+catalog = "catalog"
 
 # The homepage of the app.
 homepage = "http://github.com/dominiks/pynal"
@@ -35,9 +41,6 @@ space_between_pages = 20
 
 # List of files to open when the application has started.
 open_files = []
-
-# User specific and dynamic settings are stored in this ConfigParser object.
-config = None
 
 #===============================================================================
 # Page settings
@@ -61,63 +64,6 @@ def parse_args(args):
         arg = args[pos]
         if not arg.startswith("-") and arg.endswith(".pdf"):
             open_files.append(arg)
-
-def load_config():
-    """ Load the configuration file for the current user. """
-    global config
-    global default_configs
-    config = ConfigParser.SafeConfigParser()
-
-    add_default_values(config)
-
-    home = os.environ.get("HOME")
-    conf = os.environ.get("XDG_CONFIG_HOME", "")
-    path_configfile = os.path.join(home, conf, "pynal", "config")
-    config.read(path_configfile)
-
-def save_config():
-    """ Save the config to the user's config file. """
-    global config
-
-    if not os.path.exists(get_config_path()):
-        os.makedirs(get_config_path())
-
-    with open(get_config_file(), "w") as file:
-        config.write(file)
-
-def get_config_path():
-    """
-    Resolve the path to the configuration directory.
-
-    TODO: what if XDG_CONFIG_HOME is not set?
-    """
-    home = os.environ.get("HOME")
-    conf = os.environ.get("XDG_CONFIG_HOME", "")
-    return os.path.join(home, conf, "pynal")
-
-def get_config_file():
-    """ resolve the path to the configuration file. """
-    return os.path.join(get_config_path(), "config")
-
-def get(section, key):
-    """ Return a configuration value as a string. """
-    return config.get(section, key)
-
-def get_int(section, key):
-    """ Return a configuration value as an integer. """
-    return config.getint(section, key)
-
-def get_float(section, key):
-    """ Return a configuration value as a float. """
-    return config.getfloat(section, key)
-
-def get_bool(section, key):
-    """ Return a configuration value as a boolean. """
-    return config.getboolean(section, key)
-
-def set(section, key, value):
-    """ Set a configuration value. """
-    config.set(section, key, value)
 
 def add_default_values(config):
     """

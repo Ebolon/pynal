@@ -6,12 +6,13 @@ from PyQt4 import QtCore
 from PyQt4.QtCore import SIGNAL
 
 from PyKDE4 import kdeui
+from PyKDE4.kparts import KParts
 
 from pynal.control import actions
 from pynal.models import Config
 from pynal.control.MainControl import MainWindowControl
 
-class MainWindow(kdeui.KMainWindow):
+class MainWindow(KParts.MainWindow):
     '''
     Uh, the main window. Contains more or less useful toolbars, menus and
     a heroic status bar.
@@ -23,23 +24,20 @@ class MainWindow(kdeui.KMainWindow):
         """
         Creates a new MainWindow.
         """
-#        QtGui.QMainWindow.__init__(self)
-        kdeui.KMainWindow.__init__(self)
+        KParts.MainWindow.__init__(self)
         self.control = MainWindowControl(self)
 
-        print dir(self)
-
-        self.setWindowTitle("Pynal")
+        self.setupGUI()
 
         self.createTabWidget()
-        self.createMenuBar()
-        self.createToolbar()
+#        self.createMenuBar()
+#        self.createToolbar()
 
-        self.resize(Config.get_int("Main", "window_width"),
-                    Config.get_int("Main", "window_height"))
+#        self.resize(Config.get_int("Main", "window_width"),
+#                    Config.get_int("Main", "window_height"))
 
-        if Config.get_bool("Main", "window_maximized"):
-            self.setWindowState(QtCore.Qt.WindowMaximized)
+#        if Config.get_bool("Main", "window_maximized"):
+#            self.setWindowState(QtCore.Qt.WindowMaximized)
 
         self.control.start()
 
@@ -49,11 +47,14 @@ class MainWindow(kdeui.KMainWindow):
 
         TODO: can this be customized by the user?
         """
+
+        print self.actionCollection()
+
         bar = self.toolBar("File operations")
         bar.addAction(actions.toolbar("new_file_action"))
         bar.addAction(actions.toolbar("open_file_action"))
         bar.addAction(actions.toolbar("save_file_action"))
-        bar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+        bar.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
 
         zoombar = self.toolBar("Scaling")
         zoombar.addAction(actions.toolbar("doc_zoom_in"))
@@ -61,6 +62,7 @@ class MainWindow(kdeui.KMainWindow):
         zoombar.addAction(actions.toolbar("doc_zoom_out"))
         zoombar.addAction(actions.toolbar("doc_zoom_fit"))
         zoombar.addAction(actions.toolbar("doc_zoom_width"))
+        zoombar.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
 
         tools = self.toolBar("Tools")
         toolgroup = QtGui.QActionGroup(tools)
@@ -68,6 +70,7 @@ class MainWindow(kdeui.KMainWindow):
         tools.addAction(actions.toolbar("tool_select", toolgroup))
         tools.addAction(actions.toolbar("tool_pen", toolgroup))
         tools.addAction(actions.toolbar("tool_eraser", toolgroup))
+        tools.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
 
         debug = self.toolBar("Debug")
         # No debug actions atm
@@ -110,6 +113,7 @@ class MainWindow(kdeui.KMainWindow):
 
     def save_state(self):
         """ Save the size of the window to the configuration. """
-        Config.set("Main", "window_width", str(self.width()))
-        Config.set("Main", "window_height", str(self.height()))
-        Config.set("Main", "window_maximized", str(self.isMaximized()))
+#        Config.set("Main", "window_width", str(self.width()))
+#        Config.set("Main", "window_height", str(self.height()))
+#        Config.set("Main", "window_maximized", str(self.isMaximized()))
+        pass

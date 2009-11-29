@@ -19,17 +19,16 @@ def load_config(args):
 
 def start():
     Config.parse_args(sys.argv)
-    Config.load_config()
 
-    appName = "KApplication"
-    catalog = "catalog"
-    programName = ki18n("Application 01")
-    version = "1.0"
-    description = ki18n("KApplication/KMAinWindow/KAboutData example")
-    license = KAboutData.License_GPL
+    appName = Config.appname
+    catalog = Config.catalog
+    programName = ki18n(Config.readable_appname)
+    version = Config.version
+    description = ki18n("A tablet annotation and journaling application.")
+    license = KAboutData.License_BSD
     copyright = ki18n("(C) 2009 Dominik Schacht")
-    text = ki18n("derText")
-    homepage = "github.org/dominiks"
+    text = ki18n("Whee, greetings.")
+    homepage = Config.homepage
     bugemail = "dominik.schacht@gmail.com"
 
     aboutData = KAboutData(appName, catalog, programName, version, description, license, copyright, text, homepage, bugemail)

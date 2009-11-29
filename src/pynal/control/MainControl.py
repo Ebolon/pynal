@@ -7,6 +7,9 @@ import os, math
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
+from PyKDE4.kdeui import KStandardAction
+from PyKDE4.kio import KFileDialog
+
 import pynal.models.Config as Config
 from pynal.control import actions
 from pynal.view.PynalDocument import *
@@ -22,7 +25,18 @@ class MainWindowControl(QtCore.QObject):
         """ Creates a new MainWindowControl. """
         QtCore.QObject.__init__(self)
         self.window = window
+        self.createActions()
         actions.init(self, window)
+
+    def createActions(self):
+        actionCollection = self.window.actionCollection()
+        KStandardAction.openNew(self.new_file, actionCollection)
+        KStandardAction.open(self.open_file, actionCollection)
+        KStandardAction.save(self.save_file, actionCollection)
+
+        KStandardAction.quit(self.quit, actionCollection)
+
+
 
     def start(self):
         """
@@ -42,8 +56,9 @@ class MainWindowControl(QtCore.QObject):
         Open a dialog to let the user choose pdf files and open
         them in tabs.
         """
-        files = QtGui.QFileDialog.getOpenFileNames(
-                   self.window, self.tr("Open PDF file"), "", "PDF (*.pdf)")
+        files = KFileDialog.getOpenFileNames()
+#        files = QtGui.QFileDialog.getOpenFileNames(
+#                   self.window, self.tr("Open PDF file"), "", "PDF (*.pdf)")
         if not files:
             return
 
@@ -82,7 +97,7 @@ class MainWindowControl(QtCore.QObject):
         """ Create a new document. """
         self.open_document(PynalDocument(), "New Document")
 
-    def exit(self):
+    def quit(self):
         """ Exit the application. """
         pass
 

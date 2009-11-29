@@ -34,8 +34,6 @@ def init(control, window):
     global action_definitions
     action_definitions.clear()
 
-    create_app_actions(control, parent)
-    create_file_actions(control, parent)
     create_document_actions(control, parent)
     create_debug_actions(control, parent)
     create_tools(control, parent)
@@ -158,44 +156,6 @@ def create_debug_actions(control, parent):
     global action_definitions
     pass # No debug actions atm
 
-
-def create_app_actions(control, parent):
-    global action_definitions
-
-    """ Create a new file/document. """
-    action_definitions["exit_app_action"] = {
-         "text"   : "Exit",
-         "action" : control.exit
-    }
-
-def create_file_actions(control, parent):
-    """
-    action definitions for file actions are created here.
-
-    TODO: might remove the parent parameter as it does not seem to be used.
-    """
-    global action_definitions
-
-    """ Create a new file/document. """
-    action_definitions["new_file_action"] = {
-         "text"   : "New",
-         "icon"   : "document-new",
-         "action" : control.new_file
-     }
-
-    """ Open a file/document. """
-    action_definitions["open_file_action"] = {
-         "text"   : "Open",
-         "icon"   : "document-open",
-         "action" : control.open_file
-     }
-
-    """ Save the current file/document. """
-    action_definitions["save_file_action"] = {
-         "text"   : "Save",
-         "icon"   : "document-save",
-         "action" : control.save_file
-     }
 
 def toolbar(name, group=None, callable=None):
     """
