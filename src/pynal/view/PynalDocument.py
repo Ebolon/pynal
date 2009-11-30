@@ -43,7 +43,7 @@ class PynalDocument(QtGui.QGraphicsView):
 
         self.pages = []
 
-        if Config.get_group("rendering").readEntry("use_opengl"):
+        if Config.get_group("rendering").readEntry("use_opengl", False).toBool():
             self.setViewport(QtOpenGL.QGLWidget())
 
         if source_file is not None:
