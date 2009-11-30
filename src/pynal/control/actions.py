@@ -10,7 +10,7 @@ TODO: extend action_definitions for: tooltip, accelerator, shortcut
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 from PyKDE4 import kdeui
-from PyKDE4 import kdecore
+from PyKDE4.kdecore import i18n
 from PyKDE4.kdeui import KAction, KIcon
 
 import pynal.models.iconcache as iconcache
@@ -18,6 +18,8 @@ import pynal.models.iconcache as iconcache
 action_definitions = {} # Contains the definitions for all actions
 toolbar_actions = {}    # action_name -> KAction for all created toolbar actions
 menu_actions = {}       # action_name -> KAction for all created menu actions
+
+action_groups = {}
 
 parent = None # The global parent for all actions (usually the MainWindow)
 
@@ -44,32 +46,49 @@ def create_tools(control, parent):
 
     """ Selects the scroll tool to navigate the document. """
     action_definitions["tool_scroll"] = {
-         "text"   : "Scroll",
-         "icon"   : "transform-move",
-         "action" : control.set_tool_scroll,
+         "text"      : i18n("Scroll tool"),
+         "tooltip"   : i18n("Used to scroll"),
+         "whatsthis" : i18n("Use the mouse to scroll the document."),
+         "icon"      : "transform-move",
+         "group"     : "tools",
+         "action"    : control.set_tool_scroll,
          "checkable" : True
-     }
+    }
 
     action_definitions["tool_pen"] = {
-         "text"   : "Pen tool",
-         "icon"   : "draw-freehand",
-         "action" : control.set_tool_scroll,
+         "text"      : i18n("Pen tool"),
+         "tooltip"   : i18n("Freehand drawing"),
+         "whatsthis" : i18n("Use this to draw with a normal pen."),
+         "icon"      : "draw-freehand",
+         "group"     : "tools",
+         "action"    : control.set_tool_scroll,
          "checkable" : True
-     }
+    }
 
     action_definitions["tool_eraser"] = {
-         "text"   : "Eraser",
-         "icon"   : "draw-eraser",
-         "action" : control.set_tool_scroll,
+         "text"      : i18n("Eraser"),
+         "tooltip"   : i18n("Removes items"),
+         "whatsthis" : i18n("Used to remove items from a document."),
+         "icon"      : "draw-eraser",
+         "group"     : "tools",
+         "action"    : control.set_tool_scroll,
          "checkable" : True
-     }
+    }
 
     action_definitions["tool_select"] = {
-         "text"   : "Box select",
-         "icon"   : "select-rectangular",
-         "action" : control.set_tool_select,
+         "text"      : i18n("Box select"),
+         "tooltip"   : i18n("Select items"),
+         "whatsthis" : i18n("Used to select items to work on them."),
+         "icon"      : "select-rectangular",
+         "group"     : "tools",
+         "action"    : control.set_tool_select,
          "checkable" : True
-     }
+    }
+
+    kaction("tool_scroll", parent.actionCollection())
+    kaction("tool_select", parent.actionCollection())
+    kaction("tool_pen", parent.actionCollection())
+    kaction("tool_eraser", parent.actionCollection())
 
 def create_page_actions(control, parent):
     global action_definitions
@@ -142,7 +161,7 @@ def create_document_actions(control, parent):
          "whatsthis" : "Zooms so the whole page is visible without scrolling.",
          "icon"      : "zoom-fit-best",
          "action"    : control.zoom_fit
-     }
+    }
 
     """ Zoom the document to a bigger scale. """
     action_definitions["doc_zoom_in"] = {
@@ -151,7 +170,7 @@ def create_document_actions(control, parent):
          "whatsthis" : "Makes the page look bigger.",
          "icon"      : "zoom-in",
          "action"    : control.zoom_in
-     }
+    }
 
     """ Zoom the document to a smaller scale. """
     action_definitions["doc_zoom_out"] = {
@@ -160,17 +179,23 @@ def create_document_actions(control, parent):
          "whatsthis" : "Makes the page look smaller.",
          "icon"      : "zoom-out",
          "action"    : control.zoom_out
-     }
+    }
+
+    kaction("doc_zoom_width", parent.actionCollection())
+    kaction("doc_zoom_fit", parent.actionCollection())
+    kaction("doc_zoom_100", parent.actionCollection())
+    kaction("doc_zoom_in", parent.actionCollection())
+    kaction("doc_zoom_out", parent.actionCollection())
 
 def create_debug_actions(control, parent):
     global action_definitions
     pass # No debug actions atm
 
-
 def kaction(name, actionCollection=None):
     # Create the toolbar action and insert it into the toolbar_actions dict
     global parent
     global action_definitions
+    global action_groups
 
     config = action_definitions.get(name, None)
 
@@ -179,6 +204,16 @@ def kaction(name, actionCollection=None):
         return None #Without the config no action can be created
 
     action = KAction(parent)
+
+    if "group" in config:
+        group_name = config["group"]
+        if group_name in action_groups:
+            group = action_groups[group_name]
+        else:
+            group = QtGui.QActionGroup(parent)
+            action_groups[group_name] = group
+
+        action.setActionGroup(group)
 
     if "icon" in config:
         action.setIcon(KIcon(config["icon"]))

@@ -36,16 +36,6 @@ class MainWindowControl(QtCore.QObject):
 
         KStandardAction.quit(self.quit, actionCollection)
 
-        actions.init(self, self.window)
-
-        actions.kaction("doc_zoom_width", actionCollection)
-        actions.kaction("doc_zoom_fit", actionCollection)
-        actions.kaction("doc_zoom_100", actionCollection)
-        actions.kaction("doc_zoom_in", actionCollection)
-        actions.kaction("doc_zoom_out", actionCollection)
-
-
-
     def start(self):
         """
         Called when the window has been set up and is ready to receive
