@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<gui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1" xmlns="http://www.kde.org/standards/kxmlgui/1.0" xsi:schemaLocation="http://www.kde.org/standards/kxmlgui/1.0&#xa;                         http://www.kde.org/standards/kxmlgui/1.0/kxmlgui.xsd" name="tutorial3" >
+ <MenuBar>
+  <Menu name="wtf" >
+   <text>Wtf</text>
+   <Action name="clear" />
+  </Menu>
+ </MenuBar>
+ <ToolBar noMerge="1" name="zooming" >
+  <text>Scaling Toolbar</text>
+  <Action name="doc_zoom_width" />
+  <Action name="doc_zoom_fit" />
+  <Action name="doc_zoom_100" />
+  <Action name="doc_zoom_in" />
+  <Action name="doc_zoom_out" />
+ </ToolBar>
+</gui>
