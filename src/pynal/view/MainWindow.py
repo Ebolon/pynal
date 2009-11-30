@@ -33,32 +33,6 @@ class MainWindow(KParts.MainWindow):
 
         self.control.start()
 
-    def createToolbar(self):
-        """
-        Create and popular the toolbar.
-
-        TODO: can this be customized by the user?
-        """
-
-        zoombar = self.toolBar("Scaling")
-        zoombar.addAction(actions.toolbar("doc_zoom_in"))
-        zoombar.addAction(actions.toolbar("doc_zoom_100"))
-        zoombar.addAction(actions.toolbar("doc_zoom_out"))
-        zoombar.addAction(actions.toolbar("doc_zoom_fit"))
-        zoombar.addAction(actions.toolbar("doc_zoom_width"))
-        zoombar.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
-
-        tools = self.toolBar("Tools")
-        toolgroup = QtGui.QActionGroup(tools)
-        tools.addAction(actions.toolbar("tool_scroll", toolgroup))
-        tools.addAction(actions.toolbar("tool_select", toolgroup))
-        tools.addAction(actions.toolbar("tool_pen", toolgroup))
-        tools.addAction(actions.toolbar("tool_eraser", toolgroup))
-        tools.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
-
-        debug = self.toolBar("Debug")
-        # No debug actions atm
-
     def createMenuBar(self):
         """ Create and populate the menu bar. """
         menu = self.menuBar()
@@ -67,7 +41,7 @@ class MainWindow(KParts.MainWindow):
 
     def createTabWidget(self):
         """ Create and configure the center widget. """
-        self.tabWidget = QtGui.QTabWidget()
+        self.tabWidget = kdeui.KTabWidget(self)
         self.tabWidget.setTabsClosable(True)
         self.tabWidget.setMovable(True)
         self.tabWidget.setDocumentMode(True)
