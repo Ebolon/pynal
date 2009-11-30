@@ -27,7 +27,6 @@ class MainWindow(KParts.MainWindow):
         KParts.MainWindow.__init__(self)
         self.control = MainWindowControl(self)
 
-        print "setting gui"
         self.setupGUI()
 
         self.createTabWidget()
