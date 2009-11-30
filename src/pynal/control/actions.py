@@ -11,7 +11,7 @@ from PyQt4 import QtGui
 from PyQt4 import QtCore
 from PyKDE4 import kdeui
 from PyKDE4 import kdecore
-from PyKDE4.kdeui import KAction
+from PyKDE4.kdeui import KAction, KIcon
 
 import pynal.models.iconcache as iconcache
 
@@ -119,43 +119,92 @@ def create_document_actions(control, parent):
 
     """ Zoom the document to the width of the current document/page. """
     action_definitions["doc_zoom_width"] = {
-         "text"   : "Zoom to page width",
-         "icon"   : "zoom-fit-width",
-         "action" : control.zoom_width
-     }
+         "text"      : "Zoom width",
+         "tooltip"   : "Zoom to page width.",
+         "whatsthis" : "Zoom to fill the view with the page completely.",
+         "icon"      : "zoom-fit-width",
+         "action"    : control.zoom_width
+    }
 
     """ Zoom the document to 100%. """
     action_definitions["doc_zoom_100"] = {
-         "text"   : "Zoom to original size",
-         "icon"   : "zoom-original",
-         "action" : control.zoom_original
-     }
+         "text"      : "Zoom original",
+         "tooltip"   : "Zoom to original size.",
+         "whatsthis" : "Zoom to the default scale.",
+         "icon"      : "zoom-original",
+         "action"    : control.zoom_original
+    }
 
     """ Zoom the document to fit the whole page on screen. """
     action_definitions["doc_zoom_fit"] = {
-         "text"   : "Zoom to fit",
-         "icon"   : "zoom-fit-best",
-         "action" : control.zoom_fit
+         "text"      : "Zoom fit",
+         "tooltip"   : "Zoom to fit page.",
+         "whatsthis" : "Zooms so the whole page is visible without scrolling.",
+         "icon"      : "zoom-fit-best",
+         "action"    : control.zoom_fit
      }
 
     """ Zoom the document to a bigger scale. """
     action_definitions["doc_zoom_in"] = {
-         "text"   : "Zoom in",
-         "icon"   : "zoom-in",
-         "action" : control.zoom_in
+         "text"      : "Zoom in",
+         "tooltip"   : "Zoom into the page.",
+         "whatsthis" : "Makes the page look bigger.",
+         "icon"      : "zoom-in",
+         "action"    : control.zoom_in
      }
 
     """ Zoom the document to a smaller scale. """
     action_definitions["doc_zoom_out"] = {
-         "text"   : "Zoom out",
-         "icon"   : "zoom-out",
-         "action" : control.zoom_out
+         "text"      : "Zoom out",
+         "tooltip"   : "Zoom out",
+         "whatsthis" : "Makes the page look smaller.",
+         "icon"      : "zoom-out",
+         "action"    : control.zoom_out
      }
 
 def create_debug_actions(control, parent):
     global action_definitions
     pass # No debug actions atm
 
+
+def kaction(name, actionCollection=None):
+    # Create the toolbar action and insert it into the toolbar_actions dict
+    global parent
+    global action_definitions
+
+    config = action_definitions.get(name, None)
+
+    if config is None:
+        print "ERR: No config for action:", name
+        return None #Without the config no action can be created
+
+    action = KAction(parent)
+
+    if "icon" in config:
+        action.setIcon(KIcon(config["icon"]))
+
+    if "checkable" in config:
+        action.setCheckable(True)
+
+    # Same exception is wanted here. As an alternative one can specify a callable as a parameter.
+    if callable is not None:
+        action.triggered.connect(callable)
+    else:
+        action.triggered.connect(config["action"])
+
+    if "text" in config:
+        action.setText(config["text"])
+
+    if "tooltip" in config:
+        action.setToolTip(config["tooltip"])
+
+    if "whatsthis" in config:
+        action.setWhatsThis(config["whatsthis"])
+
+    if actionCollection is not None:
+        actionCollection.addAction(name, action)
+
+    return action
 
 def toolbar(name, group=None, callable=None):
     """

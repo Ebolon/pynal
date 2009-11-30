@@ -7,7 +7,7 @@ import os, math
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
-from PyKDE4.kdeui import KStandardAction
+from PyKDE4.kdeui import KStandardAction, KAction, KIcon
 from PyKDE4.kio import KFileDialog
 
 import pynal.models.Config as Config
@@ -35,6 +35,14 @@ class MainWindowControl(QtCore.QObject):
         KStandardAction.save(self.save_file, actionCollection)
 
         KStandardAction.quit(self.quit, actionCollection)
+
+        actions.init(self, self.window)
+
+        actions.kaction("doc_zoom_width", actionCollection)
+        actions.kaction("doc_zoom_fit", actionCollection)
+        actions.kaction("doc_zoom_100", actionCollection)
+        actions.kaction("doc_zoom_in", actionCollection)
+        actions.kaction("doc_zoom_out", actionCollection)
 
 
 

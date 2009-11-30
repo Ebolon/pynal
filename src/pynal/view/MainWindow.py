@@ -27,17 +27,10 @@ class MainWindow(KParts.MainWindow):
         KParts.MainWindow.__init__(self)
         self.control = MainWindowControl(self)
 
+        print "setting gui"
         self.setupGUI()
 
         self.createTabWidget()
-#        self.createMenuBar()
-#        self.createToolbar()
-
-#        self.resize(Config.get_int("Main", "window_width"),
-#                    Config.get_int("Main", "window_height"))
-
-#        if Config.get_bool("Main", "window_maximized"):
-#            self.setWindowState(QtCore.Qt.WindowMaximized)
 
         self.control.start()
 
@@ -47,14 +40,6 @@ class MainWindow(KParts.MainWindow):
 
         TODO: can this be customized by the user?
         """
-
-        print self.actionCollection()
-
-        bar = self.toolBar("File operations")
-        bar.addAction(actions.toolbar("new_file_action"))
-        bar.addAction(actions.toolbar("open_file_action"))
-        bar.addAction(actions.toolbar("save_file_action"))
-        bar.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
 
         zoombar = self.toolBar("Scaling")
         zoombar.addAction(actions.toolbar("doc_zoom_in"))
