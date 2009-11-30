@@ -157,8 +157,10 @@ class CheckedBackground(BackgroundImage):
     def setSizeF(self, sizef):
         BackgroundImage.setSizeF(self, sizef)
         if self.sizeF() is not None:
-            self.cols = int(math.floor(self.sizeF().width() / Config.get_int("checked background", "size"))) #TODO: move to config
-            self.rows = int(math.floor(self.sizeF().height() / Config.get_int("checked background", "size")))
+            group = Config.get_group("backgrounds")
+            #TODO: might want to refactor this to a getFloat() of some sort.
+            self.cols = int(math.floor(self.sizeF().width() / group.readEntry("checked_size", 17).toDouble()[0])) #TODO: move to config
+            self.rows = int(math.floor(self.sizeF().height() / group.readEntry("checked_size", 17).toDouble()[0]))
 
     def get_image(self, dpi, callback):
         """
