@@ -15,3 +15,7 @@ that is not the case move it to:
 	$HOME/.kde4/share/apps/pynal/pynalui.rc
 
 When done correctly the toolbar will be populated.
+
+The pynalrc provides default (and more) settings for the application. Needs to be
+copied to
+	$HOME/.kde4/share/config/pynalrc
