@@ -82,7 +82,7 @@ def add_default_values(config):
     These are the default configuration values for the ConfigParser.
     """
     rendering = KConfigGroup(config, "rendering")
-    rendering.writeEntry("use_opengl", True)
+    rendering.writeEntry("use_opengl", False)
 
     backgrounds = KConfigGroup(config, "backgrounds")
     backgrounds.writeEntry("checked_size", 17)
