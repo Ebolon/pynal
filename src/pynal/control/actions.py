@@ -191,7 +191,7 @@ def create_debug_actions(control, parent):
     global action_definitions
     pass # No debug actions atm
 
-def kaction(name, actionCollection=None):
+def kaction(name, actionCollection=None, callable=None):
     # Create the toolbar action and insert it into the toolbar_actions dict
     global parent
     global action_definitions
