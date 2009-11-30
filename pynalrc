@@ -34,4 +34,4 @@ ToolButtonStyle=IconOnly
 checked_size=17
 
 [rendering]
-use_opengl=true
+use_opengl=false
