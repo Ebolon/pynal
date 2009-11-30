@@ -36,6 +36,8 @@ def start():
     KCmdLineArgs.init(sys.argv, aboutData)
     app = KApplication()
 
+    Config.init_config() # Init after the KApplication has been created.
+
     mw = MainWindow()
     mw.show()
 

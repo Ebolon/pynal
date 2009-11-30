@@ -10,6 +10,7 @@ import os, ConfigParser
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
+from PyKDE4.kdecore import KSharedConfig, KConfigGroup
 
 #===============================================================================
 # Application information constants
@@ -57,6 +58,8 @@ page_size_A4 = QtCore.QSizeF(595, 842)
 # Color to use for the lines in checked bg pages.
 checked_line_color = QtGui.QColor(123, 175, 246)
 
+config = None
+
 def parse_args(args):
     """ Parse the list of arguments and do something useful, like pass. """
     global open_files
@@ -65,18 +68,21 @@ def parse_args(args):
         if not arg.startswith("-") and arg.endswith(".pdf"):
             open_files.append(arg)
 
+def init_config():
+    global config
+    config = KSharedConfig.openConfig("pynalrc")
+    add_default_values(config)
+
+def get_group(name):
+    global config
+    return config.group(name)
+
 def add_default_values(config):
     """
     These are the default configuration values for the ConfigParser.
     """
-    config.add_section("Main")
-    config.set("Main", "window_width", "600")
-    config.set("Main", "window_height", "600")
-    config.set("Main", "window_maximized", "false")
+    rendering = KConfigGroup(config, "rendering")
+    rendering.writeEntry("use_opengl", True)
 
-    config.add_section("Rendering")
-    config.set("Rendering", "use_opengl", "false")
-
-    config.add_section("checked background")
-    config.set("checked background", "size", "17")
-
+    backgrounds = KConfigGroup(config, "backgrounds")
+    backgrounds.writeEntry("checked_size", 17)
