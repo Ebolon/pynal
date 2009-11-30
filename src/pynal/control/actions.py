@@ -138,45 +138,45 @@ def create_document_actions(control, parent):
 
     """ Zoom the document to the width of the current document/page. """
     action_definitions["doc_zoom_width"] = {
-         "text"      : "Zoom width",
-         "tooltip"   : "Zoom to page width.",
-         "whatsthis" : "Zoom to fill the view with the page completely.",
+         "text"      : i18n("Zoom width"),
+         "tooltip"   : i18n("Zoom to page width."),
+         "whatsthis" : i18n("Zoom to fill the view with the page completely."),
          "icon"      : "zoom-fit-width",
          "action"    : control.zoom_width
     }
 
     """ Zoom the document to 100%. """
     action_definitions["doc_zoom_100"] = {
-         "text"      : "Zoom original",
-         "tooltip"   : "Zoom to original size.",
-         "whatsthis" : "Zoom to the default scale.",
+         "text"      : i18n("Zoom original"),
+         "tooltip"   : i18n("Zoom to original size."),
+         "whatsthis" : i18n("Zoom to the default scale."),
          "icon"      : "zoom-original",
          "action"    : control.zoom_original
     }
 
     """ Zoom the document to fit the whole page on screen. """
     action_definitions["doc_zoom_fit"] = {
-         "text"      : "Zoom fit",
-         "tooltip"   : "Zoom to fit page.",
-         "whatsthis" : "Zooms so the whole page is visible without scrolling.",
+         "text"      : i18n("Zoom fit"),
+         "tooltip"   : i18n("Zoom to fit page."),
+         "whatsthis" : i18n("Zooms so the whole page is visible without scrolling."),
          "icon"      : "zoom-fit-best",
          "action"    : control.zoom_fit
     }
 
     """ Zoom the document to a bigger scale. """
     action_definitions["doc_zoom_in"] = {
-         "text"      : "Zoom in",
-         "tooltip"   : "Zoom into the page.",
-         "whatsthis" : "Makes the page look bigger.",
+         "text"      : i18n("Zoom in"),
+         "tooltip"   : i18n("Zoom into the page."),
+         "whatsthis" : i18n("Makes the page look bigger."),
          "icon"      : "zoom-in",
          "action"    : control.zoom_in
     }
 
     """ Zoom the document to a smaller scale. """
     action_definitions["doc_zoom_out"] = {
-         "text"      : "Zoom out",
-         "tooltip"   : "Zoom out",
-         "whatsthis" : "Makes the page look smaller.",
+         "text"      : i18n("Zoom out"),
+         "tooltip"   : i18n("Zoom out"),
+         "whatsthis" : i18n("Makes the page look smaller."),
          "icon"      : "zoom-out",
          "action"    : control.zoom_out
     }
