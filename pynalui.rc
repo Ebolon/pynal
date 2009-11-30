@@ -6,12 +6,19 @@
    <Action name="clear" />
   </Menu>
  </MenuBar>
- <ToolBar noMerge="1" name="zooming" >
+ <ToolBar name="zooming" >
   <text>Scaling Toolbar</text>
   <Action name="doc_zoom_width" />
   <Action name="doc_zoom_fit" />
   <Action name="doc_zoom_100" />
   <Action name="doc_zoom_in" />
   <Action name="doc_zoom_out" />
+ </ToolBar>
+ <ToolBar name="tools" >
+  <text>Tools toolbar</text>
+  <Action name="tool_scroll" />
+  <Action name="tool_select" />
+  <Action name="tool_pen" />
+  <Action name="tool_eraser" />
  </ToolBar>
 </gui>
