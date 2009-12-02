@@ -6,7 +6,6 @@ Parses the startup parameters and creates a config object for the app.
 '''
 import sys
 
-from PyQt4 import QtGui
 from PyKDE4.kdecore import ki18n, KAboutData, KCmdLineArgs
 from PyKDE4.kdeui import KApplication
 

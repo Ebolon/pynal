@@ -5,12 +5,10 @@ Contains configuration info for the running application.
 Is stored in a file in the userspace (more like $XDG_CONFIG_HOME).
 Reads and interprets the cmd line arguments.
 '''
-import os, ConfigParser
-
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
-from PyKDE4.kdecore import KSharedConfig, KConfigGroup
+from PyKDE4.kdecore import KSharedConfig
 
 #===============================================================================
 # Application information constants
@@ -81,8 +79,8 @@ def add_default_values(config):
     """
     These are the default configuration values for the ConfigParser.
     """
-    rendering = KConfigGroup(config, "rendering")
-    rendering.writeEntry("use_opengl", False)
-
-    backgrounds = KConfigGroup(config, "backgrounds")
-    backgrounds.writeEntry("checked_size", 17)
+#    rendering = KConfigGroup(config, "rendering")
+#    rendering.writeEntry("use_opengl", False)
+#
+#    backgrounds = KConfigGroup(config, "backgrounds")
+#    backgrounds.writeEntry("checked_size", 17)

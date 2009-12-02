@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
-import os
-
 from PyQt4 import QtGui
-from PyQt4 import QtCore
 from PyQt4.QtCore import SIGNAL
 
 from PyKDE4 import kdeui
 from PyKDE4.kparts import KParts
 
 from pynal.control import actions
-from pynal.models import Config
 from pynal.control.MainControl import MainWindowControl
 
 class MainWindow(KParts.MainWindow):

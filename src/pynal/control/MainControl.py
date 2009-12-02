@@ -9,6 +9,7 @@ from PyQt4 import QtCore
 
 from PyKDE4.kdeui import KStandardAction, KAction, KIcon
 from PyKDE4.kio import KFileDialog
+from PyKDE4.kdecore import KUrl
 
 import pynal.models.Config as Config
 from pynal.control import actions
@@ -54,9 +55,8 @@ class MainWindowControl(QtCore.QObject):
         Open a dialog to let the user choose pdf files and open
         them in tabs.
         """
-        files = KFileDialog.getOpenFileNames()
-#        files = QtGui.QFileDialog.getOpenFileNames(
-#                   self.window, self.tr("Open PDF file"), "", "PDF (*.pdf)")
+        #TODO: Move filter to a better place :D
+        files = KFileDialog.getOpenFileNames(KUrl(), "*.pdf| PDF files")
         if not files:
             return
 

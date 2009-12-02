@@ -5,8 +5,6 @@ from PyQt4 import QtGui
 from PyQt4 import QtCore
 
 import pynal.control.actions as actions
-import pynal.models.iconcache as iconcache
-import pynal.models.Config as Config
 import pynal.view.Backgrounds as Backgrounds
 
 class PageControl(QtGui.QGraphicsItem):

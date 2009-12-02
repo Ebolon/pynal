@@ -8,12 +8,8 @@ will be done when it gets stupidly crowded in this one.
 TODO: extend action_definitions for: tooltip, accelerator, shortcut
 '''
 from PyQt4 import QtGui
-from PyQt4 import QtCore
-from PyKDE4 import kdeui
 from PyKDE4.kdecore import i18n
 from PyKDE4.kdeui import KAction, KIcon
-
-import pynal.models.iconcache as iconcache
 
 action_definitions = {} # Contains the definitions for all actions
 toolbar_actions = {}    # action_name -> KAction for all created toolbar actions
@@ -280,7 +276,7 @@ def toolbar(name, group=None, callable=None):
         # Will result in a KeyError when the icon is not set in the config.
         # This is slightly wanted behaviour, as the icon is needed for a
         # toolbar action.
-        action.setIcon(iconcache.get(config["icon"], 32))
+        action.setIcon(KIcon(config["icon"]))
 
         if "checkable" in config:
             action.setCheckable(True)
@@ -328,7 +324,7 @@ def menu(name):
         action = KAction(parent)
 
         if "icon" in config:
-            action.setIcon(QtGui.QIcon(iconloader.find_icon(config["icon"], 48)))
+            action.setIcon(KIcon(config["icon"]))
 
         if "checkable" in config:
             action.setCheckable(True)
