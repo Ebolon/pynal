@@ -69,7 +69,7 @@ def get_param_options():
     KCmdLineOptions object.
 
     Options:
-      file -- A list of files that will be opened after start.
+      <files> -- A list of files that will be opened after start.
     """
     options = KCmdLineOptions()
 
@@ -78,6 +78,10 @@ def get_param_options():
     return options
 
 def get_group(name):
+    """
+    Return the requested KConfigGroup from the config.
+    Convenience access to the KSharedConfig.
+    """
     global config
     return config.group(name)
 
