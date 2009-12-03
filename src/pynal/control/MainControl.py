@@ -9,7 +9,7 @@ from PyQt4 import QtCore
 
 from PyKDE4.kdeui import KStandardAction, KAction, KIcon
 from PyKDE4.kio import KFileDialog
-from PyKDE4.kdecore import KUrl
+from PyKDE4.kdecore import KUrl, KCmdLineArgs
 
 import pynal.models.Config as Config
 from pynal.control import actions
@@ -45,10 +45,11 @@ class MainWindowControl(QtCore.QObject):
         This can be extended to auto-reopen documents that were open
         when pynal was closed the last time.
         """
-        for file in Config.open_files:
-            filename = os.path.basename(str(file))
-            self.open_document(PynalDocument(file), filename)
-        Config.open_files[:] = [] # Clear the list
+        args = KCmdLineArgs.parsedArgs()
+
+        for i in range(args.count()):
+            filename = os.path.basename(str(args.arg(i)))
+            self.open_document(PynalDocument(args.arg(i)), filename)
 
     def open_file(self):
         """

@@ -17,8 +17,6 @@ def load_config(args):
     return Config(args)
 
 def start():
-    Config.parse_args(sys.argv)
-
     appName = Config.appname
     catalog = Config.catalog
     programName = ki18n(Config.readable_appname)
@@ -33,6 +31,8 @@ def start():
     aboutData = KAboutData(appName, catalog, programName, version, description, license, copyright, text, homepage, bugemail)
 
     KCmdLineArgs.init(sys.argv, aboutData)
+    KCmdLineArgs.addCmdLineOptions(Config.get_param_options())
+
     app = KApplication()
 
     Config.init_config() # Init after the KApplication has been created.

@@ -8,7 +8,7 @@ Reads and interprets the cmd line arguments.
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
-from PyKDE4.kdecore import KSharedConfig
+from PyKDE4.kdecore import KSharedConfig, KCmdLineOptions, ki18n
 
 #===============================================================================
 # Application information constants
@@ -58,18 +58,24 @@ checked_line_color = QtGui.QColor(123, 175, 246)
 
 config = None
 
-def parse_args(args):
-    """ Parse the list of arguments and do something useful, like pass. """
-    global open_files
-    for pos in range(len(args)):
-        arg = args[pos]
-        if not arg.startswith("-") and arg.endswith(".pdf"):
-            open_files.append(arg)
-
 def init_config():
     global config
     config = KSharedConfig.openConfig("pynalrc")
     add_default_values(config)
+
+def get_param_options():
+    """
+    Add the parameters that are to be recognized by pynal to a
+    KCmdLineOptions object.
+
+    Options:
+      file -- A list of files that will be opened after start.
+    """
+    options = KCmdLineOptions()
+
+    options.add("+[<files>]", ki18n("Files to open on startup."))
+
+    return options
 
 def get_group(name):
     global config
@@ -78,9 +84,12 @@ def get_group(name):
 def add_default_values(config):
     """
     These are the default configuration values for the ConfigParser.
+
+    Don't think this is necessary. Should find a better way.
     """
 #    rendering = KConfigGroup(config, "rendering")
 #    rendering.writeEntry("use_opengl", False)
 #
 #    backgrounds = KConfigGroup(config, "backgrounds")
 #    backgrounds.writeEntry("checked_size", 17)
+    pass
