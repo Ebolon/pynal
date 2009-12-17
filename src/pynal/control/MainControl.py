@@ -128,6 +128,7 @@ class MainWindowControl(QtCore.QObject):
         """
         Zoom in.
         TODO: Step depends on current scale or config.
+        TODO: Zooming needs limits
         """
         document = self.window.tabWidget.currentWidget()
         document.zoom(document.dpi + 10)
@@ -135,6 +136,7 @@ class MainWindowControl(QtCore.QObject):
     def zoom_out(self):
         """ Zoom out.
         TODO: Step depends on current scale or config.
+        TODO: Zooming needs limits
         """
         document = self.window.tabWidget.currentWidget()
         document.zoom(document.dpi - 10)
