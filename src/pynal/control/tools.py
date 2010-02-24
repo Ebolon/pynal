@@ -14,6 +14,7 @@ class Tool():
         Constructor
         '''
         self.cursor = QtCore.Qt.ArrowCursor
+        
 
 
     def mouseDoubleClickEvent(self, event, scene):
@@ -35,6 +36,10 @@ class Tool():
         """ Process the event of a released mouse key. """
         event.ignore()
 
+    def tabletEvent(self, event, view):
+        event.ignore()
+
+
 class ScrollTool(Tool):
     """
     The scroll tool. Not a full fledged tool as the pen or others as the
@@ -55,6 +60,35 @@ class SelectTool(Tool):
     def __init__(self):
         Tool.__init__(self)
 
+class PenTool(Tool):
+    """
+    Pen
+    """
 
+    def __init__(self):
+        Tool.__init__(self)
+        self.cursor = QtCore.Qt.CrossCursor
+        self.pen = QtGui.QPen()
+        self.pen.setCapStyle(QtCore.Qt.RoundCap)
+        self.pen.setJoinStyle(QtCore.Qt.RoundJoin)
+        self.pen.setWidth(4)
+        self.item = None
+        self.deviceDown = False
+        #
+        
+    def tabletEvent(self, event, view):
+        if(event.pressure()*100 > 50):
+            if(self.deviceDown == False):
+                self.path = QtGui.QPainterPath(QtCore.QPointF(view.mapToScene(event.pos())))
+                view.scene().addPath(self.path, self.pen)
+                self.deviceDown = True
+            else:
+                self.path.lineTo(QtCore.QPointF(view.mapToScene(event.pos())))
+                view.scene().removeItem(self.item)
+                self.item = view.scene().addPath(self.path, self.pen)
+                #scene.update()
+        else: self.deviceDown = False
+            
+            
 
 current_tool = Tool()
