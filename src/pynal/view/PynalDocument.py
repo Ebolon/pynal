@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from PyQt4 import QtGui
 from PyQt4 import QtCore
-from PyQt4 import QtOpenGL
 
 import QtPoppler
 
@@ -41,9 +40,6 @@ class PynalDocument(QtGui.QGraphicsView):
         self.dpi = Config.pdf_base_dpi
 
         self.pages = []
-
-        if Config.get_group("rendering").readEntry("use_opengl", False).toBool():
-            self.setViewport(QtOpenGL.QGLWidget())
 
         if source_file is not None:
             self.document = QtPoppler.Poppler.Document.load(source_file)
@@ -182,6 +178,23 @@ class PynalDocument(QtGui.QGraphicsView):
         """
         tools.current_tool.mouseReleaseEvent(event, self.scene())
         QtGui.QGraphicsView.mouseReleaseEvent(self, event)
+
+    def tabletEvent(self, event):
+        """
+        Delegate the tablet event to the current tool.
+        Event is also delegated to super to handle the event in case
+        the tool calls event.ignore().
+        """
+        tools.current_tool.tabletEvent(event, self)
+        QtGui.QGraphicsView.tabletEvent(self, event)
+
+
+#    def resizeEvent(self, event):
+
+#        Handle the resize event.
+
+#        size = event.size()
+       
 
     def switch_pages(self, index_a, index_b):
         """

@@ -136,7 +136,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         Background detection is done atm by checking the z-level of
         the child item. Background images should be in the back at -1.
         """
-        for item in self.children():
+        for item in self.childItems():
             if item.zValue() > 0:
                 item.scale(x, y)
 
