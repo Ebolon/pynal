@@ -49,7 +49,7 @@ class MainWindowControl(QtCore.QObject):
 
         for i in range(args.count()):
             filename = os.path.basename(str(args.arg(i)))
-            if os.path.isfile(filename):
+            if os.path.isfile(args.arg(i)):
                 self.open_document(PynalDocument(args.arg(i)), filename)
 
     def open_file(self):
