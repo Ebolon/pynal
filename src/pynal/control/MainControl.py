@@ -51,7 +51,11 @@ class MainWindowControl(QtCore.QObject):
 
         for i in range(args.count()):
             filename = os.path.basename(str(args.arg(i)))
+<<<<<<< HEAD
             if os.path.isfile(filename):
+=======
+            if os.path.isfile(args.arg(i)):
+>>>>>>> dom/master
                 self.open_document(PynalDocument(args.arg(i)), filename)
 
     def open_file(self):
@@ -134,6 +138,7 @@ class MainWindowControl(QtCore.QObject):
         """
         Zoom in.
         TODO: Step depends on current scale or config.
+        TODO: Zooming needs limits
         """
         document = self.window.tabWidget.currentWidget()
         document.zoom(document.dpi + 10)
@@ -141,6 +146,7 @@ class MainWindowControl(QtCore.QObject):
     def zoom_out(self):
         """ Zoom out.
         TODO: Step depends on current scale or config.
+        TODO: Zooming needs limits
         """
         document = self.window.tabWidget.currentWidget()
         document.zoom(document.dpi - 10)

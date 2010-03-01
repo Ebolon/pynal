@@ -33,12 +33,12 @@ class Xournal():
             
             for i in range(0, len(strokeArr)-1, 2):
                 print i, "p:", strokeArr[i], strokeArr[i+1]
-
-                self.Line.addPoint(QtCore.QPointF(float(strokeArr[i]), float(strokeArr[i+1])))
+                if(strokeArr[i] != "" and strokeArr[i+1] != ""):
+                    self.Line.addPoint(QtCore.QPointF(float(strokeArr[i]), float(strokeArr[i+1])))
                 
 class XornalHandler(xml.sax.handler.ContentHandler):
     def __init__(self):
-        self.inStroke = 0
+        self.inStroke = False
         self.mapping = {}
         self.strokes = []
  
@@ -49,7 +49,7 @@ class XornalHandler(xml.sax.handler.ContentHandler):
             self.mapping["tool"] = attributes["tool"]
             self.mapping["color"] = attributes["color"]
             self.mapping["width"] = attributes["width"]
-            self.inStroke = 1
+            self.inStroke = True
  
     def characters(self, data):
         if self.inStroke:
@@ -57,6 +57,6 @@ class XornalHandler(xml.sax.handler.ContentHandler):
  
     def endElement(self, name):
         if name == "stroke":
-            self.inStroke = 0
+            self.inStroke = False
             self.mapping["stroke"].strip()
             self.strokes.append(self.mapping)

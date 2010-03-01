@@ -57,7 +57,7 @@ def create_tools(control, parent):
          "whatsthis" : i18n("Use this to draw with a normal pen."),
          "icon"      : "draw-freehand",
          "group"     : "tools",
-         "action"    : control.set_tool_scroll,
+         "action"    : control.set_tool_pen,
          "checkable" : True
     }
 

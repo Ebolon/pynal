@@ -41,6 +41,11 @@ class PynalDocument(QtGui.QGraphicsView):
 
         self.pages = []
 
+
+#        if Config.get_group("rendering").readEntry("use_opengl", False).toBool():
+#            self.setViewport(QtOpenGL.QGLWidget())
+
+
         if source_file is not None:
             self.document = QtPoppler.Poppler.Document.load(source_file)
             self.document.setRenderHint(QtPoppler.Poppler.Document.Antialiasing and
@@ -190,9 +195,7 @@ class PynalDocument(QtGui.QGraphicsView):
 
 
 #    def resizeEvent(self, event):
-
 #        Handle the resize event.
-
 #        size = event.size()
        
 

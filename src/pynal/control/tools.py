@@ -81,7 +81,7 @@ class PenTool(Tool):
                 self.view = view                
                 self.Line = Object.Line(view, QtCore.QPointF(view.mapToScene(event.pos())))
             else:
-                if not(self.Line == None):
+                if not(self.Line is None):
                     self.Line.addPoint(QtCore.QPointF(self.view.mapToScene(event.pos())))
         else: self.deviceDown = False
             
