@@ -4,6 +4,8 @@ Contains the current tool and its configuration and the class definitions for di
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
+import pynal.view.Object as Object
+
 class Tool():
     '''
     Base class of all tools.
@@ -67,26 +69,20 @@ class PenTool(Tool):
 
     def __init__(self):
         Tool.__init__(self)
-        self.cursor = QtCore.Qt.CrossCursor
-        self.pen = QtGui.QPen()
-        self.pen.setCapStyle(QtCore.Qt.RoundCap)
-        self.pen.setJoinStyle(QtCore.Qt.RoundJoin)
-        self.pen.setWidth(4)
-        self.item = None
+        self.Line = None
         self.deviceDown = False
+        self.view = None
         #
         
     def tabletEvent(self, event, view):
         if(event.pressure()*100 > 50):
             if(self.deviceDown == False):
-                self.path = QtGui.QPainterPath(QtCore.QPointF(view.mapToScene(event.pos())))
-                view.scene().addPath(self.path, self.pen)
                 self.deviceDown = True
+                self.view = view                
+                self.Line = Object.Line(view, QtCore.QPointF(view.mapToScene(event.pos())))
             else:
-                self.path.lineTo(QtCore.QPointF(view.mapToScene(event.pos())))
-                view.scene().removeItem(self.item)
-                self.item = view.scene().addPath(self.path, self.pen)
-                #scene.update()
+                if not(self.Line == None):
+                    self.Line.addPoint(QtCore.QPointF(self.view.mapToScene(event.pos())))
         else: self.deviceDown = False
             
             

@@ -15,6 +15,8 @@ import pynal.models.Config as Config
 from pynal.control import actions
 from pynal.view.PynalDocument import *
 
+from pynal.models.xournal import Xournal
+
 class MainWindowControl(QtCore.QObject):
     """
     Provides slots for actions coming from or working with a MainWindow object.
@@ -49,7 +51,8 @@ class MainWindowControl(QtCore.QObject):
 
         for i in range(args.count()):
             filename = os.path.basename(str(args.arg(i)))
-            self.open_document(PynalDocument(args.arg(i)), filename)
+            if os.path.isfile(filename):
+                self.open_document(PynalDocument(args.arg(i)), filename)
 
     def open_file(self):
         """
@@ -57,13 +60,16 @@ class MainWindowControl(QtCore.QObject):
         them in tabs.
         """
         #TODO: Move filter to a better place :D
-        files = KFileDialog.getOpenFileNames(KUrl(), "*.pdf| PDF files")
+        files = KFileDialog.getOpenFileNames(KUrl(), "*.xoj| Xournal files")
         if not files:
             return
 
         for file in files:
             filename = os.path.basename(str(file))
-            self.open_document(PynalDocument(file), filename)
+            view = PynalDocument()
+            self.open_document(view, "New Document")
+            xournal = Xournal(file, view)
+            xournal.load()
 
     def open_document(self, document, filename):
         """ Shows a PynalDocument in the journaling area. """
@@ -138,6 +144,10 @@ class MainWindowControl(QtCore.QObject):
         """
         document = self.window.tabWidget.currentWidget()
         document.zoom(document.dpi - 10)
+
+    def set_tool_pen(self):
+        """ Set the pen tool as the current tool. """
+        tools.current_tool = tools.PenTool()
 
     def set_tool_scroll(self):
         """ Set the scroll tool as the current tool. """
