@@ -17,8 +17,6 @@ class Tool():
         '''
         self.cursor = QtCore.Qt.ArrowCursor
         
-
-
     def mouseDoubleClickEvent(self, event, scene):
         """
         Process the event of a double click.
@@ -39,6 +37,7 @@ class Tool():
         event.ignore()
 
     def tabletEvent(self, event, view):
+        """ Process the event of a tablet event. """
         event.ignore()
 
 
@@ -64,27 +63,33 @@ class SelectTool(Tool):
 
 class PenTool(Tool):
     """
-    Pen
+    The pen tool.
     """
-
     def __init__(self):
         Tool.__init__(self)
         self.Line = None
         self.deviceDown = False
+        #cursorBmp = QtGui.QBitmap()
+        #cursorBmp.fromImage("../cursor.bmp")
+        #cursor = QtGui.QCursor(cursorBmp)
+        self.cursor = QtCore.Qt.CrossCursor
         self.view = None
-        #
         
     def tabletEvent(self, event, view):
+        """
+        Handle TabletEvent
+        """
+        #TODO: Collision detection with Scene
         if(event.pressure()*100 > 50):
             if(self.deviceDown == False):
                 self.deviceDown = True
-                self.view = view                
+                self.view = view
+                   
                 self.Line = Object.Line(view, QtCore.QPointF(view.mapToScene(event.pos())))
             else:
                 if not(self.Line is None):
                     self.Line.addPoint(QtCore.QPointF(self.view.mapToScene(event.pos())))
         else: self.deviceDown = False
-            
-            
+
 
 current_tool = Tool()

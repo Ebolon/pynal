@@ -4,7 +4,6 @@ Created on 01.03.2010
 @author: simon
 '''
 import gzip
-import xml.sax.handler
 import xml.sax
 import pprint
 
