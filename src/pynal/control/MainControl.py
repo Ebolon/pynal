@@ -28,6 +28,7 @@ class MainWindowControl(QtCore.QObject):
         self.window = window
         self.createActions()
         actions.init(self, window)
+        self.errorDialog = QtGui.QErrorMessage(window)
 
     def createActions(self):
         actionCollection = self.window.actionCollection()
@@ -47,10 +48,16 @@ class MainWindowControl(QtCore.QObject):
         """
         args = KCmdLineArgs.parsedArgs()
 
+        errors = ""
         for i in range(args.count()):
             filename = os.path.basename(str(args.arg(i)))
             if os.path.isfile(args.arg(i)):
                 self.open_document(PynalDocument(args.arg(i)), filename)
+            else:
+                errors += args.arg(i) + "\n"
+
+        if errors is not "":
+            self.errorDialog.showMessage("Could not open file(s):\n" + errors)
 
     def open_file(self):
         """
