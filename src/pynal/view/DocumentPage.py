@@ -207,7 +207,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             self.bg_graphics_item.setPixmap(new_pixmap)
 
         self.move_item_topleft()
-        self.bg_graphics_item.setZValue(-1) #TODO: move to constant or config
+        self.bg_graphics_item.setZValue(-42) #TODO: move to constant or config
 
     def move_item_topleft(self):
         """

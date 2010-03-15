@@ -80,7 +80,17 @@ class PenTool(Tool):
         Handle TabletEvent
         """
         #TODO: Collision detection with Scene
+
         if(event.pressure()*100 > 50):
+            inPage = False
+            items = view.scene().items(QtCore.QPointF(view.mapToScene(event.pos())))
+            print items
+            for i in items:
+                if(i.zValue() == -42):
+                    inPage = True
+            if not (inPage):
+                self.deviceDown = False
+                return
             if(self.deviceDown == False):
                 self.deviceDown = True
                 self.view = view

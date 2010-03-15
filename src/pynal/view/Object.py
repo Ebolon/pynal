@@ -1,6 +1,7 @@
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
+from math import sqrt
 class Object():
     '''
     Base class of all Drawing Objects.
@@ -30,7 +31,7 @@ class Line(Object):
         self.item = view.scene().addPath(self.path, self.pen)
         self.item.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, True)
         self.item.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True)
-        
+        self.lastPoint = point
         
     def addPoint(self, point):
         """
@@ -40,12 +41,16 @@ class Line(Object):
         point -- a QPointF where the Line begin
         """
         #TODO: need improvement
-        self.path.lineTo(QtCore.QPointF(point))
-        self.view.scene().removeItem(self.item)
-        self.item = self.view.scene().addPath(self.path, self.pen)
-        self.item.update()
-        self.item.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, True)
-        self.item.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True)
+        # distance between two points: squrt((x2-x1)^2+(y2-y1)^2)
+        if(3 < sqrt((point.x() - self.lastPoint.x()) ** 2 + (point.y() - self.lastPoint.y()) ** 2)):
+            print sqrt((point.x() - self.lastPoint.x()) ** 2 + (point.y() - self.lastPoint.y()) ** 2)
+            self.path.lineTo(QtCore.QPointF(point))
+            self.view.scene().removeItem(self.item)
+            self.item = self.view.scene().addPath(self.path, self.pen)
+            self.item.update()
+            #self.item.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, True)
+            #self.item.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True)
+            self.lastPoint = point
  
     def setWidth(self, width):
         """
