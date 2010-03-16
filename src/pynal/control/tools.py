@@ -4,7 +4,7 @@ Contains the current tool and its configuration and the class definitions for di
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
-import pynal.view.Object as Object
+import pynal.view.Item as Item
 
 class Tool():
     '''
@@ -69,33 +69,31 @@ class PenTool(Tool):
         Tool.__init__(self)
         self.Line = None
         self.deviceDown = False
-        #cursorBmp = QtGui.QBitmap()
-        #cursorBmp.fromImage("../cursor.bmp")
-        #cursor = QtGui.QCursor(cursorBmp)
-        self.cursor = QtCore.Qt.CrossCursor
+        self.Page = None
         self.view = None
         
     def tabletEvent(self, event, view):
         """
         Handle TabletEvent
         """
-        #TODO: Collision detection with Scene
 
         if(event.pressure()*100 > 50):
             inPage = False
             items = view.scene().items(QtCore.QPointF(view.mapToScene(event.pos())))
-            print items
             for i in items:
                 if(i.zValue() == -42):
+                    self.Page = i
                     inPage = True
+                    break
             if not (inPage):
                 self.deviceDown = False
                 return
             if(self.deviceDown == False):
                 self.deviceDown = True
                 self.view = view
-                   
-                self.Line = Object.Line(view, QtCore.QPointF(view.mapToScene(event.pos())))
+                self.Line = Item.Line(view, QtCore.QPointF(view.mapToScene(event.pos())))
+                view.scene().addItem(self.Line)
+                self.Line.setParentItem(self.Page) #TODO: only run once per Line
             else:
                 if not(self.Line is None):
                     self.Line.addPoint(QtCore.QPointF(self.view.mapToScene(event.pos())))
