@@ -3,6 +3,7 @@ Contains the current tool and its configuration and the class definitions for di
 '''
 from PyQt4 import QtCore
 from PyQt4 import QtGui
+from math import hypot
 
 import pynal.view.Item as Item
 
@@ -39,6 +40,9 @@ class Tool():
     def tabletEvent(self, event, view):
         """ Process the event of a tablet event. """
         event.ignore()
+    
+    def mapToPage(self, point):
+        return QtCore.QPointF(self.view.mapToScene(point))
 
 
 class ScrollTool(Tool):
@@ -71,15 +75,18 @@ class PenTool(Tool):
         self.deviceDown = False
         self.Page = None
         self.view = None
+        self.lastPoint = None
         
     def tabletEvent(self, event, view):
         """
         Handle TabletEvent
         """
-
         if(event.pressure()*100 > 50):
+            self.view = view
+            point = self.mapToPage(event.pos())
+            # check if we are in DocumentPage
             inPage = False
-            items = view.scene().items(QtCore.QPointF(view.mapToScene(event.pos())))
+            items = view.scene().items(point)
             for i in items:
                 if(i.zValue() == -42):
                     self.Page = i
@@ -88,15 +95,25 @@ class PenTool(Tool):
             if not (inPage):
                 self.deviceDown = False
                 return
+            # Begin line
             if(self.deviceDown == False):
                 self.deviceDown = True
-                self.view = view
-                self.Line = Item.Line(view, QtCore.QPointF(view.mapToScene(event.pos())))
+                self.Line = Item.Line(view, point)
                 view.scene().addItem(self.Line)
-                self.Line.setParentItem(self.Page) #TODO: only run once per Line
+                self.Line.setParentItem(self.Page)
+                self.lastPoint = point
+            # Continue Line
             else:
                 if not(self.Line is None):
-                    self.Line.addPoint(QtCore.QPointF(self.view.mapToScene(event.pos())))
+                    '''
+                    instead of calculating the exact value with sqrt(x**2+y**2) estimate the 
+                    distance with (abs(x) +abs(y))*0.8 for better performance. The estimation 
+                    diverges from the exact value by an averageof 8.3%
+                    '''
+                    print abs(point.x() - self.lastPoint.x()) + abs(point.y() - self.lastPoint.y())*0.8
+                    if(abs(point.x() - self.lastPoint.x()) + abs(point.y() - self.lastPoint.y())*0.8 > 3):
+                        self.Line.addPoint(point)
+                        self.lastPoint = point
         else: self.deviceDown = False
 
 

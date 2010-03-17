@@ -1,6 +1,5 @@
 from PyQt4 import QtCore
 from PyQt4 import QtGui
-from math import sqrt
 
 class Item:
     '''
@@ -30,9 +29,8 @@ class Line(Item, QtGui.QGraphicsPathItem):
         self.path = QtGui.QPainterPath(point)
         self.setPath(self.path)
         self.setPen(self.pen)
-        self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, True)
-        self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True)
-        self.lastPoint = point
+        #self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, True)
+        #self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True)
         
     def addPoint(self, point):
         """
@@ -41,12 +39,11 @@ class Line(Item, QtGui.QGraphicsPathItem):
         Parameters:
         point -- a QPointF where the Line begin
         """
-        #TODO: need improvement
-        if(3 < sqrt((point.x() - self.lastPoint.x()) ** 2 + (point.y() - self.lastPoint.y()) ** 2)):
-            self.path.lineTo(QtCore.QPointF(point))
-            self.setPath(self.path)
-            self.update()
-            self.lastPoint = point
+        #print "h", point
+        self.path.lineTo(QtCore.QPointF(point))
+        self.setPath(self.path)
+        self.update()
+        self.lastPoint = point
  
     def setWidth(self, width):
         """
