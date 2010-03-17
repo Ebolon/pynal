@@ -107,6 +107,10 @@ class PynalDocument(QtGui.QGraphicsView):
         self.scene().setBackgroundBrush(QtGui.QBrush(QtCore.Qt.gray))
         self.setRenderHint(QtGui.QPainter.Antialiasing)
 
+    def get_page(self, number):
+        #TODO: safety?
+        return self.pages[number]
+
     def current_page(self):
         """
         The page that has the current focus. This can be the centered or

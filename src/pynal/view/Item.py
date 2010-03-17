@@ -50,6 +50,8 @@ class Line(Item, QtGui.QGraphicsPathItem):
         Set the width to the given value and resize the Pen.
         """
         self.pen.setWidth(width)
+        self.setPen(self.pen)
+        self.update()
     
     def setColor(self, color):
         """

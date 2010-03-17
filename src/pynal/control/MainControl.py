@@ -3,6 +3,7 @@
 Module containing the MainWindowControl class.
 """
 import os, math
+import pynal.models.Config as Config
 
 from PyQt4 import QtGui
 from PyQt4 import QtCore
@@ -11,7 +12,6 @@ from PyKDE4.kdeui import KStandardAction, KAction, KIcon
 from PyKDE4.kio import KFileDialog
 from PyKDE4.kdecore import KUrl, KCmdLineArgs
 
-import pynal.models.Config as Config
 from pynal.control import actions
 from pynal.view.PynalDocument import *
 
@@ -59,17 +59,20 @@ class MainWindowControl(QtCore.QObject):
         Open a dialog to let the user choose pdf files and open
         them in tabs.
         """
-        #TODO: Move filter to a better place :D
-        files = KFileDialog.getOpenFileNames(KUrl(), "*.xoj| Xournal files")
+        files = KFileDialog.getOpenFileNames(KUrl(), "*.pyn | *.pyn - Pynal File\n *.xoj | *.xoj - Xournal File\n *.pdf| *.pdf - PDF files\n * | All Files")
         if not files:
             return
-
+ 
         for file in files:
             filename = os.path.basename(str(file))
-            view = PynalDocument()
-            self.open_document(view, "New Document")
-            xournal = Xournal(file, view)
-            xournal.load()
+            (shortname, extension) = os.path.splitext(filename)
+            if (extension == ".pdf"):
+                self.open_document(PynalDocument(file), filename)
+            elif (extension == ".xoj"):
+                document = PynalDocument()
+                self.open_document(document, shortname)
+                xournal = Xournal(file, document)
+                xournal.load() 
 
     def open_document(self, document, filename):
         """ Shows a PynalDocument in the journaling area. """

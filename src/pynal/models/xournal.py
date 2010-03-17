@@ -10,12 +10,12 @@ import pprint
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
-import pynal.view.Object as Object
+import pynal.view.Item as Item
 
 class Xournal():
-    def __init__(self, filename, view):
+    def __init__(self, filename, document):
         self.filename = filename
-        self.view = view
+        self.view = document
         self.Line = None
         
     def load(self):
@@ -23,39 +23,67 @@ class Xournal():
         file_content = f.read()
         f.close()
 
-        handler = XornalHandler()
+        handler = XornalHandler(self.view)
         xml.sax.parseString(file_content, handler)
-        pprint.pprint(handler.strokes[0]["stroke"])
-        for strokeDict in handler.strokes:
-            strokeArr = strokeDict["stroke"].split(" ")
-            self.Line = Object.Line(self.view, QtCore.QPointF(float(strokeArr[0]), float(strokeArr[1])))
-            
-            for i in range(0, len(strokeArr)-1, 2):
-                print i, "p:", strokeArr[i], strokeArr[i+1]
-                if(strokeArr[i] != "" and strokeArr[i+1] != ""):
-                    self.Line.addPoint(QtCore.QPointF(float(strokeArr[i]), float(strokeArr[i+1])))
                 
 class XornalHandler(xml.sax.handler.ContentHandler):
-    def __init__(self):
+    def __init__(self, view):
         self.inStroke = False
-        self.mapping = {}
-        self.strokes = []
- 
+        self.view = view
+        self.page = {}
+        self.strokeAtt = {}
+        self.stroke = ""
+        self.pages = []
+        self.Line = None
+        self.pageNumb = 0
+        self.pageWidth = 0
+        self.pageHeight = 0
+
     def startElement(self, name, attributes):
-        if name == "stroke":
+        if name == "page":
+            self.pageWidth = attributes["width"]
+            self.pageHeight = attributes["height"]
+            if(self.pageNumb > 0):
+                self.view.insert_new_page_at(self.pageNumb)
+            self.pageNumb += 1
+            
+        elif name == "stroke":
             self.buffer = ""
-            self.mapping["stroke"] = ""
-            self.mapping["tool"] = attributes["tool"]
-            self.mapping["color"] = attributes["color"]
-            self.mapping["width"] = attributes["width"]
+            self.strokeAtt["tool"] = attributes["tool"]
+            self.strokeAtt["color"] = attributes["color"]
+            self.strokeAtt["width"] = float(attributes["width"])
             self.inStroke = True
  
     def characters(self, data):
         if self.inStroke:
-            self.mapping["stroke"] += data
+            self.stroke += data
  
     def endElement(self, name):
+        if name == "page":
+            self.pages.append(self.page)
+            self.page = {}
+            self.strokes = []
         if name == "stroke":
             self.inStroke = False
-            self.mapping["stroke"].strip()
-            self.strokes.append(self.mapping)
+            self.stroke.strip()
+            
+            strokeArr = self.stroke.split(" ")
+            self.stroke = ""
+            page= self.view.get_page(self.pageNumb - 1)
+            # offset where page begin (0,0)
+            offset_x = float(page.scenePos().x() - page.boundingRect().width() / 2)
+            offset_y = page.boundingRect().y()
+            scale_x = float(page.boundingRect().width())/float(self.pageWidth)
+            scale_y = float(page.boundingRect().height())/float(self.pageHeight)
+            x = offset_x + float(strokeArr[0]) * scale_x
+            y = offset_y + float(strokeArr[1]) * scale_y
+            self.Line = Item.Line(self.view, QtCore.QPointF(x,y))
+            # TODO: Pynal standard pen size?
+            self.Line.setWidth(int(self.strokeAtt["width"]))
+            self.Line.setParentItem(page)
+            self.view.scene().addItem(self.Line)
+            for i in range(0, len(strokeArr)-1, 2):
+                if(strokeArr[i] != "" and strokeArr[i+1] != ""):
+                    x = offset_x + float(strokeArr[i]) * scale_x
+                    y = offset_y + float(strokeArr[i+1]) * scale_y
+                    self.Line.addPoint(QtCore.QPoint(x,y))

@@ -105,13 +105,11 @@ class PenTool(Tool):
             # Continue Line
             else:
                 if not(self.Line is None):
-                    '''
-                    instead of calculating the exact value with sqrt(x**2+y**2) estimate the 
-                    distance with (abs(x) +abs(y))*0.8 for better performance. The estimation 
-                    diverges from the exact value by an averageof 8.3%
-                    '''
-                    print abs(point.x() - self.lastPoint.x()) + abs(point.y() - self.lastPoint.y())*0.8
-                    if(abs(point.x() - self.lastPoint.x()) + abs(point.y() - self.lastPoint.y())*0.8 > 3):
+                    # instead of calculating the exact value with sqrt(x**2+y**2) estimate the 
+                    # distance with (abs(x) +abs(y))*0.8 for better performance. The estimation 
+                    # diverges from the exact value by an averageof 8.3%
+                    x, y = abs(point.x() - self.lastPoint.x()), abs(point.y() - self.lastPoint.y())
+                    if((x + y) * 0.8 > 3):
                         self.Line.addPoint(point)
                         self.lastPoint = point
         else: self.deviceDown = False
