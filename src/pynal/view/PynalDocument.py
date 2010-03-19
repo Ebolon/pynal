@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+import math
+
 from PyQt4 import QtCore, QtGui
 from pynal.view.DocumentPage import DocumentPage
 import QtPoppler
+
 import pynal.control.tools as tools
 import pynal.models.Config as Config
 import pynal.view.Backgrounds as Backgrounds
@@ -97,12 +100,19 @@ class PynalDocument(QtGui.QGraphicsView):
 
     def current_page(self):
         """
-        The page that has the current focus. This can be the centered or
-        last clicked page.
+        The page that is in the current focus.
+        Uses the relative position of the vertical scrollbar to calculate
+        the page the user is probably looking at.
 
-        TODO: prone to failure when no page is in dead center
+        Works best with documents where every page is the
+        same size.
         """
-        return self.items(self.contentsRect().center())[-1]
+        relative_toolbar_pos = float(self.verticalScrollBar().value()) / \
+                                     self.verticalScrollBar().maximum()
+
+        current_page = math.floor(len(self.pages) * relative_toolbar_pos)
+
+        return self.pages[int(current_page)]
 
     def insert_new_page_at(self, index, bg_source=None):
         """
