@@ -119,13 +119,12 @@ class DocumentPage(QtGui.QGraphicsItem):
 
     def scale(self, x, y):
         """
-        Reimplementation to prevent the background pixmaps from getting
-        scaled. Scaling these Objects will result in an off scale value
-        which will distort the re-rendered pdf pages.
+        Reimplementation to prevent the background pixmaps and page controls 
+        from getting scaled. Scaling these Objects will result in an off
+        scale value which will distort the re-rendered pdf pages.
 
         These must always be kept at a 1.0 scale.
-        Background detection is done atm by checking the z-level of
-        the child item. Background images should be in the back at -1.
+        Detection for these is a zValue check, as these have a value <= 0.
         """
         for item in self.childItems():
             if item.zValue() > 0:
@@ -198,7 +197,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             self.bg_graphics_item.setPixmap(new_pixmap)
 
         self.move_item_topleft()
-        self.bg_graphics_item.setZValue(-1) #TODO: move to constant or config
+        self.bg_graphics_item.setZValue(Config.background_z_value)
 
     def move_item_topleft(self):
         """
