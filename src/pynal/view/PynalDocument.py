@@ -1,23 +1,22 @@
 # -*- coding: utf-8 -*-
-from PyQt4 import QtGui
-from PyQt4 import QtCore
-
+from PyQt4 import QtCore, QtGui
+from pynal.view.DocumentPage import DocumentPage
 import QtPoppler
-
 import pynal.control.tools as tools
 import pynal.models.Config as Config
-from pynal.view.DocumentPage import DocumentPage
 import pynal.view.Backgrounds as Backgrounds
+
+
 
 class PynalDocument(QtGui.QGraphicsView):
     """
     Document widget displayed in the QTabWidget.
 
     Attributes:
-    dpi      -- The current dpi used to render the background of pages.
-    pages    -- The list of DocumentPage objects of this document.
-    document -- The Poppler Document used as the background
-                source.
+    scale_level -- The current dpi used to render the background of pages.
+    pages       -- The list of DocumentPage objects of this document.
+    document    -- The Poppler Document used as the background
+                   source.
     """
 
     def __init__(self, source_file=None, parent=None):
@@ -37,7 +36,8 @@ class PynalDocument(QtGui.QGraphicsView):
         self.configure_scene()
 
         # Set the default zoom level to 1.0
-        self.dpi = Config.pdf_base_dpi
+        """ TODO: self.dpi = Config.pdf_base_dpi """
+        self.scale_level = 1
 
         self.pages = []
 
@@ -64,15 +64,6 @@ class PynalDocument(QtGui.QGraphicsView):
 
         self.removed_pages = []
 
-    def dpi_scaling(self):
-        """
-        Return the scaling factor of the current and base dpi.
-
-        TODO: mapper function to centralize calculations with this value.
-        """
-        return self.dpi / Config.pdf_base_dpi
-
-
     def refresh_viewport_size(self):
         """
         Extend or shrink the viewport's size to show all pages and not more than needed.
@@ -88,14 +79,14 @@ class PynalDocument(QtGui.QGraphicsView):
 
     def zoom(self, value):
         """
-        Set the dpi to the given value and resize the components accordingly.
+        Set the relative scale of this document (1 = 100%).
         """
-        if self.dpi == value:
+        if self.scale_level == value:
             return
-        self.dpi = value
-        print "dpi now:", self.dpi
+        self.scale_level = value
+        print "Scaling now:", self.scale_level
         for page in self.pages:
-            page.update_bounding_rect()
+            page.update_bounding_rect() # TODO: send scale_changed_event /signal
 
         self.refresh_viewport_size()
 

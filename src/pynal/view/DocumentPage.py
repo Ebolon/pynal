@@ -73,13 +73,16 @@ class DocumentPage(QtGui.QGraphicsItem):
         if self.page_number == 0:
             top = 0
         else:
-            space = Config.min_space_between_pages * self.document.dpi_scaling()
+            space = Config.min_space_between_pages * self.document.scale_level
 
             # Make enough Space for the page control of the previous page.
             space += self.prevpage().control_panel.sizeF().height()
 
             top = self.prevpage().boundingRect().bottom() + space
 
+        """
+        TODO: Move this to the page itself. This has no business here.
+        """
         # Determine the size this page in dots
         # Take the preferred size of the bg
         bg_size = self.bg_source.sizeF()
@@ -92,9 +95,9 @@ class DocumentPage(QtGui.QGraphicsItem):
 
             self.bg_source.setSizeF(bg_size)
 
-        # Transform from dots to pixels according to the current zoom/dpi-setting.
-        size = QtCore.QSize(math.ceil(bg_size.width()  * self.document.dpi_scaling()),
-                            math.ceil(bg_size.height() * self.document.dpi_scaling()))
+        # Transform from dots to pixels according to the current scale_value.
+        size = QtCore.QSize(math.ceil(bg_size.width()  * self.document.scale_level),
+                            math.ceil(bg_size.height() * self.document.scale_level))
 
         # Move to the left by half width so center is on y-axis of scene.
         left_pos = -size.width() / 2
@@ -157,7 +160,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             return
 
         if self.background_is_dirty:
-            self.bg_source.get_image(self.document.dpi, self.background_ready)
+            self.bg_source.get_image(self.document.scale_level, self.background_ready)
 
             #TODO: call paint on previous/next page to pre-cache.
             pass

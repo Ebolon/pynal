@@ -109,12 +109,14 @@ class MainWindowControl(QtCore.QObject):
         pass
 
     def zoom_width(self):
-        """ Zoom the current document to the width of the focused page. """
+        """
+        Zoom the current document to the scene_ of the focused page.
+        TODO: Exception when no tab is open as currentWidget() will return None
+        """
         document = self.window.tabWidget.currentWidget()
-        width = document.viewport().width()
-        newdpi = width / document.current_page().bg_source.sizeF().width() * Config.pdf_base_dpi
-        newdpi = math.floor(newdpi)
-        document.zoom(newdpi)
+        scene_width = document.viewport().width()
+        new_scale_value = scene_width / document.current_page().bg_source.sizeF().width()
+        document.zoom(new_scale_value)
 
     def zoom_original(self):
         """
@@ -122,32 +124,37 @@ class MainWindowControl(QtCore.QObject):
         TODO: Exception when no tab is open as currentWidget() will return None
         """
         document = self.window.tabWidget.currentWidget()
-        document.zoom(Config.pdf_base_dpi)
+        document.zoom(1)
 
     def zoom_fit(self):
-        """ Zoom the current document to fit the focused page. """
+        """
+        Zoom the current document to fit the focused page.
+        TODO: Exception when no tab is open as currentWidget() will return None
+        """
         document = self.window.tabWidget.currentWidget()
-        height = document.height()
-        newdpi = height / document.current_page().bg_source.sizeF().height() * Config.pdf_base_dpi
-        newdpi = math.floor(newdpi)
-        document.zoom(newdpi)
+        scene_height = document.height()
+        new_scale_value = scene_height / document.current_page().bg_source.sizeF().height()
+#        newdpi = math.floor(newdpi)
+        document.zoom(new_scale_value)
 
     def zoom_in(self):
         """
         Zoom in.
-        TODO: Step depends on current scale or config.
         TODO: Zooming needs limits
+        TODO: Exception when no tab is open as currentWidget() will return None
         """
         document = self.window.tabWidget.currentWidget()
-        document.zoom(document.dpi + 10)
+        scale_level = document.scale_level
+        document.zoom(scale_level + scale_level *  0.1)
 
     def zoom_out(self):
         """ Zoom out.
-        TODO: Step depends on current scale or config.
         TODO: Zooming needs limits
+        TODO: Exception when no tab is open as currentWidget() will return None
         """
         document = self.window.tabWidget.currentWidget()
-        document.zoom(document.dpi - 10)
+        scale_level = document.scale_level
+        document.zoom(scale_level - scale_level *  0.1)
 
     def set_tool_scroll(self):
         """ Set the scroll tool as the current tool. """
