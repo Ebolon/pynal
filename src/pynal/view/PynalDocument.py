@@ -36,7 +36,6 @@ class PynalDocument(QtGui.QGraphicsView):
         self.configure_scene()
 
         # Set the default zoom level to 1.0
-        """ TODO: self.dpi = Config.pdf_base_dpi """
         self.scale_level = 1
 
         self.pages = []

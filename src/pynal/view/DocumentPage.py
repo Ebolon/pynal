@@ -80,22 +80,10 @@ class DocumentPage(QtGui.QGraphicsItem):
 
             top = self.prevpage().boundingRect().bottom() + space
 
-        """
-        TODO: Move this to the page itself. This has no business here.
-        """
-        # Determine the size this page in dots
-        # Take the preferred size of the bg
+        # Use the size of this page's background.
         bg_size = self.bg_source.sizeF()
 
-        if bg_size is None: # When the bg has no preference
-            if self.page_number > 0:
-                bg_size = QtCore.QSizeF(self.prevpage().bg_source.sizeF())
-            else:
-                bg_size = QtCore.QSizeF(Config.page_size_A4)
-
-            self.bg_source.setSizeF(bg_size)
-
-        # Transform from dots to pixels according to the current scale_value.
+        # Scale the background according to the documents scale level.
         size = QtCore.QSize(math.ceil(bg_size.width()  * self.document.scale_level),
                             math.ceil(bg_size.height() * self.document.scale_level))
 

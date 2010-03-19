@@ -50,8 +50,10 @@ pdf_base_dpi = 72.0 # This is the default for QtPoppler and is needed for size c
 # The minimum space between to pages (in pixels at zoom 1.0). This scales with the zoom level.
 min_space_between_pages = 10
 
-# Predefined page format
+# Predefined page format (in pixel)
 page_size_A4 = QtCore.QSizeF(595, 842)
+
+page_size_default = page_size_A4
 
 # Color to use for the lines in checked bg pages.
 checked_line_color = QtGui.QColor(123, 175, 246)

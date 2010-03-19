@@ -15,7 +15,7 @@ from PyQt4 import QtGui
 from pynal.control.threading import semaphore
 import pynal.models.Config as Config
 
-def empty_background(size=None):
+def empty_background(size=Config.page_size_default):
     """
     Create and configure a bg_source for a plain
     and empty page.
@@ -23,7 +23,7 @@ def empty_background(size=None):
     bg = PlainBackground(size)
     return bg
 
-def checked_background(size=None):
+def checked_background(size=Config.page_size_default):
     bg = CheckedBackground(size)
     return bg
 
