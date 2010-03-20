@@ -35,6 +35,10 @@ class Tool():
         """ Process the event of a released mouse key. """
         event.ignore()
 
+    def tabletEvent(self, event, document):
+        """ Process the event of a tablet event. """
+        event.ignore()
+
 class ScrollTool(Tool):
     """
     The scroll tool. Not a full fledged tool as the pen or others as the
@@ -63,5 +67,31 @@ class PenTool(Tool):
 
     def __init__(self):
         Tool.__init__(self)
+        self.deviceDown = False
+
+    def tabletEvent(self, event, document):
+        if event.pressure() > 0.5:
+            if self.deviceDown:
+                self.mouseMoveEvent(event, document)
+            else:
+                self.mousePressEvent(event, document)
+        else:
+            if self.deviceDown:
+                self.mouseReleaseEvent(event, document)
+            else:
+                self.mouseMoveEvent(event, document)
+
+    def mousePressEvent(self, event, document):
+        print "down"
+        self.devideDown = True
+        point_coords = document.mapToScene(event.pos())
+        document.page_at(point_coords)
+
+    def mouseReleaseEvent(self, event, document):
+        self.deviceDown = False
+
+    def mouseMoveEvent(self, event, document):
+        if not self.deviceDown:
+            return
 
 current_tool = Tool()

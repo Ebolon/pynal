@@ -182,6 +182,15 @@ class PynalDocument(QtGui.QGraphicsView):
         tools.current_tool.mouseReleaseEvent(event, self)
         QtGui.QGraphicsView.mouseReleaseEvent(self, event)
 
+    def tabletEvent(self, event):
+        """
+        Delegate the tablet event to the current tool.
+        Event is also delegated to super to handle the event in case
+        the tool calls event.ignore().
+        """
+        tools.current_tool.tabletEvent(event, self)
+        QtGui.QGraphicsView.tabletEvent(self, event)
+
     def switch_pages(self, index_a, index_b):
         """
         Switch the pages with the given indexes.
@@ -219,3 +228,26 @@ class PynalDocument(QtGui.QGraphicsView):
 
         self.removed_pages.append(page_remove)
         self.refresh_viewport_size()
+
+    def page_at(self, point):
+        """
+        Returns the page at the given coordinate (scene-coordinate).
+        Used to filter out other objects that are found in the scene.
+
+        Returns None when no page is found at the given coordinate.
+        """
+        if not self.pages:
+            return None
+
+        # First item in the list has the lowest z-value - this is a page's background.
+        page_background = self.scene().items(point)[0]
+
+        # When no items were found, return None.
+        if not page_background:
+            return None
+
+        # Check if this item really has the z-value for a background.
+        if page_background.zValue() == Config.background_z_value:
+            return page_background.parentItem()
+        else:
+            return None
