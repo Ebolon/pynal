@@ -82,10 +82,12 @@ class PenTool(Tool):
                 self.mouseMoveEvent(event, document)
 
     def mousePressEvent(self, event, document):
-        print "down"
         self.devideDown = True
         point_coords = document.mapToScene(event.pos())
-        document.page_at(point_coords)
+        page = document.page_at(point_coords)
+        item = document.scene().addEllipse(point_coords.x() - 20, point_coords.y() - 20, 40, 40)
+        item.setZValue(1)
+        item.setParentItem(page)
 
     def mouseReleaseEvent(self, event, document):
         self.deviceDown = False
