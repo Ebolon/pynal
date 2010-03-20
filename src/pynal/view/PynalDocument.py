@@ -152,7 +152,7 @@ class PynalDocument(QtGui.QGraphicsView):
         Event is also delegated to super to handle the event in case
         the tool calls event.ignore().
         """
-        tools.current_tool.mouseDoubleClickEvent(event, self.scene())
+        tools.current_tool.mouseDoubleClickEvent(event, self)
         QtGui.QGraphicsView.mouseDoubleClickEvent(self, event)
 
     def mouseMoveEvent(self, event):
@@ -161,7 +161,7 @@ class PynalDocument(QtGui.QGraphicsView):
         Event is also delegated to super to handle the event in case
         the tool calls event.ignore().
         """
-        tools.current_tool.mouseMoveEvent(event, self.scene())
+        tools.current_tool.mouseMoveEvent(event, self)
         QtGui.QGraphicsView.mouseMoveEvent(self, event)
 
     def mousePressEvent(self, event):
@@ -170,7 +170,7 @@ class PynalDocument(QtGui.QGraphicsView):
         Event is also delegated to super to handle the event in case
         the tool calls event.ignore().
         """
-        tools.current_tool.mousePressEvent(event, self.scene())
+        tools.current_tool.mousePressEvent(event, self)
         QtGui.QGraphicsView.mousePressEvent(self, event)
 
     def mouseReleaseEvent(self, event):
@@ -179,7 +179,7 @@ class PynalDocument(QtGui.QGraphicsView):
         Event is also delegated to super to handle the event in case
         the tool calls event.ignore().
         """
-        tools.current_tool.mouseReleaseEvent(event, self.scene())
+        tools.current_tool.mouseReleaseEvent(event, self)
         QtGui.QGraphicsView.mouseReleaseEvent(self, event)
 
     def switch_pages(self, index_a, index_b):

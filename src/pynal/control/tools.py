@@ -16,22 +16,22 @@ class Tool():
         self.cursor = QtCore.Qt.ArrowCursor
 
 
-    def mouseDoubleClickEvent(self, event, scene):
+    def mouseDoubleClickEvent(self, event, document):
         """
         Process the event of a double click.
         TODO: The dclick might be useful to display a quick menu.
         """
         event.ignore()
 
-    def mouseMoveEvent(self, event, scene):
+    def mouseMoveEvent(self, event, document):
         """ Process the event of the mouse moving. """
         event.ignore()
 
-    def mousePressEvent(self, event, scene):
+    def mousePressEvent(self, event, document):
         """ Process the event of a pressed mouse key. """
         event.ignore()
 
-    def mouseReleaseEvent(self, event, scene):
+    def mouseReleaseEvent(self, event, document):
         """ Process the event of a released mouse key. """
         event.ignore()
 
@@ -55,6 +55,13 @@ class SelectTool(Tool):
     def __init__(self):
         Tool.__init__(self)
 
+class PenTool(Tool):
+    """
+    Pen with some debug functionality. Not really usable as a free hand
+    pen.
+    """
 
+    def __init__(self):
+        Tool.__init__(self)
 
 current_tool = Tool()
