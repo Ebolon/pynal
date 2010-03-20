@@ -35,6 +35,8 @@ class MainWindowControl(QtCore.QObject):
         KStandardAction.openNew(self.new_file, actionCollection)
         KStandardAction.open(self.open_file, actionCollection)
         KStandardAction.save(self.save_file, actionCollection)
+        KStandardAction.undo(self.undo, actionCollection)
+        KStandardAction.redo(self.redo, actionCollection)
 
         KStandardAction.quit(self.quit, actionCollection)
 
@@ -169,3 +171,22 @@ class MainWindowControl(QtCore.QObject):
             self.window.tabWidget.widget(i).setDragMode(
                           QtGui.QGraphicsView.RubberBandDrag)
         tools.current_tool = tools.SelectTool()
+
+    def set_tool_pen(self):
+        """ Set the pen tool as the current tool. """
+        for i in range(self.window.tabWidget.count()):
+            self.window.tabWidget.widget(i).setDragMode(
+                          QtGui.QGraphicsView.NoDrag)
+        tools.current_tool = tools.PenTool()
+
+    def undo(self):
+        """
+        Undo the last action.
+        """
+        pass
+
+    def redo(self):
+        """
+        Redo the last undone action.
+        """
+        pass
