@@ -58,15 +58,21 @@ class Line(Item, QtGui.QGraphicsPathItem):
         Set the Pen Color to the given QColor.
         """
         self.pen.setColor(color)
+        self.setPen(self.pen)
+        self.update()
     
     def setCapStyle(self, capstyle):
         """
         Set the Pen CapStyle to the given CapStyle.
         """        
         self.pen.setCapStyle(capstyle)
+        self.setPen(self.pen)
+        self.update()
     
     def setJoinStyle(self, joinstyle):
         """
         Set the Pen JoinStyle to the given JoinStyle.
         """
         self.pen.setJoinStyle(joinstyle)
+        self.setPen(self.pen)
+        self.update()

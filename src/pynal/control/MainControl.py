@@ -71,8 +71,8 @@ class MainWindowControl(QtCore.QObject):
             elif (extension == ".xoj"):
                 document = PynalDocument()
                 self.open_document(document, shortname)
-                xournal = Xournal(file, document)
-                xournal.load() 
+                xournal = Xournal()
+                xournal.load(file, document) 
 
     def open_document(self, document, filename):
         """ Shows a PynalDocument in the journaling area. """
@@ -99,7 +99,12 @@ class MainWindowControl(QtCore.QObject):
 
     def save_file(self):
         """ Save the current document. """
-        pass
+        tabwidget = self.window.tabWidget
+        document = tabwidget.currentWidget()
+        if(document is not None):
+            filename = KFileDialog.getSaveFileName(KUrl(), "*.xoj | *.xoj - Xournal File")
+            xournal = Xournal()
+            xournal.save(filename, document)
 
     def new_file(self):
         """ Create a new document. """

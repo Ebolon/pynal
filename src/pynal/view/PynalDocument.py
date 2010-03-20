@@ -108,8 +108,13 @@ class PynalDocument(QtGui.QGraphicsView):
         self.setRenderHint(QtGui.QPainter.Antialiasing)
 
     def get_page(self, number):
+        """ Page by number """
         #TODO: safety?
         return self.pages[number]
+
+    def get_pages(self):
+        """ Pages """
+        return self.pages
 
     def current_page(self):
         """
