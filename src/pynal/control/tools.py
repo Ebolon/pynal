@@ -114,5 +114,4 @@ class PenTool(Tool):
                         self.lastPoint = point
         else: self.deviceDown = False
 
-
 current_tool = Tool()

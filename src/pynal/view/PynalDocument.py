@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from PyQt4 import QtGui
 from PyQt4 import QtCore
+from PyQt4 import QtOpenGL
 
 import QtPoppler
 
@@ -42,8 +43,8 @@ class PynalDocument(QtGui.QGraphicsView):
         self.pages = []
 
 
-#        if Config.get_group("rendering").readEntry("use_opengl", False).toBool():
-#            self.setViewport(QtOpenGL.QGLWidget())
+        if Config.get_group("rendering").readEntry("use_opengl", False).toBool():
+            self.setViewport(QtOpenGL.QGLWidget())
 
 
         if source_file is not None:
