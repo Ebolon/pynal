@@ -57,6 +57,9 @@ class DocumentPage(QtGui.QGraphicsItem):
 
         self.update_bounding_rect()
 
+    def type(self):
+        # return a value larger than or equal to UserType (65536).
+        return 65540
     def prevpage(self):
         """
         Return the previous page, or None when there is none.

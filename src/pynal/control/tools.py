@@ -71,38 +71,58 @@ class PenTool(Tool):
         self.deviceDown = False
         self.lastPoint = None
         self.tabletActive = False
+        self.page = None
         
     def mousePressEvent(self, event, document):
-        self.deviceDown = True
+        """
+        Start drawing.
+        """
         point_coords = document.mapToScene(event.pos())
-        page = document.page_at(point_coords)
-        if page is not None:
+        self.page = document.page_at(point_coords)
+        if self.page is not None:
+            self.deviceDown = True
             self.Line = Item.Line(document, point_coords)
             command = CommandAddLine(document, self.Line, "Line")
             document.undoStack.push(command)
-            self.Line.setParentItem(page)
+            self.Line.setParentItem(self.page)
             self.Line.setZValue(1)
             self.lastPoint = point_coords
 
     def mouseReleaseEvent(self, event, document):
-        if self.deviceDown:
-            self.Line = None
-            self.deviceDown = False
+        """
+        Stop drawing.
+        """
+        self.Line = None
+        self.deviceDown = False
 
     def mouseMoveEvent(self, event, document):
         if not self.deviceDown:
+            # no stroke
             return
-        if self.Line is not None:
-            point_coords = document.mapToScene(event.pos())
-            page = document.page_at(point_coords)
-            if page is not None:
-                x, y = abs(point_coords.x() - self.lastPoint.x()), abs(point_coords.y() - self.lastPoint.y())
-                if((x + y) * 0.8 > 3):
-                    self.Line.addPoint(point_coords)
-                    self.lastPoint = point_coords
+        point_coords = document.mapToScene(event.pos())
+        pageNow = document.page_at(point_coords)
+        if pageNow is None:
+            # out of page
+            self.Line = None
+            return
+        if not self.page == pageNow:
+            # other page - begin new stroke
+            self.mousePressEvent(event, document)
+            return
+        if self.Line is None:
+            # back again in drawing action
+            self.mousePressEvent(event, document)
+        self.page = pageNow
+        x, y = abs(point_coords.x() - self.lastPoint.x()), abs(point_coords.y() - self.lastPoint.y())
+        if((x + y) * 0.8 > 3):
+            self.Line.addPoint(point_coords)
+            self.lastPoint = point_coords
+
 
 class CommandAddLine(QtGui.QUndoCommand):
-
+    """
+    Undo Line Class
+    """
     def __init__(self, document, Line, description):
         super(CommandAddLine, self).__init__(description)
         self.Line = Line

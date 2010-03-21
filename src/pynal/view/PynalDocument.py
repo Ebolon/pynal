@@ -258,16 +258,14 @@ class PynalDocument(QtGui.QGraphicsView):
         if not self.pages:
             return None
         
-        items = self.scene().items(point)
-        # When no items were found, return None.
-        if len(items) == 0:
-            return None
-        
         # First item in the list has the lowest z-value - this is a page's background.
-        page_background = items[0]
+        try:
+            page = self.scene().items(point)[-1]
+        except IndexError:
+            return None
 
         # Check if this item really has the z-value for a background.
-        if page_background.zValue() == Config.background_z_value:
-            return page_background.parentItem()
+        if page.type() == 65540:
+            return page
         else:
             return None

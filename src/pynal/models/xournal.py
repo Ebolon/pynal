@@ -112,7 +112,12 @@ class XornalHandler(xml.sax.handler.ContentHandler):
             self.Line = Item.Line(self.view, QtCore.QPointF(x,y)) # err?
             # TODO: Pynal standard pen size?
             self.Line.setWidth(int(self.strokeAtt["width"]))
-            self.Line.setColor(self.colors[self.strokeAtt["color"]])
+            strokeColor = self.colors[self.strokeAtt["color"]]
+            strokeColor.setAlpha(255)
+            if self.strokeAtt["tool"] == "highlighter":
+                self.Line.setZValue(6)
+                strokeColor.setAlpha(100)
+            self.Line.setColor(strokeColor)
             self.Line.setZValue(1)
             self.Line.setParentItem(page)
             self.view.scene().addItem(self.Line)
