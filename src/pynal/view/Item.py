@@ -12,16 +12,17 @@ class Item:
         self.view = view
 
 class Line(Item, QtGui.QGraphicsPathItem):
-    def __init__(self, view, point=None):
+    def __init__(self, document, point=None):
         """
         Create a new Line Object
 
         Parameters:
-        view  -- the  document view.
+        document  -- the  document view.
         point -- a QPointF where the Line begin
         """
-        Item.__init__(self, view)
+        Item.__init__(self, document)
         QtGui.QGraphicsPathItem.__init__(self)
+        self.document = document
         self.pen = QtGui.QPen()
         self.pen.setCapStyle(QtCore.Qt.RoundCap)
         self.pen.setJoinStyle(QtCore.Qt.RoundJoin)
@@ -31,7 +32,7 @@ class Line(Item, QtGui.QGraphicsPathItem):
         self.setPen(self.pen)
         #self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, True)
         #self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True)
-        
+
     def addPoint(self, point):
         """
         Add a new Point to the Line
@@ -44,7 +45,7 @@ class Line(Item, QtGui.QGraphicsPathItem):
         self.setPath(self.path)
         self.update()
         self.lastPoint = point
- 
+
     def setWidth(self, width):
         """
         Set the width to the given value and resize the Pen.

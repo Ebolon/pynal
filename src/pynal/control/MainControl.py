@@ -173,6 +173,9 @@ class MainWindowControl(QtCore.QObject):
 
     def set_tool_pen(self):
         """ Set the pen tool as the current tool. """
+        for i in range(self.window.tabWidget.count()):
+            self.window.tabWidget.widget(i).setDragMode(
+                          QtGui.QGraphicsView.NoDrag)
         tools.current_tool = tools.PenTool()
 
     def set_tool_scroll(self):
@@ -189,21 +192,18 @@ class MainWindowControl(QtCore.QObject):
                           QtGui.QGraphicsView.RubberBandDrag)
         tools.current_tool = tools.SelectTool()
 
-    def set_tool_pen(self):
-        """ Set the pen tool as the current tool. """
-        for i in range(self.window.tabWidget.count()):
-            self.window.tabWidget.widget(i).setDragMode(
-                          QtGui.QGraphicsView.NoDrag)
-        tools.current_tool = tools.PenTool()
-
     def undo(self):
         """
         Undo the last action.
         """
-        pass
+        tabwidget = self.window.tabWidget
+        document = tabwidget.currentWidget()
+        document.undoStack.undo()
 
     def redo(self):
         """
         Redo the last undone action.
         """
-        pass
+        tabwidget = self.window.tabWidget
+        document = tabwidget.currentWidget()
+        document.undoStack.redo()

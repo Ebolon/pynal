@@ -101,9 +101,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             oldwidth = self.boundingRect().width()
             scale = newwidth / oldwidth
             self.scale(scale, scale)
-            # TODO: Need improve
-            for i in self.childItems():
-                i.scale(scale, scale)
+
         else:
             # Create the rect once...
             self._bounding = QtCore.QRectF()

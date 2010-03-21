@@ -78,23 +78,40 @@ class PenTool(Tool):
         page = document.page_at(point_coords)
         if page is not None:
             self.Line = Item.Line(document, point_coords)
-            document.scene().addItem(self.Line)
+            command = CommandAddLine(document, self.Line, "Line")
+            document.undoStack.push(command)
             self.Line.setParentItem(page)
             self.Line.setZValue(1)
             self.lastPoint = point_coords
 
     def mouseReleaseEvent(self, event, document):
-        self.Line = None
-        self.deviceDown = False
+        if self.deviceDown:
+            self.Line = None
+            self.deviceDown = False
 
     def mouseMoveEvent(self, event, document):
         if not self.deviceDown:
             return
         if self.Line is not None:
             point_coords = document.mapToScene(event.pos())
-            x, y = abs(point_coords.x() - self.lastPoint.x()), abs(point_coords.y() - self.lastPoint.y())
-            if((x + y) * 0.8 > 3):
-                self.Line.addPoint(point_coords)
-                self.lastPoint = point_coords
+            page = document.page_at(point_coords)
+            if page is not None:
+                x, y = abs(point_coords.x() - self.lastPoint.x()), abs(point_coords.y() - self.lastPoint.y())
+                if((x + y) * 0.8 > 3):
+                    self.Line.addPoint(point_coords)
+                    self.lastPoint = point_coords
+
+class CommandAddLine(QtGui.QUndoCommand):
+
+    def __init__(self, document, Line, description):
+        super(CommandAddLine, self).__init__(description)
+        self.Line = Line
+        self.document = document
+
+    def redo(self):
+        self.document.scene().addItem(self.Line)
+
+    def undo(self):
+        self.document.scene().removeItem(self.Line)
 
 current_tool = Tool()

@@ -113,6 +113,7 @@ class XornalHandler(xml.sax.handler.ContentHandler):
             # TODO: Pynal standard pen size?
             self.Line.setWidth(int(self.strokeAtt["width"]))
             self.Line.setColor(self.colors[self.strokeAtt["color"]])
+            self.Line.setZValue(1)
             self.Line.setParentItem(page)
             self.view.scene().addItem(self.Line)
             for i in range(0, len(strokeArr)-1, 2):

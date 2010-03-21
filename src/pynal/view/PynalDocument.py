@@ -47,6 +47,8 @@ class PynalDocument(QtGui.QGraphicsView):
         self.scale_level = 1
 
         self.pages = []
+        
+        self.undoStack = QtGui.QUndoStack(self)
 
 
         if Config.get_group("rendering").readEntry("use_opengl", False).toBool():
@@ -204,8 +206,9 @@ class PynalDocument(QtGui.QGraphicsView):
         Event is also delegated to super to handle the event in case
         the tool calls event.ignore().
         """
+        event.accept()
         tools.current_tool.tabletEvent(event, self)
-        QtGui.QGraphicsView.tabletEvent(self, event)
+        #QtGui.QGraphicsView.tabletEvent(self, event)
 
     def switch_pages(self, index_a, index_b):
         """
@@ -254,13 +257,14 @@ class PynalDocument(QtGui.QGraphicsView):
         """
         if not self.pages:
             return None
-
-        # First item in the list has the lowest z-value - this is a page's background.
-        page_background = self.scene().items(point)[0]
-
+        
+        items = self.scene().items(point)
         # When no items were found, return None.
-        if not page_background:
+        if len(items) == 0:
             return None
+        
+        # First item in the list has the lowest z-value - this is a page's background.
+        page_background = items[0]
 
         # Check if this item really has the z-value for a background.
         if page_background.zValue() == Config.background_z_value:
