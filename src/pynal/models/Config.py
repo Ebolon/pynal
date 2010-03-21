@@ -41,6 +41,9 @@ space_between_pages = 20
 # List of files to open when the application has started.
 open_files = []
 
+# The zValue for the background of pages within the QGraphicsScene
+background_z_value = -42
+
 #===============================================================================
 # Page settings
 #===============================================================================

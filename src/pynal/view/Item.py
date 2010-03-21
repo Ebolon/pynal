@@ -61,6 +61,14 @@ class Line(Item, QtGui.QGraphicsPathItem):
         self.pen.setColor(color)
         self.setPen(self.pen)
         self.update()
+  
+    def setStyle(self, style):
+        """
+        Set the Pen Style to the given Style.
+        """        
+        self.pen.setStyle(style)
+        self.setPen(self.pen)
+        self.update()      
     
     def setCapStyle(self, capstyle):
         """

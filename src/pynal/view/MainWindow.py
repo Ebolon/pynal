@@ -2,6 +2,8 @@
 from PyQt4 import QtGui
 from PyQt4.QtCore import SIGNAL
 
+from PyQt4 import QtCore
+
 from PyKDE4 import kdeui
 from PyKDE4.kparts import KParts
 
@@ -24,16 +26,37 @@ class MainWindow(KParts.MainWindow):
         self.control = MainWindowControl(self)
 
         self.setupGUI()
-
+        self.createLineStyleComboBox()
         self.createTabWidget()
-
         self.control.start()
+
+
+    def createLineStyleComboBox(self):
+        """ Create and populate the ComboBox for Stroke Style """
+        # TODO: improve speed, style of the ComboBox?
+        styles = [QtCore.Qt.SolidLine, QtCore.Qt.DashLine, QtCore.Qt.DotLine, QtCore.Qt.DashDotLine, QtCore.Qt.DashDotDotLine]
+        comboBox = QtGui.QComboBox(self)
+        self.pen = QtGui.QPen()
+        self.pen.setWidth(3)
+        pixmap = QtGui.QPixmap(113,3)
+        for style in styles:
+            self.pen.setStyle(style)
+            pixmap.fill()
+            painter = QtGui.QPainter(pixmap)
+            painter.setPen(self.pen)
+            painter.drawLine(0,1, 113,1)
+            painter.end()
+            icon = QtGui.QIcon(pixmap)
+            comboBox.addItem("")
+            comboBox.setItemIcon(comboBox.count()-1, icon)
+            comboBox.setIconSize(QtCore.QSize(113, 3))
+        
+        self.connect(comboBox, SIGNAL("currentIndexChanged(int)"),  self.control.changeLineStyle)
+        self.toolBar("StrokeToolBar").addWidget(comboBox)
 
     def createMenuBar(self):
         """ Create and populate the menu bar. """
-        menu = self.menuBar()
-        file = menu.addMenu("&File")
-        file.addAction(actions.menu("exit_app_action"))
+        pass
 
     def createTabWidget(self):
         """ Create and configure the center widget. """

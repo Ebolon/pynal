@@ -34,13 +34,27 @@ class MainWindowControl(QtCore.QObject):
 
     def createActions(self):
         actionCollection = self.window.actionCollection()
+        # File Menu
         KStandardAction.openNew(self.new_file, actionCollection)
         KStandardAction.open(self.open_file, actionCollection)
+        KStandardAction.openRecent(self.open_file_recent, actionCollection)   
         KStandardAction.save(self.save_file, actionCollection)
+        KStandardAction.quit(self.quit, actionCollection)
+        
+        # Edit Menu
         KStandardAction.undo(self.undo, actionCollection)
         KStandardAction.redo(self.redo, actionCollection)
-
-        KStandardAction.quit(self.quit, actionCollection)
+        KStandardAction.copy(self.copy, actionCollection)
+        KStandardAction.paste(self.paste, actionCollection)
+        KStandardAction.cut(self.cut, actionCollection)
+        
+        # View Menu
+        KStandardAction.zoomIn(self.zoom_in, actionCollection)
+        KStandardAction.zoomOut(self.zoom_out, actionCollection)
+        
+        # Settings Menu
+        KStandardAction.selectAll(self.select_all, actionCollection)
+        
 
     def start(self):
         """
@@ -83,6 +97,9 @@ class MainWindowControl(QtCore.QObject):
                 xournal = Xournal()
                 xournal.load(file, document) 
 
+    def open_file_recent(self):
+        pass
+
     def open_document(self, document, filename):
         """ Shows a PynalDocument in the journaling area. """
         tabwidget = self.window.tabWidget
@@ -121,7 +138,7 @@ class MainWindowControl(QtCore.QObject):
 
     def quit(self):
         """ Exit the application. """
-        pass
+        exit()
 
     def zoom_width(self):
         """
@@ -207,3 +224,20 @@ class MainWindowControl(QtCore.QObject):
         tabwidget = self.window.tabWidget
         document = tabwidget.currentWidget()
         document.undoStack.redo()
+    
+    def cut(self):
+        pass
+    def copy(self):
+        pass
+    def paste(self):
+        pass
+    def invert_selection(self):
+        pass
+    
+    def select_all(self):
+        pass
+    
+    def changeLineStyle(self, index):
+        styles = [QtCore.Qt.SolidLine, QtCore.Qt.DashLine, QtCore.Qt.DotLine, QtCore.Qt.DashDotLine, QtCore.Qt.DashDotDotLine]
+        if tools.current_tool.type() == "PenTool":
+            tools.current_tool.setLineStyle(styles[index])

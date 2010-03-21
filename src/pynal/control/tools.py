@@ -40,6 +40,9 @@ class Tool():
     def tabletEvent(self, event, document):
         """ Process the event of a tablet event. """
         event.ignore()
+    
+    def type(self):
+        return "default"
 
 class ScrollTool(Tool):
     """
@@ -72,6 +75,10 @@ class PenTool(Tool):
         self.lastPoint = None
         self.tabletActive = False
         self.page = None
+        self.LineStyle = QtCore.Qt.SolidLine
+    
+    def setLineStyle(self, style):
+        self.LineStyle = style
         
     def mousePressEvent(self, event, document):
         """
@@ -82,6 +89,7 @@ class PenTool(Tool):
         if self.page is not None:
             self.deviceDown = True
             self.Line = Item.Line(document, point_coords)
+            self.Line.setStyle(self.LineStyle)
             command = CommandAddLine(document, self.Line, "Line")
             document.undoStack.push(command)
             self.Line.setParentItem(self.page)
@@ -118,6 +126,8 @@ class PenTool(Tool):
             self.Line.addPoint(point_coords)
             self.lastPoint = point_coords
 
+    def type(self):
+        return "PenTool"
 
 class CommandAddLine(QtGui.QUndoCommand):
     """
