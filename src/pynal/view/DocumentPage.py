@@ -73,28 +73,19 @@ class DocumentPage(QtGui.QGraphicsItem):
         if self.page_number == 0:
             top = 0
         else:
-            space = Config.min_space_between_pages * self.document.dpi_scaling()
+            space = Config.min_space_between_pages * self.document.scale_level
 
             # Make enough Space for the page control of the previous page.
             space += self.prevpage().control_panel.sizeF().height()
 
             top = self.prevpage().boundingRect().bottom() + space
 
-        # Determine the size this page in dots
-        # Take the preferred size of the bg
+        # Use the size of this page's background.
         bg_size = self.bg_source.sizeF()
 
-        if bg_size is None: # When the bg has no preference
-            if self.page_number > 0:
-                bg_size = QtCore.QSizeF(self.prevpage().bg_source.sizeF())
-            else:
-                bg_size = QtCore.QSizeF(Config.page_size_A4)
-
-            self.bg_source.setSizeF(bg_size)
-
-        # Transform from dots to pixels according to the current zoom/dpi-setting.
-        size = QtCore.QSize(math.ceil(bg_size.width()  * self.document.dpi_scaling()),
-                            math.ceil(bg_size.height() * self.document.dpi_scaling()))
+        # Scale the background according to the documents scale level.
+        size = QtCore.QSize(math.ceil(bg_size.width()  * self.document.scale_level),
+                            math.ceil(bg_size.height() * self.document.scale_level))
 
         # Move to the left by half width so center is on y-axis of scene.
         left_pos = -size.width() / 2
@@ -131,13 +122,12 @@ class DocumentPage(QtGui.QGraphicsItem):
 
     def scale(self, x, y):
         """
-        Reimplementation to prevent the background pixmaps from getting
-        scaled. Scaling these Objects will result in an off scale value
-        which will distort the re-rendered pdf pages.
+        Reimplementation to prevent the background pixmaps and page controls 
+        from getting scaled. Scaling these Objects will result in an off
+        scale value which will distort the re-rendered pdf pages.
 
         These must always be kept at a 1.0 scale.
-        Background detection is done atm by checking the z-level of
-        the child item. Background images should be in the back at -1.
+        Detection for these is a zValue check, as these have a value <= 0.
         """
         for item in self.childItems():
             if item.zValue() > 0:
@@ -160,7 +150,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             return
 
         if self.background_is_dirty:
-            self.bg_source.get_image(self.document.dpi, self.background_ready)
+            self.bg_source.get_image(self.document.scale_level, self.background_ready)
 
             #TODO: call paint on previous/next page to pre-cache.
             pass
@@ -210,7 +200,7 @@ class DocumentPage(QtGui.QGraphicsItem):
             self.bg_graphics_item.setPixmap(new_pixmap)
 
         self.move_item_topleft()
-        self.bg_graphics_item.setZValue(-42) #TODO: move to constant or config
+        self.bg_graphics_item.setZValue(Config.background_z_value)
 
     def move_item_topleft(self):
         """

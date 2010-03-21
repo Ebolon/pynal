@@ -30,12 +30,15 @@ class MainWindowControl(QtCore.QObject):
         self.window = window
         self.createActions()
         actions.init(self, window)
+        self.errorDialog = QtGui.QErrorMessage(window)
 
     def createActions(self):
         actionCollection = self.window.actionCollection()
         KStandardAction.openNew(self.new_file, actionCollection)
         KStandardAction.open(self.open_file, actionCollection)
         KStandardAction.save(self.save_file, actionCollection)
+        KStandardAction.undo(self.undo, actionCollection)
+        KStandardAction.redo(self.redo, actionCollection)
 
         KStandardAction.quit(self.quit, actionCollection)
 
@@ -49,10 +52,16 @@ class MainWindowControl(QtCore.QObject):
         """
         args = KCmdLineArgs.parsedArgs()
 
+        errors = ""
         for i in range(args.count()):
             filename = os.path.basename(str(args.arg(i)))
             if os.path.isfile(args.arg(i)):
                 self.open_document(PynalDocument(args.arg(i)), filename)
+            else:
+                errors += args.arg(i) + "\n"
+
+        if errors is not "":
+            self.errorDialog.showMessage("Could not open file(s):\n" + errors)
 
     def open_file(self):
         """
@@ -115,12 +124,14 @@ class MainWindowControl(QtCore.QObject):
         pass
 
     def zoom_width(self):
-        """ Zoom the current document to the width of the focused page. """
+        """
+        Zoom the current document to the scene_ of the focused page.
+        TODO: Exception when no tab is open as currentWidget() will return None
+        """
         document = self.window.tabWidget.currentWidget()
-        width = document.viewport().width()
-        newdpi = width / document.current_page().bg_source.sizeF().width() * Config.pdf_base_dpi
-        newdpi = math.floor(newdpi)
-        document.zoom(newdpi)
+        scene_width = document.viewport().width()
+        new_scale_value = scene_width / document.current_page().bg_source.sizeF().width()
+        document.zoom(new_scale_value)
 
     def zoom_original(self):
         """
@@ -128,32 +139,37 @@ class MainWindowControl(QtCore.QObject):
         TODO: Exception when no tab is open as currentWidget() will return None
         """
         document = self.window.tabWidget.currentWidget()
-        document.zoom(Config.pdf_base_dpi)
+        document.zoom(1)
 
     def zoom_fit(self):
-        """ Zoom the current document to fit the focused page. """
+        """
+        Zoom the current document to fit the focused page.
+        TODO: Exception when no tab is open as currentWidget() will return None
+        """
         document = self.window.tabWidget.currentWidget()
-        height = document.height()
-        newdpi = height / document.current_page().bg_source.sizeF().height() * Config.pdf_base_dpi
-        newdpi = math.floor(newdpi)
-        document.zoom(newdpi)
+        scene_height = document.height()
+        new_scale_value = scene_height / document.current_page().bg_source.sizeF().height()
+#        newdpi = math.floor(newdpi)
+        document.zoom(new_scale_value)
 
     def zoom_in(self):
         """
         Zoom in.
-        TODO: Step depends on current scale or config.
         TODO: Zooming needs limits
+        TODO: Exception when no tab is open as currentWidget() will return None
         """
         document = self.window.tabWidget.currentWidget()
-        document.zoom(document.dpi + 10)
+        scale_level = document.scale_level
+        document.zoom(scale_level + scale_level *  0.1)
 
     def zoom_out(self):
         """ Zoom out.
-        TODO: Step depends on current scale or config.
         TODO: Zooming needs limits
+        TODO: Exception when no tab is open as currentWidget() will return None
         """
         document = self.window.tabWidget.currentWidget()
-        document.zoom(document.dpi - 10)
+        scale_level = document.scale_level
+        document.zoom(scale_level - scale_level *  0.1)
 
     def set_tool_pen(self):
         """ Set the pen tool as the current tool. """
@@ -172,3 +188,22 @@ class MainWindowControl(QtCore.QObject):
             self.window.tabWidget.widget(i).setDragMode(
                           QtGui.QGraphicsView.RubberBandDrag)
         tools.current_tool = tools.SelectTool()
+
+    def set_tool_pen(self):
+        """ Set the pen tool as the current tool. """
+        for i in range(self.window.tabWidget.count()):
+            self.window.tabWidget.widget(i).setDragMode(
+                          QtGui.QGraphicsView.NoDrag)
+        tools.current_tool = tools.PenTool()
+
+    def undo(self):
+        """
+        Undo the last action.
+        """
+        pass
+
+    def redo(self):
+        """
+        Redo the last undone action.
+        """
+        pass

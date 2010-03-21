@@ -15,7 +15,7 @@ from PyQt4 import QtGui
 from pynal.control.threading import semaphore
 import pynal.models.Config as Config
 
-def empty_background(size=None):
+def empty_background(size=Config.page_size_default):
     """
     Create and configure a bg_source for a plain
     and empty page.
@@ -23,7 +23,7 @@ def empty_background(size=None):
     bg = PlainBackground(size)
     return bg
 
-def checked_background(size=None):
+def checked_background(size=Config.page_size_default):
     bg = CheckedBackground(size)
     return bg
 
@@ -50,7 +50,7 @@ class BackgroundImage():
         """ Set the QSizeF of this bg. """
         self.size = size
 
-    def get_image(self, dpi, callback):
+    def get_image(self, scale, callback):
         """
         Create an image of this bg that can be displayed,
         and call the callback with the QImage.
@@ -58,7 +58,7 @@ class BackgroundImage():
         extracted from the QImage in the GUI-thread.
 
         Parameters:
-          dpi      -- The dpi to render the image with.
+          scale    -- The scale to render the image with.
           callback -- The method to deliver the generated image.
         """
         pass
@@ -81,11 +81,11 @@ class PdfBackground(BackgroundImage):
         self.poppler = poppler
         self.loader = None
 
-    def get_image(self, dpi, callback):
+    def get_image(self, scale, callback):
         """
         Create a new render thread and start it.
         """
-        self.loader = PdfRenderThread(self.poppler, dpi)
+        self.loader = PdfRenderThread(self.poppler, scale)
         self.loader.output.connect(callback)
         self.loader.start()
 
@@ -125,7 +125,7 @@ class PlainBackground(BackgroundImage):
         BackgroundImage.__init__(self, size)
         self.brush = brush
 
-    def get_image(self, dpi, callback):
+    def get_image(self, scale, callback):
         """
         A pixmap can be directly created here as this is done in the GUI-Thread
         instead of a dedicated one.
@@ -133,9 +133,8 @@ class PlainBackground(BackgroundImage):
         And creating a white pixmap is easier than creating a QImage first and then
         extract the pixmap.
         """
-        factor = dpi / Config.pdf_base_dpi #TODO: get factor from document
-        pixmap = QtGui.QPixmap(QtCore.QSize(self.sizeF().width()  * factor,
-                                            self.sizeF().height() * factor))
+        pixmap = QtGui.QPixmap(QtCore.QSize(self.sizeF().width()  * scale,
+                                            self.sizeF().height() * scale))
         pixmap.fill(self.brush)
         callback(pixmap)
 
@@ -162,7 +161,7 @@ class CheckedBackground(BackgroundImage):
             self.cols = int(math.floor(self.sizeF().width() / group.readEntry("checked_size", 17).toDouble()[0])) #TODO: move to config
             self.rows = int(math.floor(self.sizeF().height() / group.readEntry("checked_size", 17).toDouble()[0]))
 
-    def get_image(self, dpi, callback):
+    def get_image(self, scale, callback):
         """
         A pixmap can be directly created here as this is done in the GUI-Thread
         instead of a dedicated one.
@@ -170,9 +169,8 @@ class CheckedBackground(BackgroundImage):
         And creating a white pixmap is easier than creating a QImage first and then
         extract the pixmap.
         """
-        factor = dpi / Config.pdf_base_dpi #TODO: get factor from document
-        pixmap = QtGui.QPixmap(QtCore.QSize(self.sizeF().width()  * factor,
-                                            self.sizeF().height() * factor))
+        pixmap = QtGui.QPixmap(QtCore.QSize(self.sizeF().width()  * scale,
+                                            self.sizeF().height() * scale))
         pixmap.fill(self.brush)
 
         painter = QtGui.QPainter(pixmap)
@@ -201,17 +199,17 @@ class PdfRenderThread(QtCore.QThread):
     """ Signal to emit when a QImage has been rendered. """
     output = QtCore.pyqtSignal(QtGui.QImage)
 
-    def __init__(self, page, dpi):
+    def __init__(self, page, scale):
         """
         Create a new PdfRenderThread.
 
         Parameters:
           page -- The DocumentPage that the bg is rendered for.
-          dpi  -- The dpi to render with.
+          scale  -- The scale to render with.
         """
         QtCore.QThread.__init__(self)
         self.page = page
-        self.dpi = dpi
+        self.scale = scale
 
     def run(self):
         """
@@ -219,6 +217,7 @@ class PdfRenderThread(QtCore.QThread):
         signal that the image is ready.
         """
         semaphore.acquire()
-        image = self.page.renderToImage(self.dpi, self.dpi)
+        dpi = self.scale * Config.pdf_base_dpi
+        image = self.page.renderToImage(dpi, dpi)
         self.output.emit(image)
         semaphore.release()

@@ -1,24 +1,30 @@
 # -*- coding: utf-8 -*-
+
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 from PyQt4 import QtOpenGL
 
+import math
+
+from PyQt4 import QtCore, QtGui
+from pynal.view.DocumentPage import DocumentPage
 import QtPoppler
 
 import pynal.control.tools as tools
 import pynal.models.Config as Config
-from pynal.view.DocumentPage import DocumentPage
 import pynal.view.Backgrounds as Backgrounds
+
+
 
 class PynalDocument(QtGui.QGraphicsView):
     """
     Document widget displayed in the QTabWidget.
 
     Attributes:
-    dpi      -- The current dpi used to render the background of pages.
-    pages    -- The list of DocumentPage objects of this document.
-    document -- The Poppler Document used as the background
-                source.
+    scale_level -- The current dpi used to render the background of pages.
+    pages       -- The list of DocumentPage objects of this document.
+    document    -- The Poppler Document used as the background
+                   source.
     """
 
     def __init__(self, source_file=None, parent=None):
@@ -38,7 +44,7 @@ class PynalDocument(QtGui.QGraphicsView):
         self.configure_scene()
 
         # Set the default zoom level to 1.0
-        self.dpi = Config.pdf_base_dpi
+        self.scale_level = 1
 
         self.pages = []
 
@@ -67,15 +73,6 @@ class PynalDocument(QtGui.QGraphicsView):
 
         self.removed_pages = []
 
-    def dpi_scaling(self):
-        """
-        Return the scaling factor of the current and base dpi.
-
-        TODO: mapper function to centralize calculations with this value.
-        """
-        return self.dpi / Config.pdf_base_dpi
-
-
     def refresh_viewport_size(self):
         """
         Extend or shrink the viewport's size to show all pages and not more than needed.
@@ -91,14 +88,14 @@ class PynalDocument(QtGui.QGraphicsView):
 
     def zoom(self, value):
         """
-        Set the dpi to the given value and resize the components accordingly.
+        Set the relative scale of this document (1 = 100%).
         """
-        if self.dpi == value:
+        if self.scale_level == value:
             return
-        self.dpi = value
-        print "dpi now:", self.dpi
+        self.scale_level = value
+        print "Scaling now:", self.scale_level
         for page in self.pages:
-            page.update_bounding_rect()
+            page.update_bounding_rect() # TODO: send scale_changed_event /signal
 
         self.refresh_viewport_size()
 
@@ -119,12 +116,19 @@ class PynalDocument(QtGui.QGraphicsView):
 
     def current_page(self):
         """
-        The page that has the current focus. This can be the centered or
-        last clicked page.
+        The page that is in the current focus.
+        Uses the relative position of the vertical scrollbar to calculate
+        the page the user is probably looking at.
 
-        TODO: prone to failure when no page is in dead center
+        Works best with documents where every page is the
+        same size.
         """
-        return self.items(self.contentsRect().center())[-1]
+        relative_toolbar_pos = float(self.verticalScrollBar().value()) / \
+                                     self.verticalScrollBar().maximum()
+
+        current_page = math.floor(len(self.pages) * relative_toolbar_pos)
+
+        return self.pages[int(current_page)]
 
     def insert_new_page_at(self, index, bg_source=None):
         """
@@ -164,7 +168,7 @@ class PynalDocument(QtGui.QGraphicsView):
         Event is also delegated to super to handle the event in case
         the tool calls event.ignore().
         """
-        tools.current_tool.mouseDoubleClickEvent(event, self.scene())
+        tools.current_tool.mouseDoubleClickEvent(event, self)
         QtGui.QGraphicsView.mouseDoubleClickEvent(self, event)
 
     def mouseMoveEvent(self, event):
@@ -173,7 +177,7 @@ class PynalDocument(QtGui.QGraphicsView):
         Event is also delegated to super to handle the event in case
         the tool calls event.ignore().
         """
-        tools.current_tool.mouseMoveEvent(event, self.scene())
+        tools.current_tool.mouseMoveEvent(event, self)
         QtGui.QGraphicsView.mouseMoveEvent(self, event)
 
     def mousePressEvent(self, event):
@@ -182,7 +186,7 @@ class PynalDocument(QtGui.QGraphicsView):
         Event is also delegated to super to handle the event in case
         the tool calls event.ignore().
         """
-        tools.current_tool.mousePressEvent(event, self.scene())
+        tools.current_tool.mousePressEvent(event, self)
         QtGui.QGraphicsView.mousePressEvent(self, event)
 
     def mouseReleaseEvent(self, event):
@@ -191,7 +195,7 @@ class PynalDocument(QtGui.QGraphicsView):
         Event is also delegated to super to handle the event in case
         the tool calls event.ignore().
         """
-        tools.current_tool.mouseReleaseEvent(event, self.scene())
+        tools.current_tool.mouseReleaseEvent(event, self)
         QtGui.QGraphicsView.mouseReleaseEvent(self, event)
 
     def tabletEvent(self, event):
@@ -202,12 +206,6 @@ class PynalDocument(QtGui.QGraphicsView):
         """
         tools.current_tool.tabletEvent(event, self)
         QtGui.QGraphicsView.tabletEvent(self, event)
-
-
-#    def resizeEvent(self, event):
-#        Handle the resize event.
-#        size = event.size()
-       
 
     def switch_pages(self, index_a, index_b):
         """
@@ -246,3 +244,26 @@ class PynalDocument(QtGui.QGraphicsView):
 
         self.removed_pages.append(page_remove)
         self.refresh_viewport_size()
+
+    def page_at(self, point):
+        """
+        Returns the page at the given coordinate (scene-coordinate).
+        Used to filter out other objects that are found in the scene.
+
+        Returns None when no page is found at the given coordinate.
+        """
+        if not self.pages:
+            return None
+
+        # First item in the list has the lowest z-value - this is a page's background.
+        page_background = self.scene().items(point)[0]
+
+        # When no items were found, return None.
+        if not page_background:
+            return None
+
+        # Check if this item really has the z-value for a background.
+        if page_background.zValue() == Config.background_z_value:
+            return page_background.parentItem()
+        else:
+            return None
