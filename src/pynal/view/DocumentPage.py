@@ -70,40 +70,38 @@ class DocumentPage(QtGui.QGraphicsItem):
         """
         Update the bounding rect of this page.
         """
+        # Calculate the size of the page:
+        ## Use the size of the background.
+        bg_size = self.bg_source.sizeF()
+
+        ## Scale the background according to the documents scale level.
+        size = QtCore.QSize(math.ceil(bg_size.width()  * self.document.scale_level),
+                            math.ceil(bg_size.height() * self.document.scale_level))
+
+        # Calculate the position of the page.
         if self.page_number == 0:
             top = 0
         else:
             space = Config.min_space_between_pages * self.document.scale_level
 
-            # Make enough Space for the page control of the previous page.
+            ## Make enough Space for the page control of the previous page.
             space += self.prevpage().control_panel.sizeF().height()
 
             top = self.prevpage().boundingRect().bottom() + space
 
-        # Use the size of this page's background.
-        bg_size = self.bg_source.sizeF()
-
-        # Scale the background according to the documents scale level.
-        size = QtCore.QSize(math.ceil(bg_size.width()  * self.document.scale_level),
-                            math.ceil(bg_size.height() * self.document.scale_level))
-
-        # Move to the left by half width so center is on y-axis of scene.
+        ## Move to the left by half width so center is on y-axis of scene.
         left_pos = -size.width() / 2
 
-        if self.boundingRect() is not None:
-            """
-            Find the scaling factor needed to transform
-            the page to the needed size.
-            Then scale, to transform all children so they stay
-            where they are relative to the page.
-            """
-            newwidth = size.width()
-            oldwidth = self.boundingRect().width()
-            scale = newwidth / oldwidth
-            self.scale(scale, scale)
-        else:
-            # Create the rect once...
-            self._bounding = QtCore.QRectF()
+        """
+        Find the scaling factor needed to transform
+        the page to the needed size.
+        Then scale, to transform all children so they stay
+        where they are relative to the page.
+        """
+        newwidth = size.width()
+        oldwidth = self.boundingRect().width()
+        scale = newwidth / oldwidth
+        self.scale(scale, scale)
 
         # ...and change its properties to update it.
         self._bounding.setTopLeft(QtCore.QPointF(left_pos, top))
@@ -119,7 +117,7 @@ class DocumentPage(QtGui.QGraphicsItem):
 
     def scale(self, x, y):
         """
-        Reimplementation to prevent the background pixmaps and page controls 
+        Reimplementation to prevent the background pixmaps and page controls
         from getting scaled. Scaling these Objects will result in an off
         scale value which will distort the re-rendered pdf pages.
 
@@ -134,6 +132,8 @@ class DocumentPage(QtGui.QGraphicsItem):
         """
         Return the bounding box of the page.
         """
+        if self._bounding is None:
+            self._bounding = QtCore.QRectF(0, 0, 1, 1)
         return self._bounding
 
     def paint(self, painter, option, widget=None):
