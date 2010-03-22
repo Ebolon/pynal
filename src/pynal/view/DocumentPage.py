@@ -70,13 +70,9 @@ class DocumentPage(QtGui.QGraphicsItem):
         """
         Update the bounding rect of this page.
         """
-        # Calculate the size of the page:
-        ## Use the size of the background.
-        bg_size = self.bg_source.sizeF()
+        self.prepareGeometryChange()
 
-        ## Scale the background according to the documents scale level.
-        size = QtCore.QSize(math.ceil(bg_size.width()  * self.document.scale_level),
-                            math.ceil(bg_size.height() * self.document.scale_level))
+        size = self.bounding_size()
 
         # Calculate the position of the page.
         if self.page_number == 0:
@@ -104,6 +100,9 @@ class DocumentPage(QtGui.QGraphicsItem):
         self.scale(scale, scale)
 
         # ...and change its properties to update it.
+#        transform = QtGui.QTransform().translate(left_pos, top)
+#        self.setTransform(transform)
+
         self._bounding.setTopLeft(QtCore.QPointF(left_pos, top))
         self._bounding.setSize(QtCore.QSizeF(size))
 
@@ -134,7 +133,20 @@ class DocumentPage(QtGui.QGraphicsItem):
         """
         if self._bounding is None:
             self._bounding = QtCore.QRectF(0, 0, 1, 1)
+            self._bounding.setSize(self.bounding_size())
         return self._bounding
+
+    def bounding_size(self):
+        """
+        Calculate the size of the page by using the dimensions of the
+        background source.
+        """
+        bg_size = self.bg_source.sizeF()
+
+        ## Scale the background according to the documents scale level.
+        size = QtCore.QSizeF(math.ceil(bg_size.width()  * self.document.scale_level),
+                            math.ceil(bg_size.height() * self.document.scale_level))
+        return size
 
     def paint(self, painter, option, widget=None):
         """
