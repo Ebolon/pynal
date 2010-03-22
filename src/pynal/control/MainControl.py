@@ -195,6 +195,13 @@ class MainWindowControl(QtCore.QObject):
                           QtGui.QGraphicsView.NoDrag)
         tools.current_tool = tools.PenTool()
 
+    def set_tool_eraser(self):
+        """ Set the eraser tool as the current tool. """
+        for i in range(self.window.tabWidget.count()):
+            self.window.tabWidget.widget(i).setDragMode(
+                          QtGui.QGraphicsView.NoDrag)
+        tools.current_tool = tools.EraserTool()
+
     def set_tool_scroll(self):
         """ Set the scroll tool as the current tool. """
         for i in range(self.window.tabWidget.count()):

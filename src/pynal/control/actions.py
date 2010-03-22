@@ -67,7 +67,7 @@ def create_tools(control, parent):
          "whatsthis" : i18n("Used to remove items from a document."),
          "icon"      : "draw-eraser",
          "group"     : "tools",
-         "action"    : control.set_tool_scroll,
+         "action"    : control.set_tool_eraser,
          "checkable" : True
     }
 

@@ -28,10 +28,8 @@ class Line(Item, QtGui.QGraphicsPathItem):
         self.pen.setJoinStyle(QtCore.Qt.RoundJoin)
         self.pen.setWidth(4)
         self.path = QtGui.QPainterPath(point)
-        self.setPath(self.path)
         self.setPen(self.pen)
-        #self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, True)
-        #self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True)
+        self.setPath(self.path)
 
     def addPoint(self, point):
         """
@@ -45,6 +43,9 @@ class Line(Item, QtGui.QGraphicsPathItem):
         self.setPath(self.path)
         self.update()
         self.lastPoint = point
+
+    def finalize(self):
+        self.path.simplified()
 
     def setWidth(self, width):
         """
@@ -85,3 +86,13 @@ class Line(Item, QtGui.QGraphicsPathItem):
         self.pen.setJoinStyle(joinstyle)
         self.setPen(self.pen)
         self.update()
+    
+    def getPoints(self):
+        points = []
+        for i in range(0, self.path.elementCount() -1):
+            points.append(self.path.elementAt(i))
+        return points
+
+    def type(self):
+        #TODO: standardize type codes
+        return 65555

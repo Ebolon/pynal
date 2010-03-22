@@ -64,6 +64,67 @@ class SelectTool(Tool):
     def __init__(self):
         Tool.__init__(self)
 
+class EraserTool(Tool):
+    #TODO: improve functionality
+    """
+    The erase tool.
+    """
+    def __init__(self):
+        Tool.__init__(self)
+        self.Line = None
+        self.deviceDown = False
+        self.lastPoint = None
+        self.tabletActive = False
+        self.page = None
+      
+    def mousePressEvent(self, event, document):
+        """
+        Start drawing.
+        """
+        point_coords = document.mapToScene(event.pos())
+        self.page = document.page_at(point_coords)
+        if self.page is not None:
+            self.deviceDown = True
+            self.Line = Item.Line(document, point_coords)
+            self.lastPoint = point_coords
+
+    def mouseReleaseEvent(self, event, document):
+        """
+        Stop drawing.
+        """
+        self.Line = None
+        self.deviceDown = False
+
+    def mouseMoveEvent(self, event, document):
+        if not self.deviceDown:
+            # no stroke
+            return
+        point_coords = document.mapToScene(event.pos())
+        pageNow = document.page_at(point_coords)
+        if pageNow is None:
+            # out of page
+            self.Line = None
+            return
+        if not self.page == pageNow:
+            # other page - begin new stroke
+            self.mousePressEvent(event, document)
+            return
+        if self.Line is None:
+            # back again in drawing action
+            self.mousePressEvent(event, document)
+        self.page = pageNow
+        x, y = abs(point_coords.x() - self.lastPoint.x()), abs(point_coords.y() - self.lastPoint.y())
+        if((x + y) * 0.8 > 3):
+            self.Line.addPoint(point_coords)
+            colliding = document.scene().collidingItems(self.Line)
+            for item in colliding:
+                if item.type() == 65555:
+                    document.scene().removeItem(item)
+            self.lastPoint = point_coords
+
+    def type(self):
+        return "EraseTool"
+        
 class PenTool(Tool):
     """
     The pen tool.
