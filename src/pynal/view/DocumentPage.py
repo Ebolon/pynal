@@ -74,19 +74,7 @@ class DocumentPage(QtGui.QGraphicsItem):
 
         size = self.bounding_size()
 
-        # Calculate the position of the page.
-        if self.page_number == 0:
-            top = 0
-        else:
-            space = Config.min_space_between_pages * self.document.scale_level
-
-            ## Make enough Space for the page control of the previous page.
-            space += self.prevpage().control_panel.sizeF().height()
-
-            top = self.prevpage().boundingRect().bottom() + space
-
-        ## Move to the left by half width so center is on y-axis of scene.
-        left_pos = -size.width() / 2
+        topleft = self.bounding_topleft(size)
 
         """
         Find the scaling factor needed to transform
@@ -103,7 +91,7 @@ class DocumentPage(QtGui.QGraphicsItem):
 #        transform = QtGui.QTransform().translate(left_pos, top)
 #        self.setTransform(transform)
 
-        self._bounding.setTopLeft(QtCore.QPointF(left_pos, top))
+        self._bounding.setTopLeft(topleft)
         self._bounding.setSize(QtCore.QSizeF(size))
 
         self.control_panel.update_bounding_rect()
@@ -113,6 +101,32 @@ class DocumentPage(QtGui.QGraphicsItem):
             self.bg_graphics_item.setPixmap(p.scaled(size))
             self.move_item_topleft()
             self.background_is_dirty = True
+
+    def bounding_topleft(self, size=None):
+        """
+        Calculate the position of the page.
+
+        Parameters:
+          size -- The size is needed to center the page within the scene.
+                  When None, the size is calculated with self.bounding_size().
+        """
+        if size is None:
+            size = self.bounding_size()
+
+        if self.page_number == 0:
+            top = 0
+        else:
+            space = Config.min_space_between_pages * self.document.scale_level
+
+            ## Make enough Space for the page control of the previous page.
+            space += self.prevpage().control_panel.sizeF().height()
+
+            top = self.prevpage().boundingRect().bottom() + space
+
+        ## Move to the left by half width so center is on y-axis of scene.
+        left_pos = -size.width() / 2
+
+        return QtCore.QPointF(left_pos, top)
 
     def scale(self, x, y):
         """
