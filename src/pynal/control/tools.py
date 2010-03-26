@@ -15,7 +15,6 @@ class Tool():
         '''
         self.cursor = QtCore.Qt.ArrowCursor
 
-
     def mouseDoubleClickEvent(self, event, document):
         """
         Process the event of a double click.
@@ -69,23 +68,17 @@ class PenTool(Tool):
         Tool.__init__(self)
         self.deviceDown = False
 
-    def tabletEvent(self, event, document):
-        if event.pressure() > 0.5:
-            if self.deviceDown:
-                self.mouseMoveEvent(event, document)
-            else:
-                self.mousePressEvent(event, document)
-        else:
-            if self.deviceDown:
-                self.mouseReleaseEvent(event, document)
-            else:
-                self.mouseMoveEvent(event, document)
-
     def mousePressEvent(self, event, document):
         self.devideDown = True
         point_coords = document.mapToScene(event.pos())
         page = document.page_at(point_coords)
-        item = document.scene().addEllipse(point_coords.x() - 20, point_coords.y() - 20, 40, 40)
+
+        if page is None:
+            return
+
+        page_point = page.mapFromScene(point_coords)
+
+        item = document.scene().addEllipse(page_point.x() - 20, page_point.y() - 20, 40, 40)
         item.setZValue(1)
         item.setParentItem(page)
 

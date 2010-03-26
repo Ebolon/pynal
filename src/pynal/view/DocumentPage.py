@@ -43,6 +43,8 @@ class DocumentPage(QtGui.QGraphicsItem):
                            something else made it unneeded.
     """
 
+    TYPE_DOCUMENT_PAGE = 65536
+
     def __init__(self, document, page_number, bg_source=None):
         QtGui.QGraphicsItemGroup.__init__(self, None, document.scene())
 
@@ -70,10 +72,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         """
         Update the bounding rect of this page.
         """
-        self.prepareGeometryChange()
-
         size = self.bounding_size()
-
         topleft = self.bounding_topleft(size)
 
         """
@@ -83,23 +82,19 @@ class DocumentPage(QtGui.QGraphicsItem):
         where they are relative to the page.
         """
         newwidth = size.width()
-        oldwidth = self.boundingRect().width()
+        oldwidth = self.sceneBoundingRect().width()
         scale = newwidth / oldwidth
         self.scale(scale, scale)
 
-        # ...and change its properties to update it.
-#        transform = QtGui.QTransform().translate(left_pos, top)
-#        self.setTransform(transform)
-
-        self._bounding.setTopLeft(topleft)
+        self.prepareGeometryChange()
         self._bounding.setSize(QtCore.QSizeF(size))
+        self.setPos(topleft)
 
         self.control_panel.update_bounding_rect()
 
         if self.bg_graphics_item is not None:
             p = self.bg_graphics_item.pixmap()
-            self.bg_graphics_item.setPixmap(p.scaled(size))
-            self.move_item_topleft()
+            self.bg_graphics_item.setPixmap(p.scaled(size.toSize()))
             self.background_is_dirty = True
 
     def bounding_topleft(self, size=None):
@@ -121,12 +116,15 @@ class DocumentPage(QtGui.QGraphicsItem):
             ## Make enough Space for the page control of the previous page.
             space += self.prevpage().control_panel.sizeF().height()
 
-            top = self.prevpage().boundingRect().bottom() + space
+            top = self.prevpage().sceneBoundingRect().bottom() + space
 
         ## Move to the left by half width so center is on y-axis of scene.
         left_pos = -size.width() / 2
 
         return QtCore.QPointF(left_pos, top)
+
+    def type(self):
+        return DocumentPage.TYPE_DOCUMENT_PAGE
 
     def scale(self, x, y):
         """
@@ -180,7 +178,6 @@ class DocumentPage(QtGui.QGraphicsItem):
         else:
             pass
 
-
     def background_ready(self, result):
         """
         Callback method for the bg_source to bring the rendered background to.
@@ -222,18 +219,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         else:
             self.bg_graphics_item.setPixmap(new_pixmap)
 
-        self.move_item_topleft()
         self.bg_graphics_item.setZValue(Config.background_z_value)
-
-    def move_item_topleft(self):
-        """
-        Move the background image to the top left of the
-        bounding rect.
-
-        This should be done as a translation transformation
-        to move all children correctly.
-        """
-        self.bg_graphics_item.setOffset(self.boundingRect().topLeft())
 
     def append(self):
         """ Append a new page after this. """

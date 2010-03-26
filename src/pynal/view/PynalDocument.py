@@ -9,8 +9,6 @@ import pynal.control.tools as tools
 import pynal.models.Config as Config
 import pynal.view.Backgrounds as Backgrounds
 
-
-
 class PynalDocument(QtGui.QGraphicsView):
     """
     Document widget displayed in the QTabWidget.
@@ -73,9 +71,9 @@ class PynalDocument(QtGui.QGraphicsView):
         bottom right page (page's control).
         """
         lastpage = self.pages[-1]
-        bottom = lastpage.boundingRect().bottomRight()
+        bottom = lastpage.sceneBoundingRect().bottomRight()
         bottom.setY(bottom.y() + lastpage.control_panel.sizeF().height())
-        rect = QtCore.QRectF(self.pages[0].boundingRect().topLeft(),
+        rect = QtCore.QRectF(self.pages[0].sceneBoundingRect().topLeft(),
                              bottom)
         return self.scene().setSceneRect(rect)
 
@@ -239,15 +237,8 @@ class PynalDocument(QtGui.QGraphicsView):
         if not self.pages:
             return None
 
-        # First item in the list has the lowest z-value - this is a page's background.
-        page_background = self.scene().items(point)[0]
+        for item in self.scene().items(point):
+            if item.type() == DocumentPage.TYPE_DOCUMENT_PAGE:
+                return item
 
-        # When no items were found, return None.
-        if not page_background:
-            return None
-
-        # Check if this item really has the z-value for a background.
-        if page_background.zValue() == Config.background_z_value:
-            return page_background.parentItem()
-        else:
-            return None
+        return None
