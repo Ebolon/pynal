@@ -113,9 +113,10 @@ class MainWindowControl(QtCore.QObject):
     def zoom_width(self):
         """
         Zoom the current document to the scene_ of the focused page.
-        TODO: Exception when no tab is open as currentWidget() will return None
         """
         document = self.window.tabWidget.currentWidget()
+        if document is None:
+            return
         scene_width = document.viewport().width()
         new_scale_value = scene_width / document.current_page().bg_source.sizeF().width()
         document.zoom(new_scale_value)
@@ -123,17 +124,19 @@ class MainWindowControl(QtCore.QObject):
     def zoom_original(self):
         """
         Zoom the current document to 100%.
-        TODO: Exception when no tab is open as currentWidget() will return None
         """
         document = self.window.tabWidget.currentWidget()
+        if document is None:
+            return
         document.zoom(1)
 
     def zoom_fit(self):
         """
         Zoom the current document to fit the focused page.
-        TODO: Exception when no tab is open as currentWidget() will return None
         """
         document = self.window.tabWidget.currentWidget()
+        if document is None:
+            return
         scene_height = document.height()
         new_scale_value = scene_height / document.current_page().bg_source.sizeF().height()
 #        newdpi = math.floor(newdpi)
@@ -143,18 +146,20 @@ class MainWindowControl(QtCore.QObject):
         """
         Zoom in.
         TODO: Zooming needs limits
-        TODO: Exception when no tab is open as currentWidget() will return None
         """
         document = self.window.tabWidget.currentWidget()
+        if document is None:
+            return
         scale_level = document.scale_level
         document.zoom(scale_level + scale_level *  0.1)
 
     def zoom_out(self):
         """ Zoom out.
         TODO: Zooming needs limits
-        TODO: Exception when no tab is open as currentWidget() will return None
         """
         document = self.window.tabWidget.currentWidget()
+        if document is None:
+            return
         scale_level = document.scale_level
         document.zoom(scale_level - scale_level *  0.1)
 
