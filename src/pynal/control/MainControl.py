@@ -143,24 +143,23 @@ class MainWindowControl(QtCore.QObject):
         document.zoom(new_scale_value)
 
     def zoom_in(self):
-        """
-        Zoom in.
-        TODO: Zooming needs limits
-        """
+        """ Zoom in. """
         document = self.window.tabWidget.currentWidget()
         if document is None:
             return
         scale_level = document.scale_level
+        if scale_level >= Config.zoom_max:
+            return
         document.zoom(scale_level + scale_level *  0.1)
 
     def zoom_out(self):
-        """ Zoom out.
-        TODO: Zooming needs limits
-        """
+        """ Zoom out. """
         document = self.window.tabWidget.currentWidget()
         if document is None:
             return
         scale_level = document.scale_level
+        if scale_level <= Config.zoom_min:
+            return
         document.zoom(scale_level - scale_level *  0.1)
 
     def set_tool_scroll(self):

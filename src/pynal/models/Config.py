@@ -61,6 +61,10 @@ page_size_default = page_size_A4
 # Color to use for the lines in checked bg pages.
 checked_line_color = QtGui.QColor(123, 175, 246)
 
+# Limits for manual scaling
+zoom_max = 3
+zoom_min = 0.1
+
 config = None
 
 def init_config():
