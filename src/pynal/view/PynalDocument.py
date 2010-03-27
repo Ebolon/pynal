@@ -2,12 +2,13 @@
 import math
 
 from PyQt4 import QtCore, QtGui
-from pynal.view.DocumentPage import DocumentPage
+from PyKDE4 import kdeui
 import QtPoppler
 
 import pynal.control.tools as tools
 import pynal.models.Config as Config
 import pynal.view.Backgrounds as Backgrounds
+from pynal.view.DocumentPage import DocumentPage
 
 class PynalDocument(QtGui.QGraphicsView):
     """
@@ -18,6 +19,7 @@ class PynalDocument(QtGui.QGraphicsView):
     pages       -- The list of DocumentPage objects of this document.
     document    -- The Poppler Document used as the background
                    source.
+    undo_stack  -- The undo stack for this document.
     """
 
     def __init__(self, source_file=None, parent=None):
@@ -61,6 +63,8 @@ class PynalDocument(QtGui.QGraphicsView):
 
         else:
             self.insert_new_page_at(0) # Add an empty page.
+
+        self.undo_stack = kdeui.KUndoStack(self)
 
         self.removed_pages = []
 

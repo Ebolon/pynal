@@ -188,10 +188,18 @@ class MainWindowControl(QtCore.QObject):
         """
         Undo the last action.
         """
-        pass
+        tabwidget = self.window.tabWidget.currentWidget()
+        if tabwidget is None:
+            return
+
+        tabwidget.undo_stack.undo()
 
     def redo(self):
         """
         Redo the last undone action.
         """
-        pass
+        tabwidget = self.window.tabWidget.currentWidget()
+        if tabwidget is None:
+            return
+
+        tabwidget.undo_stack.redo()
