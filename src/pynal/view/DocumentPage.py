@@ -214,6 +214,8 @@ class DocumentPage(QtGui.QGraphicsItem):
         else:
             new_pixmap = result
 
+        self.document.cache.addBackground(self, new_pixmap)
+
         if self.bg_graphics_item is None:
             self.bg_graphics_item = QtGui.QGraphicsPixmapItem(new_pixmap, self)
         else:
@@ -246,3 +248,6 @@ class DocumentPage(QtGui.QGraphicsItem):
     def duplicate(self):
         """ Insert a duplicate of this page below it. """
         pass
+
+    def clear_bg_pixmap(self):
+        print self, ": clear dat shit"

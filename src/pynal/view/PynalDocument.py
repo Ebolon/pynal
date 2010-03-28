@@ -8,6 +8,7 @@ import QtPoppler
 import pynal.control.tools as tools
 import pynal.models.Config as Config
 import pynal.view.Backgrounds as Backgrounds
+from pynal.models.PynalCache import PynalCache
 from pynal.view.DocumentPage import DocumentPage
 
 class PynalDocument(QtGui.QGraphicsView):
@@ -67,6 +68,8 @@ class PynalDocument(QtGui.QGraphicsView):
         self.undo_stack = kdeui.KUndoStack(self)
 
         self.removed_pages = []
+
+        self.cache = PynalCache()
 
     def refresh_viewport_size(self):
         """
