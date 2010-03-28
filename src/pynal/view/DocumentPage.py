@@ -45,6 +45,12 @@ class DocumentPage(QtGui.QGraphicsItem):
 
     TYPE_DOCUMENT_PAGE = 65536
 
+    """
+    This is an empty pixmap that is used by the pages when the pixmap
+    needs to be replaced.
+    """
+    placeholder_pixmap = None
+
     def __init__(self, document, page_number, bg_source=None):
         QtGui.QGraphicsItemGroup.__init__(self, None, document.scene())
 
@@ -58,6 +64,11 @@ class DocumentPage(QtGui.QGraphicsItem):
         self.background_is_dirty = True
 
         self.update_bounding_rect()
+
+        # This needs to be done here because a QPaintDevice needs to be initialized.
+        # TODO: Do this somewhere else...
+        if DocumentPage.placeholder_pixmap is None:
+            DocumentPage.placeholder_pixmap = QtGui.QPixmap()
 
     def prevpage(self):
         """
@@ -214,6 +225,7 @@ class DocumentPage(QtGui.QGraphicsItem):
         else:
             new_pixmap = result
 
+        # Tell the pixmap cache that a new background is in use.
         self.document.cache.addBackground(self, new_pixmap)
 
         if self.bg_graphics_item is None:
@@ -250,4 +262,9 @@ class DocumentPage(QtGui.QGraphicsItem):
         pass
 
     def clear_bg_pixmap(self):
-        print self, ": clear dat shit"
+        """
+        Remove the current pixmap of the background with an empty one.
+        The pixmap is rendered again when needed.
+        """
+        self.bg_graphics_item.setPixmap(DocumentPage.placeholder_pixmap)
+        self.background_is_dirty = True
