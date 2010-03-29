@@ -71,9 +71,11 @@ class MainWindowControl(QtCore.QObject):
         if not files:
             return
 
+        QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         for file in files:
             filename = os.path.basename(str(file))
             self.open_document(PynalDocument(file), filename)
+        QtGui.QApplication.restoreOverrideCursor()
 
     def open_document(self, document, filename):
         """ Show a PynalDocument in the journaling area. """
