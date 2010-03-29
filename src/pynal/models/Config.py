@@ -22,6 +22,18 @@ version = "0.1"
 # Readable application name to display.
 readable_appname = "Pynal"
 
+# Description
+description = "Journaling application bla bla, use on a tablet."
+description_long = "Many words here. But actually not that many more than for the short \
+                    description - ah there we go."
+
+# Author information
+author = "Dominik Schacht"
+author_email = "domschacht@gmail.com"
+
+# Platforms the program runs on
+platforms = "Any"
+
 # The KDE catalog specifier.
 catalog = "catalog"
 
