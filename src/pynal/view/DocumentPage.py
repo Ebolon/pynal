@@ -45,8 +45,14 @@ class DocumentPage(QtGui.QGraphicsItem):
 
     TYPE_DOCUMENT_PAGE = 65536
 
+    """
+    This is an empty pixmap that is used by the pages when the pixmap
+    needs to be replaced.
+    """
+    placeholder_pixmap = None
+
     def __init__(self, document, page_number, bg_source=None):
-        QtGui.QGraphicsItemGroup.__init__(self, None, document.scene())
+        QtGui.QGraphicsItem.__init__(self, None, document.scene())
 
         self.document = document
         self.bg_source = bg_source
@@ -58,6 +64,11 @@ class DocumentPage(QtGui.QGraphicsItem):
         self.background_is_dirty = True
 
         self.update_bounding_rect()
+
+        # This needs to be done here because a QPaintDevice needs to be initialized.
+        # TODO: Do this somewhere else...
+        if DocumentPage.placeholder_pixmap is None:
+            DocumentPage.placeholder_pixmap = QtGui.QPixmap()
 
     def prevpage(self):
         """
@@ -94,6 +105,8 @@ class DocumentPage(QtGui.QGraphicsItem):
 
         if self.bg_graphics_item is not None:
             p = self.bg_graphics_item.pixmap()
+            if p.isNull:
+                return
             self.bg_graphics_item.setPixmap(p.scaled(size.toSize()))
             self.background_is_dirty = True
 
@@ -172,7 +185,7 @@ class DocumentPage(QtGui.QGraphicsItem):
 
         if self.background_is_dirty:
             self.bg_source.get_image(self.document.scale_level, self.background_ready)
-
+            self.background_is_dirty = False
             #TODO: call paint on previous/next page to pre-cache.
             pass
         else:
@@ -214,6 +227,9 @@ class DocumentPage(QtGui.QGraphicsItem):
         else:
             new_pixmap = result
 
+        # Tell the pixmap cache that a new background is in use.
+        self.document.cache.addBackground(self, new_pixmap)
+
         if self.bg_graphics_item is None:
             self.bg_graphics_item = QtGui.QGraphicsPixmapItem(new_pixmap, self)
         else:
@@ -246,3 +262,11 @@ class DocumentPage(QtGui.QGraphicsItem):
     def duplicate(self):
         """ Insert a duplicate of this page below it. """
         pass
+
+    def clear_bg_pixmap(self):
+        """
+        Remove the current pixmap of the background with an empty one.
+        The pixmap is rendered again when needed.
+        """
+        self.bg_graphics_item.setPixmap(DocumentPage.placeholder_pixmap)
+        self.background_is_dirty = True

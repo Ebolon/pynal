@@ -23,7 +23,7 @@ class MainWindowControl(QtCore.QObject):
     """
 
     def __init__(self, window):
-        """ Creates a new MainWindowControl. """
+        """ Create a new MainWindowControl. """
         QtCore.QObject.__init__(self)
         self.window = window
         self.createActions()
@@ -71,12 +71,14 @@ class MainWindowControl(QtCore.QObject):
         if not files:
             return
 
+        QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         for file in files:
             filename = os.path.basename(str(file))
             self.open_document(PynalDocument(file), filename)
+        QtGui.QApplication.restoreOverrideCursor()
 
     def open_document(self, document, filename):
-        """ Shows a PynalDocument in the journaling area. """
+        """ Show a PynalDocument in the journaling area. """
         tabwidget = self.window.tabWidget
         newindex = tabwidget.addTab(document, filename)
         tabwidget.setCurrentIndex(newindex)
@@ -85,7 +87,7 @@ class MainWindowControl(QtCore.QObject):
 
     def close_document(self, index):
         """
-        Closes a tab.
+        Close a tab.
 
         No idea if there is more work needed to dispose the widgets and
         QtPoppler.Document that lived in this tab.

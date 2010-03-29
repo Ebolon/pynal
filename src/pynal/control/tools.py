@@ -105,7 +105,7 @@ class GraphicsItemCommand(QtGui.QUndoCommand):
 
     def __init__(self, document, graphicsItem):
         """
-        Creates a new GraphicsItemCommand that can be pushed on an UndoStack.
+        Create a new GraphicsItemCommand that can be pushed on an UndoStack.
         Undo and redo changes the parent item of the graphicsItem. The parent
         is read from the graphicsItem when the command is created therefore it
         should have the parent before the command is created.
