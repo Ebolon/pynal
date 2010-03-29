@@ -15,13 +15,14 @@ class PynalCache(object):
     of the pixmaps.
     """
 
-    """ The maximum amount of loaded backgrounds. """
-    MAX_BACKGROUNDS = 25
+    """ The maximum amount of memory that can be used for background pixmaps in kb. """
+    MAX_BACKGROUND_SIZE = 1024 * 20
 
     def __init__(self):
         '''
         Create a new cache.
         '''
+        self.bg_size = 0
         self.backgrounds = collections.deque()
 
     def addBackground(self, page, pixmap):
@@ -33,11 +34,20 @@ class PynalCache(object):
           pixmap -- The pixmap of the background that is added.
                     Currently not used.
         """
+        self.bg_size += pixmap_size(pixmap)
+
         if page in self.backgrounds:
             self.backgrounds.remove(page)
 
-        while len(self.backgrounds) >= PynalCache.MAX_BACKGROUNDS:
+        while self.bg_size >= PynalCache.MAX_BACKGROUND_SIZE:
             remove_page = self.backgrounds.pop()
+            old_pixmap = remove_page.bg_graphics_item.pixmap()
+            old_size = pixmap_size(old_pixmap)
+            self.bg_size -= old_size
             remove_page.clear_bg_pixmap()
 
         self.backgrounds.appendleft(page)
+
+def pixmap_size(pixmap):
+    """ Calculates an estimate for the size in kb of a pixmap. """
+    return pixmap.width() * pixmap.height() * pixmap.depth() / 8 / 1024
