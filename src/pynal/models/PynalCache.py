@@ -2,6 +2,7 @@
 import collections
 
 from PyQt4 import QtCore, QtGui
+import pynal.models.Config as Config
 
 class PynalCache(object):
     """
@@ -14,9 +15,6 @@ class PynalCache(object):
     A better version of this could be based on the size in bytes
     of the pixmaps.
     """
-
-    """ The maximum amount of memory that can be used for background pixmaps in kb. """
-    MAX_BACKGROUND_SIZE = 1024 * 20
 
     def __init__(self):
         '''
@@ -39,7 +37,7 @@ class PynalCache(object):
         if page in self.backgrounds:
             self.backgrounds.remove(page)
 
-        while self.bg_size >= PynalCache.MAX_BACKGROUND_SIZE:
+        while self.bg_size >= Config.max_background_cache_size:
             remove_page = self.backgrounds.pop()
             old_pixmap = remove_page.bg_graphics_item.pixmap()
             old_size = pixmap_size(old_pixmap)

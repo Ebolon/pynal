@@ -62,6 +62,9 @@ background_z_value = -42
 # Resolution to use when rendering pdf pages to QImages.
 pdf_base_dpi = 72.0 # This is the default for QtPoppler and is needed for size calculations.
 
+# The maximum amount of memory that can be used for background pixmaps in kb.
+max_background_cache_size = 1024 * 64
+
 # The minimum space between to pages (in pixels at zoom 1.0). This scales with the zoom level.
 min_space_between_pages = 10
 
