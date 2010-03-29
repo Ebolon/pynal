@@ -32,6 +32,7 @@ class PynalDocument(QtGui.QGraphicsView):
         parent      -- the parent widget of this widget.
         """
         QtGui.QGraphicsView.__init__(self, parent)
+        self.max_width = -1
         self.setCursor(tools.current_tool.cursor)
 
         # Needed for proper rendering of selection box
@@ -80,8 +81,16 @@ class PynalDocument(QtGui.QGraphicsView):
         lastpage = self.pages[-1]
         bottom = lastpage.sceneBoundingRect().bottomRight()
         bottom.setY(bottom.y() + lastpage.control_panel.sizeF().height())
-        rect = QtCore.QRectF(self.pages[0].sceneBoundingRect().topLeft(),
-                             bottom)
+
+        """
+        When max_width is set to -1, the current max width is unknown and has to be determined.
+        """
+        if self.max_width == -1:
+            for page in self.pages:
+                if page.boundingRect().width() > self.max_width:
+                    self.max_width = page.boundingRect().width()
+
+        rect = QtCore.QRectF(self.max_width / -2, 0, self.max_width, bottom.y())
         return self.scene().setSceneRect(rect)
 
     def zoom(self, value):
@@ -131,12 +140,17 @@ class PynalDocument(QtGui.QGraphicsView):
         if bg_source is None:
             bg_source = Backgrounds.empty_background()
 
-        self.pages.insert(index, DocumentPage(self, index, bg_source))
+        new_page = DocumentPage(self, index, bg_source)
+        if new_page.boundingRect().width() > self.max_width:
+           self.max_width = new_page.boundingRect().width()
+
+        self.pages.insert(index, new_page)
 
         # Move all pages after this down to accommodate it.
         for i in range(index + 1, len(self.pages)):
             self.pages[i].page_number = i
             self.pages[i].update_bounding_rect()
+
         self.refresh_viewport_size()
 
     def insert_new_page_after(self, index, bg_source=None):
@@ -232,6 +246,14 @@ class PynalDocument(QtGui.QGraphicsView):
             pages[i].update_bounding_rect()
 
         self.removed_pages.append(page_remove)
+
+        """
+        When this page might have been the widest, set the maximum width to unknown.
+        So it is recalculated when needed.
+        """
+        if page_remove.boundingRect().width() == self.max_width:
+            self.max_Width = -1
+
         self.refresh_viewport_size()
 
     def page_at(self, point):
