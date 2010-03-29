@@ -12,9 +12,15 @@ sys.path.append("src")
 
 from pynal.models import Config
 
+pynal_data_files = [
+        ("share/applications", ["resources/pynal.desktop"]),
+        ("share/pynal", ["resources/pynalui.rc"]),
+                    ]
+
 setup(name=Config.appname.lower(), version=Config.version,
       url=Config.homepage, license=Config.license,
       package_dir={"pynal": "src/pynal"},
       packages=["pynal", "pynal.models", "pynal.view", "pynal.control"],
-      scripts=["pynal"],)
+      scripts=["pynal"],
+      data_files=pynal_data_files)
 
