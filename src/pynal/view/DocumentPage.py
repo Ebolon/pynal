@@ -52,7 +52,7 @@ class DocumentPage(QtGui.QGraphicsItem):
     placeholder_pixmap = None
 
     def __init__(self, document, page_number, bg_source=None):
-        QtGui.QGraphicsItemGroup.__init__(self, None, document.scene())
+        QtGui.QGraphicsItem.__init__(self, None, document.scene())
 
         self.document = document
         self.bg_source = bg_source

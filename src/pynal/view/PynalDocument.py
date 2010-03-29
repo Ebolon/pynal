@@ -56,8 +56,8 @@ class PynalDocument(QtGui.QGraphicsView):
             # This might want to be moved into an own thread
             # (when numPages is over a certain threshold?)
             for page_number in range(0, self.document.numPages()):
-                    self.insert_new_page_at(page_number,
-                        Backgrounds.pdf_page(self.document.page(page_number)))
+                self.insert_new_page_at(page_number,
+                    Backgrounds.pdf_page(self.document.page(page_number)))
 
                 # Note that the pdf pages are not rendered
                 # now. That happens when the page is to be
