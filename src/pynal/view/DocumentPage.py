@@ -105,7 +105,7 @@ class DocumentPage(QtGui.QGraphicsItem):
 
         if self.bg_graphics_item is not None:
             p = self.bg_graphics_item.pixmap()
-            if p.isNull:
+            if p.isNull():
                 return
             self.bg_graphics_item.setPixmap(p.scaled(size.toSize()))
             self.background_is_dirty = True
