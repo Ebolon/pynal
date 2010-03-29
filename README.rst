@@ -9,10 +9,22 @@ Introduction
 Intended for use on tablets to make quick illustrations and add notes
 and other annotations.
 
-For installation instructions see ``docs/INSTALL``.
+For installation instructions see ``docs/INSTALL.rst``.
 
 The source is published under the 2-clause BSD license. For details 
 see ``docs/LICENSE``.
+
+Authors
+=======
+* Dominik Schacht <domschacht@gmail.com>
+* Simon Pizonka <simzonka@gmail.com>
+* Samuel Spiza <samuelspiza@gmail.com>
+
+Contact
+=======
+For feedback or to report bugs go to http://github.com/dominiks/pynal
+
+Maintaining author is Dominik Schacht <domschacht@gmail.com>
 
 Notes
 =====
