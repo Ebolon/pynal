@@ -28,6 +28,10 @@ Maintaining author is Dominik Schacht <domschacht@gmail.com>
 
 Notes
 =====
+When encountering errors related to QtPoppler when starting the application
+it might help to reinstall/update the PyPoppler-qt4 bindings. For detailed
+instructions see ``docs/INSTALL.rst``.
+
 The pynalui.rc contains the xml configuration for the toolbars and menus.
 When the application is installed the file will be moved automatically, if
 that is not the case move it to::
