@@ -13,6 +13,8 @@ class PageControl(QtGui.QGraphicsItem):
     page manipulation and management actions.
     '''
 
+    TYPE_PAGE_CONTROL = 65537
+
     def __init__(self, parent):
         '''
         Creates a new PageControl for the given page.
@@ -96,3 +98,6 @@ class PageControl(QtGui.QGraphicsItem):
             toolbar_item.setWidget(self.toolbar_widget)
             self.toolbar = toolbar_item
             self.reposition_toolbar()
+
+    def type(self):
+        return PageControl.TYPE_PAGE_CONTROL
