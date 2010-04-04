@@ -54,6 +54,7 @@ Files that can be found in this file tree and their use:
 /setup.py                  The setup script. ``python setup.py --help`` for more info.
 /resources/PKGBUILD        The configuration file for the arch packaging system.
 /resources/arch-pkg.sh     Script to create an arch package.
+/resources/pynal           A startup script that is used to start the application when installed.
 /resources/pynal.desktop   Application descriptor for the installed program.
 /resources/pynalui.rc      Default GUI configuration file.
 =========================  ==========================================================================

@@ -28,6 +28,6 @@ setup(name=Config.appname.lower(),
       license=Config.license,
       package_dir={"pynal": "src/pynal"},
       packages=["pynal", "pynal.models", "pynal.view", "pynal.control"],
-      scripts=["pynal"],
+      scripts=["resources/pynal"],
       data_files=pynal_data_files)
 
