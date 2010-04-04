@@ -16,7 +16,7 @@ can be found at the pardus-project_.
 
 License information and authors can be found in ``/pypoppler-qt4/LICENSE`` and ``/pypoppler-qt4/AUTHORS``. 
 
-Steps to install the bindings ::
+Steps to install the bindings::
 
     cd pypoppler-qt4
     python configure.py
@@ -26,9 +26,17 @@ Steps to install the bindings ::
 Installation process
 ====================
 Pynal is distributed as python modules so there is no need
-for a build process. To install the modules execute ::
+for a build process. To install the modules execute::
 
     python setup.py install
+
+Distribution specific
+~~~~~~~~~~~~~~~~~~~~~
+When using *Arch* a package can easily created with a script in the resources dir::
+
+    cd resources
+    sh arch-pkg.sh
+    sudo pacman -U ../dist/pynal-0.1-1-any.pkg.tar.gz
 
 Starting
 ========
