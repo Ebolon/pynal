@@ -41,3 +41,19 @@ that is not the case move it to::
 This file is formatted with reStructuredText_ markup.
 
 .. _reStructuredText: http://docutils.sourceforge.net/rst.html
+
+Files
+=====
+Files that can be found in this file tree and their use:
+
+=========================  ==========================================================================
+ File                      Description
+=========================  ==========================================================================
+/MANIFEST                  Used by setup.py to determine which files to include in the distributions.
+/README.rst                This file.
+/setup.py                  The setup script. ``python setup.py --help`` for more info.
+/resources/PKGBUILD        The configuration file for the arch packaging system.
+/resources/arch-pkg.sh     Script to create an arch package.
+/resources/pynal.desktop   Application descriptor for the installed program.
+/resources/pynalui.rc      Default GUI configuration file.
+=========================  ==========================================================================
