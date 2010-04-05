@@ -18,7 +18,7 @@ Authors
 =======
 * Dominik Schacht <domschacht@gmail.com>
 * Simon Pizonka <simzonka@gmail.com>
-* Samuel Spiza <samuelspiza@gmail.com>
+* Samuel Spiza <sam.spiza@gmail.com>
 
 Contact
 =======
