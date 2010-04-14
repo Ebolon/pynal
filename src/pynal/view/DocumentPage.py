@@ -43,8 +43,16 @@ class DocumentPage(QtGui.QGraphicsItem):
                            something else made it unneeded.
     """
 
+    TYPE_DOCUMENT_PAGE = 65536
+
+    """
+    This is an empty pixmap that is used by the pages when the pixmap
+    needs to be replaced.
+    """
+    placeholder_pixmap = None
+
     def __init__(self, document, page_number, bg_source=None):
-        QtGui.QGraphicsItemGroup.__init__(self, None, document.scene())
+        QtGui.QGraphicsItem.__init__(self, None, document.scene())
 
         self.document = document
         self.bg_source = bg_source
@@ -57,9 +65,11 @@ class DocumentPage(QtGui.QGraphicsItem):
 
         self.update_bounding_rect()
 
-    def type(self):
-        # return a value larger than or equal to UserType (65536).
-        return 65540
+        # This needs to be done here because a QPaintDevice needs to be initialized.
+        # TODO: Do this somewhere else...
+        if DocumentPage.placeholder_pixmap is None:
+            DocumentPage.placeholder_pixmap = QtGui.QPixmap()
+
     def prevpage(self):
         """
         Return the previous page, or None when there is none.
@@ -73,57 +83,65 @@ class DocumentPage(QtGui.QGraphicsItem):
         """
         Update the bounding rect of this page.
         """
-        if self.page_number == 0:
-            top = 0
-        else:
-            space = Config.min_space_between_pages * self.document.scale_level
+        size = self.bounding_size()
+        topleft = self.bounding_topleft(size)
 
-            # Make enough Space for the page control of the previous page.
-            space += self.prevpage().control_panel.sizeF().height()
+        """
+        Find the scaling factor needed to transform
+        the page to the needed size.
+        Then scale, to transform all children so they stay
+        where they are relative to the page.
+        """
+        newwidth = size.width()
+        oldwidth = self.sceneBoundingRect().width()
+        scale = newwidth / oldwidth
+        self.scale(scale, scale)
 
-            top = self.prevpage().boundingRect().bottom() + space
-
-        # Use the size of this page's background.
-        bg_size = self.bg_source.sizeF()
-
-        # Scale the background according to the documents scale level.
-        size = QtCore.QSize(math.ceil(bg_size.width()  * self.document.scale_level),
-                            math.ceil(bg_size.height() * self.document.scale_level))
-
-        # Move to the left by half width so center is on y-axis of scene.
-        left_pos = -size.width() / 2
-
-        if self.boundingRect() is not None:
-            """
-            Find the scaling factor needed to transform
-            the page to the needed size.
-            Then scale, to transform all children so they stay
-            where they are relative to the page.
-            """
-            newwidth = size.width()
-            oldwidth = self.boundingRect().width()
-            scale = newwidth / oldwidth
-            self.scale(scale, scale)
-
-        else:
-            # Create the rect once...
-            self._bounding = QtCore.QRectF()
-
-        # ...and change its properties to update it.
-        self._bounding.setTopLeft(QtCore.QPointF(left_pos, top))
+        self.prepareGeometryChange()
         self._bounding.setSize(QtCore.QSizeF(size))
+        self.setPos(topleft)
 
         self.control_panel.update_bounding_rect()
 
         if self.bg_graphics_item is not None:
             p = self.bg_graphics_item.pixmap()
-            self.bg_graphics_item.setPixmap(p.scaled(size))
-            self.move_item_topleft()
+            if p.isNull:
+                return
+            self.bg_graphics_item.setPixmap(p.scaled(size.toSize()))
             self.background_is_dirty = True
+
+    def bounding_topleft(self, size=None):
+        """
+        Calculate the position of the page.
+
+        Parameters:
+          size -- The size is needed to center the page within the scene.
+                  When None, the size is calculated with self.bounding_size().
+        """
+        if size is None:
+            size = self.bounding_size()
+
+        if self.page_number == 0:
+            top = 0
+        else:
+            space = Config.min_space_between_pages * self.document.scale_level
+
+            ## Make enough Space for the page control of the previous page.
+            space += self.prevpage().control_panel.sizeF().height()
+
+            top = self.prevpage().sceneBoundingRect().bottom() + space
+
+        ## Move to the left by half width so center is on y-axis of scene.
+        left_pos = -size.width() / 2
+
+        return QtCore.QPointF(left_pos, top)
+
+    def type(self):
+        return DocumentPage.TYPE_DOCUMENT_PAGE
 
     def scale(self, x, y):
         """
-        Reimplementation to prevent the background pixmaps and page controls 
+        Reimplementation to prevent the background pixmaps and page controls
         from getting scaled. Scaling these Objects will result in an off
         scale value which will distort the re-rendered pdf pages.
 
@@ -138,7 +156,22 @@ class DocumentPage(QtGui.QGraphicsItem):
         """
         Return the bounding box of the page.
         """
+        if self._bounding is None:
+            self._bounding = QtCore.QRectF(0, 0, 1, 1)
+            self._bounding.setSize(self.bounding_size())
         return self._bounding
+
+    def bounding_size(self):
+        """
+        Calculate the size of the page by using the dimensions of the
+        background source.
+        """
+        bg_size = self.bg_source.sizeF()
+
+        ## Scale the background according to the documents scale level.
+        size = QtCore.QSizeF(math.ceil(bg_size.width()  * self.document.scale_level),
+                            math.ceil(bg_size.height() * self.document.scale_level))
+        return size
 
     def paint(self, painter, option, widget=None):
         """
@@ -152,12 +185,11 @@ class DocumentPage(QtGui.QGraphicsItem):
 
         if self.background_is_dirty:
             self.bg_source.get_image(self.document.scale_level, self.background_ready)
-
+            self.background_is_dirty = False
             #TODO: call paint on previous/next page to pre-cache.
             pass
         else:
             pass
-
 
     def background_ready(self, result):
         """
@@ -195,23 +227,15 @@ class DocumentPage(QtGui.QGraphicsItem):
         else:
             new_pixmap = result
 
+        # Tell the pixmap cache that a new background is in use.
+        self.document.cache.addBackground(self, new_pixmap)
+
         if self.bg_graphics_item is None:
             self.bg_graphics_item = QtGui.QGraphicsPixmapItem(new_pixmap, self)
         else:
             self.bg_graphics_item.setPixmap(new_pixmap)
 
-        self.move_item_topleft()
         self.bg_graphics_item.setZValue(Config.background_z_value)
-
-    def move_item_topleft(self):
-        """
-        Move the background image to the top left of the
-        bounding rect.
-
-        This should be done as a translation transformation
-        to move all children correctly.
-        """
-        self.bg_graphics_item.setOffset(self.boundingRect().topLeft())
 
     def append(self):
         """ Append a new page after this. """
@@ -238,3 +262,11 @@ class DocumentPage(QtGui.QGraphicsItem):
     def duplicate(self):
         """ Insert a duplicate of this page below it. """
         pass
+
+    def clear_bg_pixmap(self):
+        """
+        Remove the current pixmap of the background with an empty one.
+        The pixmap is rendered again when needed.
+        """
+        self.bg_graphics_item.setPixmap(DocumentPage.placeholder_pixmap)
+        self.background_is_dirty = True

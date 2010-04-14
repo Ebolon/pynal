@@ -7,14 +7,14 @@ from PyQt4 import QtOpenGL
 import math
 
 from PyQt4 import QtCore, QtGui
-from pynal.view.DocumentPage import DocumentPage
+from PyKDE4 import kdeui
 import QtPoppler
 
 import pynal.control.tools as tools
 import pynal.models.Config as Config
 import pynal.view.Backgrounds as Backgrounds
-
-
+from pynal.models.PynalCache import PynalCache
+from pynal.view.DocumentPage import DocumentPage
 
 class PynalDocument(QtGui.QGraphicsView):
     """
@@ -25,6 +25,7 @@ class PynalDocument(QtGui.QGraphicsView):
     pages       -- The list of DocumentPage objects of this document.
     document    -- The Poppler Document used as the background
                    source.
+    undo_stack  -- The undo stack for this document.
     """
 
     def __init__(self, source_file=None, parent=None):
@@ -36,6 +37,7 @@ class PynalDocument(QtGui.QGraphicsView):
         parent      -- the parent widget of this widget.
         """
         QtGui.QGraphicsView.__init__(self, parent)
+        self.max_width = -1
         self.setCursor(tools.current_tool.cursor)
 
         # Needed for proper rendering of selection box
@@ -63,8 +65,8 @@ class PynalDocument(QtGui.QGraphicsView):
             # This might want to be moved into an own thread
             # (when numPages is over a certain threshold?)
             for page_number in range(0, self.document.numPages()):
-                    self.insert_new_page_at(page_number,
-                        Backgrounds.pdf_page(self.document.page(page_number)))
+                self.insert_new_page_at(page_number,
+                    Backgrounds.pdf_page(self.document.page(page_number)))
 
                 # Note that the pdf pages are not rendered
                 # now. That happens when the page is to be
@@ -72,6 +74,8 @@ class PynalDocument(QtGui.QGraphicsView):
 
         else:
             self.insert_new_page_at(0) # Add an empty page.
+
+        self.undo_stack = kdeui.KUndoStack(self)
 
         self.removed_pages = []
 
@@ -92,10 +96,13 @@ class PynalDocument(QtGui.QGraphicsView):
         self.popMenu.addAction( self.actionDelete )
         self.popMenu.addSeparator()
         self.popMenu.addAction( self.actionAdd )
+        
+        self.cache = PynalCache()
 
     def on_context_menu(self, point):
         self.popMenu.exec_(self.mapToGlobal(point))
         print "hu"
+        
 
     def refresh_viewport_size(self):
         """
@@ -104,10 +111,18 @@ class PynalDocument(QtGui.QGraphicsView):
         bottom right page (page's control).
         """
         lastpage = self.pages[-1]
-        bottom = lastpage.boundingRect().bottomRight()
+        bottom = lastpage.sceneBoundingRect().bottomRight()
         bottom.setY(bottom.y() + lastpage.control_panel.sizeF().height())
-        rect = QtCore.QRectF(self.pages[0].boundingRect().topLeft(),
-                             bottom)
+
+        """
+        When max_width is set to -1, the current max width is unknown and has to be determined.
+        """
+        if self.max_width == -1:
+            for page in self.pages:
+                if page.boundingRect().width() > self.max_width:
+                    self.max_width = page.boundingRect().width()
+
+        rect = QtCore.QRectF(self.max_width / -2, 0, self.max_width, bottom.y())
         return self.scene().setSceneRect(rect)
 
     def zoom(self, value):
@@ -166,12 +181,17 @@ class PynalDocument(QtGui.QGraphicsView):
         if bg_source is None:
             bg_source = Backgrounds.empty_background()
 
-        self.pages.insert(index, DocumentPage(self, index, bg_source))
+        new_page = DocumentPage(self, index, bg_source)
+        if new_page.boundingRect().width() > self.max_width:
+           self.max_width = new_page.boundingRect().width()
+
+        self.pages.insert(index, new_page)
 
         # Move all pages after this down to accommodate it.
         for i in range(index + 1, len(self.pages)):
             self.pages[i].page_number = i
             self.pages[i].update_bounding_rect()
+
         self.refresh_viewport_size()
 
     def insert_new_page_after(self, index, bg_source=None):
@@ -268,6 +288,14 @@ class PynalDocument(QtGui.QGraphicsView):
             pages[i].update_bounding_rect()
 
         self.removed_pages.append(page_remove)
+
+        """
+        When this page might have been the widest, set the maximum width to unknown.
+        So it is recalculated when needed.
+        """
+        if page_remove.boundingRect().width() == self.max_width:
+            self.max_Width = -1
+
         self.refresh_viewport_size()
 
     def page_at(self, point):
@@ -279,15 +307,9 @@ class PynalDocument(QtGui.QGraphicsView):
         """
         if not self.pages:
             return None
-        
-        # First item in the list has the lowest z-value - this is a page's background.
-        try:
-            page = self.scene().items(point)[-1]
-        except IndexError:
-            return None
 
-        # Check if this item really has the z-value for a background.
-        if page.type() == 65540:
-            return page
-        else:
-            return None
+        for item in self.scene().items(point):
+            if item.type() == DocumentPage.TYPE_DOCUMENT_PAGE:
+                return item
+
+        return None

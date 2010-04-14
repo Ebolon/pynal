@@ -47,14 +47,9 @@ class PageControl(QtGui.QGraphicsItem):
 
     def reposition_toolbar(self):
         """ Move the toolbar QGraphicsProxyItem below the page. """
-        return self.toolbar.setPos(-self.toolbar.boundingRect().width() / 2, self.boundingRect().top())
-
-#        Toolbar can also be left or right aligned.
-#        return self.toolbar.setPos(self.parentItem().boundingRect().left(), self.boundingRect().top())
-#        return self.toolbar.setPos(
-#                    self.parentItem().boundingRect().right() - self.toolbar.boundingRect().width(),
-#                    self.boundingRect().top())
-
+        return self.toolbar.setPos(  self.toolbar.size().width() / -2
+                                   + self.parentItem().boundingRect().width() / 2,
+                                    self.parentItem().boundingRect().height())
 
     def plain_bg(self):
         """ Set the background to plain. """
@@ -77,7 +72,7 @@ class PageControl(QtGui.QGraphicsItem):
         """
 
         #TODO: these values and the whole bounding_rect should be related to the toolbar
-        self._bounding = QtCore.QRectF(QtCore.QPointF(-100, self.parentItem().boundingRect().bottom()),
+        self._bounding = QtCore.QRectF(QtCore.QPointF(0, 0),
                                         self.sizeF())
 
         if self.toolbar is not None:
