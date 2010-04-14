@@ -9,6 +9,7 @@ from PyKDE4.kparts import KParts
 
 from pynal.control import actions
 from pynal.control.MainControl import MainWindowControl
+from pynal.view.Widgets import ColorPicker
 
 class MainWindow(KParts.MainWindow):
     '''
@@ -53,6 +54,8 @@ class MainWindow(KParts.MainWindow):
         
         self.connect(comboBox, SIGNAL("currentIndexChanged(int)"),  self.control.changeLineStyle)
         self.toolBar("StrokeToolBar").addWidget(comboBox)
+        colorpicker = ColorPicker(self)
+        self.toolBar("StrokeToolBar").addWidget(colorpicker)
 
     def createMenuBar(self):
         """ Create and populate the menu bar. """

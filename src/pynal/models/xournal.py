@@ -85,6 +85,7 @@ class XornalHandler(xml.sax.handler.ContentHandler):
             self.strokeAtt["tool"] = attributes["tool"]
             self.strokeAtt["color"] = attributes["color"]
             self.strokeAtt["width"] = float(attributes["width"])
+            self.Line = None
             self.inStroke = True
  
     def characters(self, data):
@@ -119,8 +120,9 @@ class XornalHandler(xml.sax.handler.ContentHandler):
                 strokeColor.setAlpha(100)
             self.Line.setColor(strokeColor)
             self.Line.setZValue(1)
-            self.Line.setParentItem(page)
+            
             self.view.scene().addItem(self.Line)
+            self.Line.setParentItem(page)
             for i in range(0, len(strokeArr)-1, 2):
                 if(strokeArr[i] != "" and strokeArr[i+1] != ""):
                     x = offset.x() + float(strokeArr[i]) * scale_x

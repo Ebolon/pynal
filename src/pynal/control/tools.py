@@ -161,6 +161,8 @@ class PenTool(Tool):
         """
         Stop drawing.
         """
+        if self.Line is not None:
+            self.Line.finalize()
         self.Line = None
         self.deviceDown = False
 

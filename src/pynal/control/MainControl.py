@@ -14,7 +14,6 @@ from PyKDE4.kdecore import KUrl, KCmdLineArgs
 
 from pynal.control import actions
 from pynal.view.PynalDocument import *
-
 from pynal.models.xournal import Xournal
 
 class MainWindowControl(QtCore.QObject):

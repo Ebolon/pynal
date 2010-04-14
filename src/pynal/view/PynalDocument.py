@@ -39,7 +39,7 @@ class PynalDocument(QtGui.QGraphicsView):
         self.setCursor(tools.current_tool.cursor)
 
         # Needed for proper rendering of selection box
-        self.setViewportUpdateMode(self.FullViewportUpdate)
+        #self.setViewportUpdateMode(self.FullViewportUpdate)
 
         self.configure_scene()
 
@@ -74,6 +74,28 @@ class PynalDocument(QtGui.QGraphicsView):
             self.insert_new_page_at(0) # Add an empty page.
 
         self.removed_pages = []
+
+        # Toolbar
+        toolbar = QtGui.QToolBar()
+
+        # Actions
+        self.actionAdd = toolbar.addAction("New", self.refresh_viewport_size)
+        self.actionEdit = toolbar.addAction("Edit", self.refresh_viewport_size)
+        self.actionDelete = toolbar.addAction("Delete", self.refresh_viewport_size)
+        
+        self.setContextMenuPolicy( QtCore.Qt.CustomContextMenu )
+        self.connect(self, QtCore.SIGNAL('customContextMenuRequested(const QPoint&)'), self.on_context_menu)
+
+        # Popup Menu
+        self.popMenu = QtGui.QMenu(self)
+        self.popMenu.addAction( self.actionEdit )
+        self.popMenu.addAction( self.actionDelete )
+        self.popMenu.addSeparator()
+        self.popMenu.addAction( self.actionAdd )
+
+    def on_context_menu(self, point):
+        self.popMenu.exec_(self.mapToGlobal(point))
+        print "hu"
 
     def refresh_viewport_size(self):
         """

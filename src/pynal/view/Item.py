@@ -30,6 +30,8 @@ class Line(Item, QtGui.QGraphicsPathItem):
         self.path = QtGui.QPainterPath(point)
         self.setPen(self.pen)
         self.setPath(self.path)
+        self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable)
+        self.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
 
     def addPoint(self, point):
         """
@@ -45,8 +47,8 @@ class Line(Item, QtGui.QGraphicsPathItem):
         self.lastPoint = point
 
     def finalize(self):
-        self.path.simplified()
-
+        pass
+   
     def setWidth(self, width):
         """
         Set the width to the given value and resize the Pen.
