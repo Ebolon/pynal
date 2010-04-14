@@ -88,7 +88,6 @@ class EraserTool(Tool):
             self.Line = Item.Line(document, point_coords)
             self.lastPoint = point_coords
 
-<<<<<<< HEAD
     def mouseReleaseEvent(self, event, document):
         """
         Stop drawing.
@@ -142,40 +141,25 @@ class PenTool(Tool):
     def setLineStyle(self, style):
         self.LineStyle = style
         
-=======
->>>>>>> dom/master
     def mousePressEvent(self, event, document):
         """
         Start drawing.
         """
         point_coords = document.mapToScene(event.pos())
-<<<<<<< HEAD
         self.page = document.page_at(point_coords)
         if self.page is not None:
             self.deviceDown = True
             self.Line = Item.Line(document, point_coords)
             self.Line.setStyle(self.LineStyle)
-            command = CommandAddLine(document, self.Line, "Line")
-            document.undoStack.push(command)
+            # Create and push the UndoCommand.
+            document.undo_stack.push(GraphicsItemCommand(document, self.Line))
             self.Line.setParentItem(self.page)
             self.Line.setZValue(1)
             self.lastPoint = point_coords
-=======
-        page = document.page_at(point_coords)
+        #page = document.page_at(point_coords)
 
-        if page is None:
-            return
 
-        # Create the QGraphicsItem that should be added to the page.
-        page_point = page.mapFromScene(point_coords)
-        circle = QtGui.QGraphicsEllipseItem(page)
-        circle.setRect(QtCore.QRectF(page_point.x() - 20, page_point.y() - 20, 40, 40))
-        circle.setZValue(1)
-
-        # Create and push the UndoCommand.
-        document.undo_stack.push(GraphicsItemCommand(document, circle))
->>>>>>> dom/master
-
+        
     def mouseReleaseEvent(self, event, document):
         """
         Stop drawing.
@@ -190,19 +174,20 @@ class PenTool(Tool):
             # no stroke
             return
         point_coords = document.mapToScene(event.pos())
-        pageNow = document.page_at(point_coords)
-        if pageNow is None:
-            # out of page
-            self.Line = None
-            return
-        if not self.page == pageNow:
-            # other page - begin new stroke
-            self.mousePressEvent(event, document)
-            return
-        if self.Line is None:
-            # back again in drawing action
-            self.mousePressEvent(event, document)
-        self.page = pageNow
+        print point_coords
+#        pageNow = document.page_at(point_coords)
+#        if pageNow is None:
+#            # out of page
+#            self.Line = None
+#            return
+#        if not self.page == pageNow:
+#            # other page - begin new stroke
+#            self.mousePressEvent(event, document)
+#            return
+#        if self.Line is None:
+#            # back again in drawing action
+#            self.mousePressEvent(event, document)
+#        self.page = pageNow
         x, y = abs(point_coords.x() - self.lastPoint.x()), abs(point_coords.y() - self.lastPoint.y())
         if((x + y) * 0.8 > 3):
             self.Line.addPoint(point_coords)
@@ -210,21 +195,6 @@ class PenTool(Tool):
 
     def type(self):
         return "PenTool"
-
-class CommandAddLine(QtGui.QUndoCommand):
-    """
-    Undo Line Class
-    """
-    def __init__(self, document, Line, description):
-        super(CommandAddLine, self).__init__(description)
-        self.Line = Line
-        self.document = document
-
-    def redo(self):
-        self.document.scene().addItem(self.Line)
-
-    def undo(self):
-        self.document.scene().removeItem(self.Line)
 
 class GraphicsItemCommand(QtGui.QUndoCommand):
     """

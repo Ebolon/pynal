@@ -40,7 +40,7 @@ class Line(Item, QtGui.QGraphicsPathItem):
         Parameters:
         point -- a QPointF where the Line begin
         """
-        #print "h", point
+        print "h", point
         self.path.lineTo(QtCore.QPointF(point))
         self.setPath(self.path)
         self.update()

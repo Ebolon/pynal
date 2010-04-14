@@ -40,9 +40,6 @@ class PynalDocument(QtGui.QGraphicsView):
         self.max_width = -1
         self.setCursor(tools.current_tool.cursor)
 
-        # Needed for proper rendering of selection box
-        #self.setViewportUpdateMode(self.FullViewportUpdate)
-
         self.configure_scene()
 
         # Set the default zoom level to 1.0

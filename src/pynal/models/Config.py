@@ -22,6 +22,18 @@ version = "0.1"
 # Readable application name to display.
 readable_appname = "Pynal"
 
+# Description
+description = "Journaling application bla bla, use on a tablet."
+description_long = "Many words here. But actually not that many more than for the short \
+                    description - ah there we go."
+
+# Author information
+author = "Dominik Schacht"
+author_email = "domschacht@gmail.com"
+
+# Platforms the program runs on
+platforms = "Any"
+
 # The KDE catalog specifier.
 catalog = "catalog"
 
@@ -49,6 +61,9 @@ background_z_value = -42
 #===============================================================================
 # Resolution to use when rendering pdf pages to QImages.
 pdf_base_dpi = 72.0 # This is the default for QtPoppler and is needed for size calculations.
+
+# The maximum amount of memory that can be used for background pixmaps in kb.
+max_background_cache_size = 1024 * 64
 
 # The minimum space between to pages (in pixels at zoom 1.0). This scales with the zoom level.
 min_space_between_pages = 10

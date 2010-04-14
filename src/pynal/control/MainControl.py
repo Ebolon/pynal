@@ -249,6 +249,9 @@ class MainWindowControl(QtCore.QObject):
     
     def select_all(self):
         pass
+
+    def open_file_recent(self):
+        pass 
     
     def changeLineStyle(self, index):
         styles = [QtCore.Qt.SolidLine, QtCore.Qt.DashLine, QtCore.Qt.DotLine, QtCore.Qt.DashDotLine, QtCore.Qt.DashDotDotLine]
